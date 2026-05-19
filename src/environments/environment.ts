@@ -6,6 +6,7 @@
 export const environment = {
   production: false,
   defaultauth: 'fakebackend',
+  mapboxToken: '',
   firebaseConfig: {
     apiKey: "AIzaSyCqS9cSPrDCNSQ-Ku2kZf5DBWjPPv7hvcA",
     authDomain: "test-demo-774f8.firebaseapp.com",
