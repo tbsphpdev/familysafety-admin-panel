@@ -46,6 +46,20 @@ export const MENU: MenuItem[] = [
         ]
     },
     {
+        id: 175,
+        label: 'MENUITEMS.USERS.LIST.USERS',
+        icon: 'ph-users',
+        link: '/users',
+        parentId: 1
+    },
+    {
+        id: 176,
+        label: 'MENUITEMS.SUBSCRIPTION.LIST.SUBSCRIPTION',
+        icon: 'ph-credit-card',
+        link: '/subscription',
+        parentId: 1
+    },
+    {
         id: 8,
         label: 'MENUITEMS.APPS.TEXT',
         isTitle: true
@@ -725,7 +739,7 @@ export const MENU: MenuItem[] = [
                 link: '/advance-ui/sweetalert',
                 parentId: 112
             },
-          
+
             {
                 id: 115,
                 label: 'MENUITEMS.ADVANCEUI.LIST.SCROLLBAR',

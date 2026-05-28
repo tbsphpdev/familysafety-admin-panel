@@ -58,6 +58,18 @@
         "EARNINGS": "Earnings"
       }
     },
+    "USERS": {
+      "TEXT": "Users",
+      "LIST": {
+        "USERS": "Users"
+      }
+    },
+    "SUBSCRIPTION": {
+      "TEXT": "Subscription",
+      "LIST": {
+        "SUBSCRIPTION": "Subscription"
+      }
+    },
     "PAGES": {
       "TEXT": "Pages"
     },

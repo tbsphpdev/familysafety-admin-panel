@@ -47,6 +47,9 @@ import { InstructorEffects } from './store/Learning-instructor/instructor.effect
 import { CustomerEffects } from './store/Customer/customer.effects';
 import { studentsEffects } from './store/students/student.effcts';
 import { CourcesEffects } from './store/Learning-cources/cources.effect';
+import { UserEffects } from './store/Users/user.effects';
+import { ProfileSettingEffects } from './store/ProfileSetting/profile-setting.effects';
+import { SubscriptionEffects } from './store/Subscription/subscription.effects';
 
 export function createTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader();
@@ -95,7 +98,10 @@ if (environment.defaultauth === 'firebase') {
     CustomerEffects,
     studentsEffects,
     CourcesEffects,
-    InstructorEffects
+    InstructorEffects,
+    UserEffects,
+    ProfileSettingEffects,
+    SubscriptionEffects
   ]),
   AngularFireModule.initializeApp(environment.firebaseConfig),
     BrowserModule,

@@ -15,12 +15,20 @@ import { getLayoutmode } from 'src/app/store/layouts/layout-selector';
 import { TokenStorageService } from 'src/app/core/services/token-storage.service';
 
 @Component({
-    selector: 'app-topbar',
-    templateUrl: './topbar.component.html',
-    styleUrls: ['./topbar.component.scss'],
-    standalone: false
+  selector: 'app-topbar',
+  templateUrl: './topbar.component.html',
+  styleUrls: ['./topbar.component.scss'],
+  standalone: false
 })
 export class TopbarComponent {
+  getInitials(name?: string): string {
+    if (!name) return '';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) {
+      return parts[0].substring(0, 2).toUpperCase();
+    }
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
 
   country: any;
   selectedItem!: any;
@@ -161,9 +169,9 @@ export class TopbarComponent {
       document.documentElement.classList.add('mode-auto')
     } else {
       this.store.dispatch(changeMode({ mode }));
-    this.store.select(getLayoutmode).subscribe((mode) => {
-      document.documentElement.setAttribute('data-bs-theme', mode);
-    })
+      this.store.select(getLayoutmode).subscribe((mode) => {
+        document.documentElement.setAttribute('data-bs-theme', mode);
+      })
       document.documentElement.classList.remove('mode-auto')
       document.documentElement.setAttribute('data-topbar', mode);
     }
@@ -340,12 +348,13 @@ export class TopbarComponent {
    * Logout the user
    */
   logout() {
-    this.authService.logout();
-    // if (environment.defaultauth === 'firebase') {
-    //   this.authService.logout();
-    // } else {
-    //   this.authFackservice.logout();
-    // }
-    this.router.navigate(['/auth/login']);
+    this.authService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/auth/login']);
+      },
+      error: (err) => {
+        this.router.navigate(['/auth/login']);
+      }
+    });
   }
 }

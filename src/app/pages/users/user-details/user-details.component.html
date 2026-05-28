@@ -1,0 +1,102 @@
+<div class="card">
+  <div class="card-header">
+    <h4 class="card-title mb-0">User Details</h4>
+  </div>
+  <div class="card-body">
+    <div *ngIf="userdetails; else loading" class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Full Name</label>
+        <p class="text-muted">{{ userdetails.full_name }}</p>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Email</label>
+        <p class="text-muted">{{ userdetails.email }}</p>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Phone Number</label>
+        <p class="text-muted">{{ userdetails.phone_number }}</p>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Date of Birth</label>
+        <p class="text-muted">{{ userdetails.date_of_birth | date:'yyyy-MM-dd' }}</p>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Is Minor</label>
+        <p class="text-muted">
+          <span class="badge"
+            [ngClass]="userdetails.is_minor ? 'bg-warning-subtle text-warning' : 'bg-success-subtle text-success'">
+            {{ userdetails.is_minor ? 'Yes' : 'No' }}
+          </span>
+        </p>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Is Suspended</label>
+        <p class="text-muted">
+          <span class="badge"
+            [ngClass]="userdetails.is_suspended ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success'">
+            {{ userdetails.is_suspended ? 'Suspended' : 'Active' }}
+          </span>
+        </p>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Social Provider</label>
+        <p class="text-muted">{{ userdetails.social_provider }}</p>
+      </div>
+      <ng-container *ngIf="subscriptionDetails">
+        <hr>
+        <div>
+          <h5 class="card-title mb-3">Subscription Details</h5>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Plan Name</label>
+          <p class="text-muted">{{ subscriptionDetails.plan.name }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Plan Price</label>
+          <p class="text-muted">{{ subscriptionDetails.plan.price }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Interval</label>
+          <p class="text-muted">{{ subscriptionDetails.plan.interval }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Payment Source</label>
+          <p class="text-muted">{{ subscriptionDetails.payment_source_name }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Subscription Status</label>
+          <p class="text-muted">{{ subscriptionDetails.status }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Trial Start At</label>
+          <p class="text-muted">{{ subscriptionDetails.trial_start_at | date:'yyyy-MM-dd' }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Trial End At</label>
+          <p class="text-muted">{{ subscriptionDetails.trial_end_at | date:'yyyy-MM-dd' }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Current Period Start At</label>
+          <p class="text-muted">{{ subscriptionDetails.current_period_start | date:'yyyy-MM-dd' }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Current Period End At</label>
+          <p class="text-muted">{{ subscriptionDetails.current_period_end | date:'yyyy-MM-dd' }}</p>
+        </div>
+      </ng-container>
+      <div class="col-12 mt-4">
+        <button class="btn btn-primary" [routerLink]="['/users/edit', userdetails.id]">Edit User</button>
+        <button class="btn btn-secondary ms-2" (click)="goBack()">Back to List</button>
+      </div>
+    </div>
+
+    <ng-template #loading>
+      <div class="text-center py-5">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Loading user details...</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

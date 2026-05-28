@@ -1,0 +1,115 @@
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs title="Users List" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+<!-- End Breadcrumbs -->
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-body">
+        <div id="customerList">
+          <div class="row g-4 mb-3">
+            <div class="col-sm-auto">
+            </div>
+            <div class="col-sm">
+              <div class="d-flex justify-content-sm-end">
+                <div class="search-box ms-2 d-flex align-items-center">
+                  <input type="text" class="form-control search" placeholder="Search..." [(ngModel)]="term">
+                  <button class="btn btn-primary ms-2" type="button" (click)="onSearchClick()">Search</button>
+                  <i class="ri-search-line search-icon ms-2"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive table-card mt-3 mb-1">
+            <table class="table align-middle table-nowrap" id="customerTable">
+              <thead class="table-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Full Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Date of Birth</th>
+                  <th>Minor</th>
+                  <th>Status</th>
+                  <th>Suspended By</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody class="list form-check-all">
+                <tr *ngFor="let user of allusers; let i = index" id="u_{{user.id}}" (click)="viewUserDetails(user.id)"
+                  style="cursor: pointer;">
+                  <td>{{ user.id }}</td>
+                  <td class="customer_name">{{ user.full_name }}</td>
+                  <td class="email">{{ user.email }}</td>
+                  <td class="phone">{{ user.phone_number }}</td>
+                  <td>{{ user.date_of_birth | date:'yyyy-MM-dd' }}</td>
+                  <td>
+                    <span class="badge text-uppercase"
+                      [ngClass]="{ 'bg-warning-subtle text-warning': user.is_minor, 'bg-secondary-subtle text-secondary': !user.is_minor }">
+                      {{ user.is_minor ? 'Yes' : 'No' }}
+                    </span>
+                  </td>
+                  <td class="status"><span class="badge text-uppercase"
+                      [ngClass]="{'bg-success-subtle text-success' : !user.is_suspended,'bg-danger-subtle text-danger' : user.is_suspended}">
+                      {{ user.is_suspended ? 'Suspended' : 'Active' }}</span>
+                  </td>
+                  <td>{{ user.suspended_by ?? '-' }}</td>
+                  <td (click)="$event.stopPropagation()" style="cursor: default;">
+                    <div class="d-flex gap-2">
+                      <div class="edit">
+                        <button class="btn btn-sm btn-success edit-item-btn"
+                          [routerLink]="['/users/edit', user.id]">Edit</button>
+                      </div>
+                      @if(user.is_suspended){
+                      <div class="unsuspend">
+                        <button class="btn btn-sm btn-success remove-item-btn"
+                          (click)="userUnsuspend(user.id)">Unsuspend</button>
+                      </div>
+                      } @else {
+                      <div class="suspend">
+                        <button class="btn btn-sm btn-danger remove-item-btn"
+                          (click)="userSuspend(user.id)">Suspend</button>
+                      </div>
+                      }
+
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="noresult" [ngClass]="(allusers?.length != 0)?'d-none':''">
+              <div class="text-center">
+                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                  colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                <h5 class="mt-2">Sorry! No Result Found</h5>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end">
+            <nav aria-label="User list pagination">
+              <ul class="pagination">
+                <li class="page-item" [class.disabled]="currentPage <= 1">
+                  <button class="page-link" (click)="tablepageChanged(currentPage - 1)"
+                    [disabled]="currentPage <= 1">Previous</button>
+                </li>
+                <li class="page-item" *ngFor="let p of [].constructor(totalPages); let idx = index"
+                  [class.active]="(idx+1) === currentPage">
+                  <button class="page-link" (click)="tablepageChanged(idx+1)">{{ idx + 1 }}</button>
+                </li>
+                <li class="page-item" [class.disabled]="currentPage >= totalPages">
+                  <button class="page-link" (click)="tablepageChanged(currentPage + 1)"
+                    [disabled]="currentPage >= totalPages">Next</button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div><!-- end card -->
+    </div>
+    <!-- end col -->
+  </div>
+  <!-- end col -->
+</div>
+<!-- end row -->

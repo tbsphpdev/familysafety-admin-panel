@@ -1,0 +1,36 @@
+<div class="card">
+  <div class="card-header">
+    <h4 class="card-title mb-0">Edit User</h4>
+  </div>
+  <div class="card-body">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label class="form-label">Full Name</label>
+        <input class="form-control" formControlName="full_name" placeholder="Full name">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input class="form-control" formControlName="email" type="email" placeholder="Email address">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Phone</label>
+        <input class="form-control" formControlName="phone_number" placeholder="Phone number">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Date of Birth</label>
+        <input class="form-control" formControlName="date_of_birth" type="date" placeholder="Date of birth">
+      </div>
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" formControlName="is_minor" id="isMinor">
+        <label class="form-check-label" for="isMinor">Is Minor</label>
+      </div>
+      <button class="btn btn-primary" type="submit" [disabled]="loading">
+        <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        Update User
+      </button>
+      <div *ngIf="form.invalid && (form.dirty || form.touched)" class="mt-2 text-danger">
+        Please fix form errors before submitting.
+      </div>
+    </form>
+  </div>
+</div>

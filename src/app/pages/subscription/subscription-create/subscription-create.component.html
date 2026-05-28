@@ -1,0 +1,35 @@
+<div class="card">
+  <div class="card-header">
+    <h4 class="card-title mb-0">Create Subscription</h4>
+  </div>
+  <div class="card-body">
+    <form [formGroup]="createForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label class="form-label">Name</label>
+        <input class="form-control" formControlName="name" placeholder="Name">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Price</label>
+        <input class="form-control" formControlName="price" type="number" placeholder="Price">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Interval</label>
+        <div class="form-check">
+          <input class="form-check-input" formControlName="interval" id="intervalMonthly" value="monthly" type="radio">
+          <label class="form-check-label" for="intervalMonthly">Monthly</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" formControlName="interval" id="intervalYearly" value="yearly" type="radio">
+          <label class="form-check-label" for="intervalYearly">Yearly</label>
+        </div>
+      </div>
+      <button class="btn btn-primary" type="submit" [disabled]="loading">
+        <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        Create Subscription
+      </button>
+      <div *ngIf="createForm.invalid && (createForm.dirty || createForm.touched)" class="mt-2 text-danger">
+        Please fix form errors before submitting.
+      </div>
+    </form>
+  </div>
+</div>

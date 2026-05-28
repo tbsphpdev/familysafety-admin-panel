@@ -10,6 +10,7 @@ import { LockscreenComponent } from './lockscreen/lockscreen.component';
 import { LogoutComponent } from './logout/logout.component';
 import { SuccessMsgComponent } from './success-msg/success-msg.component';
 import { TwostepComponent } from './twostep/twostep.component';
+import { VerifyOtpComponent } from './verify-otp/verify-otp.component';
 
 const routes: Routes = [
   {
@@ -27,6 +28,10 @@ const routes: Routes = [
   {
     path: 'pass-change',
     component: PassChangeComponent,
+  },
+  {
+    path: 'verify-otp',
+    component: VerifyOtpComponent,
   },
   {
     path: 'lockscreen',

@@ -7,10 +7,10 @@ import { AuthfakeauthenticationService } from 'src/app/core/services/authfake.se
 import { login } from 'src/app/store/Authentication/authentication.actions';
 
 @Component({
-    selector: 'app-login',
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.scss'],
-    standalone: false
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
+  standalone: false
 })
 
 // Login Component
@@ -33,7 +33,7 @@ export class LoginComponent {
   constructor(private formBuilder: UntypedFormBuilder,
     private router: Router,
     private store: Store,
-) { }
+  ) { }
 
   ngOnInit(): void {
     if (localStorage.getItem('currentUser')) {
@@ -43,8 +43,8 @@ export class LoginComponent {
      * Form Validatyion
      */
     this.loginForm = this.formBuilder.group({
-      email: ['admin@themesbrand.com', [Validators.required, Validators.email]],
-      password: ['123456', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required]],
     });
   }
 
