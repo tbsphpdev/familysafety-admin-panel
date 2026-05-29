@@ -34,7 +34,7 @@
               </thead>
               <tbody class="list form-check-all">
                 <tr *ngFor="let subscription of subscriptions; let i = index" id="u_{{subscription.id}}"
-                  (click)="viewSubscriptionDetails(subscription.id)" style="cursor: pointer;">
+                  [routerLink]="['/subscription/edit', subscription.id]" style="cursor: pointer;">
                   <td>{{ subscription.id }}</td>
                   <td class="customer_name">{{ subscription.name }}</td>
                   <td class="email">{{ subscription.price | currency }}</td>
@@ -43,8 +43,8 @@
                   <td (click)="$event.stopPropagation()" style="cursor: default;">
                     <div class="d-flex gap-2">
                       <div class="edit">
-                        <!-- <button class="btn btn-sm btn-success edit-item-btn"
-                          [routerLink]="['/users/edit', user.id]">Edit</button> -->
+                        <button class="btn btn-sm btn-primary edit-item-btn"
+                          [routerLink]="['/subscription/edit', subscription.id]">Edit</button>
                       </div>
                       @if(subscription.is_active){
                       <div class="unsuspend">

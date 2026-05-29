@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { SubscriptionListComponent } from './subscription-list/subscription-list.component';
 import { SubscriptionCreateComponent } from './subscription-create/subscription-create.component';
+import { SubscriptionEditComponent } from './subscription-edit/subscription-edit.component';
 
 const routes: Routes = [
   {
@@ -11,6 +12,10 @@ const routes: Routes = [
   {
     path: 'create',
     component: SubscriptionCreateComponent
+  },
+  {
+    path: 'edit/:id',
+    component: SubscriptionEditComponent
   }
 ];
 

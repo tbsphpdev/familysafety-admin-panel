@@ -3,7 +3,7 @@
     <h4 class="card-title mb-0">Create Subscription</h4>
   </div>
   <div class="card-body">
-    <form [formGroup]="createForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="editForm" (ngSubmit)="onSubmit()">
       <div class="row">
 
         <div class="col-md-4 mb-3">
@@ -96,22 +96,20 @@
         </div>
       </div>
       <hr>
-      <div formArrayName="features" class="mb-3">
-        <label class="form-label">Features</label>
+      <div formArrayName="features" class="mb-4">
+        <label class="form-label fw-bold">Features</label>
 
-        <div class="row" *ngFor="let featureCtrl of features.controls; let i = index; let isLast = last">
-          <div class="col-md-12 mb-3">
+        <div class="row mb-2" *ngFor="let featureGroup of features.controls; let i = index; let isLast = last"
+          [formGroupName]="i">
+          <div class="col-md-12">
             <div class="input-group">
+              <input type="hidden" formControlName="id">
+              <input type="hidden" formControlName="order">
+              <input type="text" formControlName="feature_name" class="form-control" placeholder="Enter Feature">
 
-              <input type="text" [formControlName]="i" class="form-control" placeholder="Enter Feature">
-
-              <button *ngIf="isLast" class="btn btn-primary" type="button" (click)="addFeature()">
-                Add Feature
-              </button>
-
-              <button *ngIf="!isLast" class="btn btn-danger" type="button" (click)="removeFeature(i)">
-                Remove Feature
-              </button>
+              <button *ngIf="isLast" class="btn btn-primary" type="button"
+                (click)="addFeature(null, '', features.length + 1)">+</button>
+              <button *ngIf="!isLast" class="btn btn-danger" type="button" (click)="removeFeature(i)">&times;</button>
 
             </div>
           </div>
@@ -120,13 +118,13 @@
 
 
       <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-primary" type="submit" [disabled]="createForm.invalid || loading">
+        <button class="btn btn-primary" type="submit" [disabled]="editForm.invalid || loading">
           <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-          Create Subscription
+          Update Subscription
         </button>
       </div>
 
-      <div *ngIf="createForm.invalid && (createForm.dirty || createForm.touched)" class="mt-2 text-danger fs-xs">
+      <div *ngIf="editForm.invalid && (editForm.dirty || editForm.touched)" class="mt-2 text-danger fs-xs">
         Please fix form errors before submitting.
       </div>
     </form>

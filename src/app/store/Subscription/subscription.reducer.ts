@@ -77,7 +77,16 @@ export const reducer = createReducer(
   ),
   on(SubscriptionActions.clearSubscriptions,
     state => adapter.removeAll(state)
-  )
+  ),
+  on(SubscriptionActions.getSubscriptionSuccess, (state, action) => {
+    const subscriptionData = action.subscription?.data ? action.subscription.data : action.subscription;
+
+    return adapter.upsertOne(subscriptionData, {
+      ...state,
+      loading: false,
+      error: null
+    });
+  })
 );
 
 export const subscriptionReducer = reducer;

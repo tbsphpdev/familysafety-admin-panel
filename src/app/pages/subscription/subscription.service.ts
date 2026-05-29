@@ -53,4 +53,46 @@ export class SubscriptionService {
       catchError((error: any) => throwError(() => error))
     );
   }
+
+  createSubscription(token: String, payload: any): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      })
+    };
+
+    const url = API_URL + 'subscriptions/';
+
+    return this.http.post<any>(url, payload, httpOptions).pipe(
+      map((response: any) => {
+        if (response && response.status === 201) {
+          return response;
+        }
+        return {};
+      }),
+      catchError((error: any) => throwError(() => error))
+    );
+  }
+
+  getSubscription(token: String, id: any): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      })
+    };
+
+    const url = API_URL + `subscriptions/${id}/`;
+
+    return this.http.get<any>(url, httpOptions).pipe(
+      map((response: any) => {
+        if (response && response.status === 200) {
+          return response;
+        }
+        return {};
+      }),
+      catchError((error: any) => throwError(() => error))
+    );
+  }
 }
