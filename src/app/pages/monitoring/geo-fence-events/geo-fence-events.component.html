@@ -1,0 +1,100 @@
+<app-breadcrumbs [title]="title" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-body">
+        <div id="monitoringList">
+          <div class="row g-4 mb-3">
+            <div class="col-sm-6"></div>
+            <div class="col-sm-6">
+              <div class="d-flex justify-content-sm-end align-items-center">
+                <div class="me-2 d-flex align-items-center">
+                  <label class="me-2 mb-0">Event type</label>
+                  <select class="form-select" [(ngModel)]="eventType" (change)="onFilterChange()"
+                    aria-label="Event type filter">
+                    <option *ngFor="let option of eventTypeOptions" [value]="option.value">{{ option.label }}</option>
+                  </select>
+                </div>
+                <div class="search-box d-flex align-items-center">
+                  <input type="text" class="form-control search" placeholder="Search..." [(ngModel)]="term"
+                    (keyup.enter)="onSearchClick()" />
+                  <button class="btn btn-primary ms-2" type="button" (click)="onSearchClick()">Search</button>
+                  <i class="ri-search-line search-icon ms-2"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="isLoading" class="text-center my-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+
+          <div class="table-responsive table-card mt-3 mb-1" *ngIf="!isLoading">
+            <table class="table align-middle table-nowrap" id="monitoringTable">
+              <thead class="table-light" *ngIf="tableColumns.length > 0">
+                <tr>
+                  <th>Id</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone Number</th>
+                  <th>Safe Zone</th>
+                  <th>Lat</th>
+                  <th>Long</th>
+                  <th>Radius</th>
+                  <th>Event Type</th>
+                  <th>Created At</th>
+                </tr>
+              </thead>
+              <tbody class="list form-check-all">
+                <tr *ngFor="let item of monitoringList; let i = index">
+                  <td>{{ getRowNumber(i) }}</td>
+                  <td>{{ item.full_name }}</td>
+                  <td>{{ item.email }}</td>
+                  <td>{{ item.phone_number }}</td>
+                  <td>{{ item.safe_zone_name }}</td>
+                  <td>{{ item.latitude }}</td>
+                  <td>{{ item.longitude }}</td>
+                  <td>{{ item.radius }}</td>
+                  <td>{{ item.event_type }}</td>
+                  <td>{{ item.created_at | date:'dd-MM-yyyy HH:mm' }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="noresult" [ngClass]="monitoringList.length ? 'd-none' : ''">
+              <div class="text-center">
+                <lord-icon class="lord-icon-small" src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                  colors="primary:#121331,secondary:#08a88a"></lord-icon>
+                <h5 class="mt-2">Sorry! No Result Found</h5>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end" *ngIf="totalPages > 1 && !isLoading">
+            <nav aria-label="Monitoring list pagination">
+              <ul class="pagination">
+                <li class="page-item" [class.disabled]="currentPage <= 1">
+                  <button class="page-link" (click)="tablePageChanged(currentPage - 1)"
+                    [disabled]="currentPage <= 1">Previous</button>
+                </li>
+                <li class="page-item" *ngFor="let page of paginationPages" [class.active]="page === currentPage"
+                  [class.disabled]="page === '...'">
+                  <button class="page-link" *ngIf="page !== '...'" (click)="tablePageChanged(page)"
+                    [disabled]="page === currentPage">{{ page }}</button>
+                  <span class="page-link" *ngIf="page === '...'">...</span>
+                </li>
+                <li class="page-item" [class.disabled]="currentPage >= totalPages">
+                  <button class="page-link" (click)="tablePageChanged(currentPage + 1)"
+                    [disabled]="currentPage >= totalPages">Next</button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

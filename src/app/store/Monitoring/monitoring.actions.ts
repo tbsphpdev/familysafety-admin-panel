@@ -1,0 +1,20 @@
+import { createActionGroup, emptyProps, props } from '@ngrx/store';
+import { Update } from '@ngrx/entity';
+
+import { Monitoring } from './monitoring.model';
+
+export const MonitoringActions = createActionGroup({
+  source: 'Monitoring/API',
+  events: {
+    'Load Monitorings': props<{ monitorings: Monitoring[] }>(),
+    'Add Monitoring': props<{ monitoring: Monitoring }>(),
+    'Upsert Monitoring': props<{ monitoring: Monitoring }>(),
+    'Add Monitorings': props<{ monitorings: Monitoring[] }>(),
+    'Upsert Monitorings': props<{ monitorings: Monitoring[] }>(),
+    'Update Monitoring': props<{ monitoring: Update<Monitoring> }>(),
+    'Update Monitorings': props<{ monitorings: Update<Monitoring>[] }>(),
+    'Delete Monitoring': props<{ id: string }>(),
+    'Delete Monitorings': props<{ ids: string[] }>(),
+    'Clear Monitorings': emptyProps(),
+  }
+});

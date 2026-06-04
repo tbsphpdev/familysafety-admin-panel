@@ -1,14 +1,15 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnDestroy } from '@angular/core';
 
 // Get Modal
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 import { Store } from '@ngrx/store';
 import { loadUsers, userSuspend, userUnsuspend } from '../../../store/Users/user.actions';
 import { selectAll as selectAllUsers, selectCurrentPage, selectTotalPages, selectTotalUsers } from '../../../store/Users/user.reducer';
 import { Router } from '@angular/router';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-user-list',
@@ -17,7 +18,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./user-list.component.scss'],
   providers: [DecimalPipe, DatePipe],
 })
-export class UserListComponent {
+export class UserListComponent implements OnDestroy {
   // bread crumb items
   breadCrumbItems!: Array<{}>;
   deleteID: any;
@@ -39,6 +40,7 @@ export class UserListComponent {
   totalPages: number = 1;
   totalUsers: number = 0;
   itemsPerPage: number = 10;
+  private destroy$ = new Subject<void>();
 
   constructor(private formBuilder: UntypedFormBuilder, public store: Store, public datepipe: DatePipe, private router: Router) {
   }
@@ -65,25 +67,40 @@ export class UserListComponent {
       status: ['', [Validators.required]]
     });
     this.store.dispatch(loadUsers({ page: 1 }));
-    this.store.select(selectAllUsers).subscribe((users) => {
+
+    this.store.select(selectAllUsers).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((users) => {
       this.users = users;
       this.allusers = users;
+      this.itemsPerPage = Math.max(this.itemsPerPage, users?.length || 0);
       console.log('Users from store:', users);
     });
 
-    this.store.select(selectCurrentPage).subscribe((p: number) => {
+    this.store.select(selectCurrentPage).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((p: number) => {
       this.currentPage = p || 1;
     });
 
-    this.store.select(selectTotalUsers).subscribe((t: number) => {
+    this.store.select(selectTotalUsers).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((t: number) => {
       this.totalUsers = t || 0;
-      this.store.select(selectTotalPages).subscribe((tp: number) => {
-        this.totalPages = tp || 1;
-        const perPage = tp && tp > 0 ? Math.ceil((this.totalUsers || 0) / tp) : 10;
-        this.itemsPerPage = perPage > 0 ? perPage : 10;
-      });
     });
 
+    this.store.select(selectTotalPages).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((tp: number) => {
+      this.totalPages = tp || 1;
+      const perPage = tp && tp > 0 ? Math.ceil((this.totalUsers || 0) / tp) : 10;
+      this.itemsPerPage = Math.max(this.itemsPerPage, perPage > 0 ? perPage : 10);
+    });
+
+  }
+
+  getRowNumber(index: number): number {
+    return ((this.currentPage || 1) - 1) * (this.itemsPerPage || 10) + index + 1;
   }
 
   onSearch(value: string) {
@@ -112,6 +129,11 @@ export class UserListComponent {
 
   viewUserDetails(id: any) {
     this.router.navigate(['/users/details', id]);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }

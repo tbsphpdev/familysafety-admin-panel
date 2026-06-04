@@ -17,7 +17,16 @@ import {
   getSubscriptionFailure,
   updateSubscription,
   updateSubscriptionSuccess,
-  updateSubscriptionFailure
+  updateSubscriptionFailure,
+  deleteSubscription,
+  deleteSubscriptionSuccess,
+  deleteSubscriptionFailure,
+  getLanguages,
+  getLanguagesSuccess,
+  getLanguagesFailure,
+  translateToAllLanguages,
+  translateToAllLanguagesSuccess,
+  translateToAllLanguagesFailure
 } from './subscription.actions';
 import { SubscriptionService } from '../../pages/subscription/subscription.service';
 import { ToastrService } from 'ngx-toastr';
@@ -45,7 +54,12 @@ export class SubscriptionEffects {
   logGetSubscriptionsFailure$ = createEffect(() =>
     this.actions$.pipe(
       ofType(getSubscriptionsFailure),
-      tap((action: any) => console.error('[SubscriptionEffects] getSubscriptionsFailure', action.error))
+      tap((action: any) => {
+        console.error('[SubscriptionEffects] getSubscriptionsFailure', action.error);
+        try {
+          this.toastr.error(this.getEffectErrorMessage(action.error), 'Error');
+        } catch (e) { }
+      })
     ), { dispatch: false }
   );
 
@@ -71,6 +85,33 @@ export class SubscriptionEffects {
     return [];
   }
 
+  private getEffectErrorMessage(error: any): string {
+    if (!error) {
+      return 'Request failed';
+    }
+    if (typeof error === 'string' && error.trim()) {
+      return error;
+    }
+    if (error.message) {
+      return error.message;
+    }
+    if (error.error) {
+      if (typeof error.error === 'string' && error.error.trim()) {
+        return error.error;
+      }
+      if (error.error.message) {
+        return error.error.message;
+      }
+    }
+    if (error.status && error.statusText) {
+      return `${error.status} ${error.statusText}`;
+    }
+    if (error.status) {
+      return `Request failed with status ${error.status}`;
+    }
+    return 'Request failed';
+  }
+
   statusChange$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(statusChange),
@@ -83,7 +124,7 @@ export class SubscriptionEffects {
             statusChangeSuccess({ response: res }),
             getSubscriptions()
           ]),
-          catchError((error) => of(statusChangeFailure({ error: error.message || error })))
+          catchError((error) => of(statusChangeFailure({ error: this.getEffectErrorMessage(error) })))
         );
       })
     );
@@ -100,16 +141,16 @@ export class SubscriptionEffects {
     ), { dispatch: false }
   )
 
-  statusChangeFailure$ = createEffect(() => {
-    return this.actions$.pipe(
+  statusChangeFailure$ = createEffect(() =>
+    this.actions$.pipe(
       ofType(statusChangeFailure),
       tap((action: any) => {
         try {
-          this.toastr.error('Failed to change subscription status', 'Error');
+          this.toastr.error(action.error || 'Failed to change subscription status', 'Error');
         } catch (e) { }
       })
-    )
-  });
+    ), { dispatch: false }
+  );
 
   createSubscription$ = createEffect(() => {
     return this.actions$.pipe(
@@ -123,7 +164,7 @@ export class SubscriptionEffects {
             createSubscriptionSuccess({ response: res }),
             getSubscriptions()
           ]),
-          catchError((error) => of(createSubscriptionFailure({ error: error.message || error })))
+          catchError((error) => of(createSubscriptionFailure({ error: this.getEffectErrorMessage(error) })))
         );
       })
     );
@@ -144,16 +185,16 @@ export class SubscriptionEffects {
     { dispatch: false }
   );
 
-  createSubscriptionFailure$ = createEffect(() => {
-    return this.actions$.pipe(
+  createSubscriptionFailure$ = createEffect(() =>
+    this.actions$.pipe(
       ofType(createSubscriptionFailure),
       tap((action: any) => {
         try {
-          this.toastr.error('Failed to create subscription', 'Error');
+          this.toastr.error(action.error || 'Failed to create subscription', 'Error');
         } catch (e) { }
       })
-    )
-  })
+    ), { dispatch: false }
+  )
 
   getSubscription$ = createEffect(() => {
     return this.actions$.pipe(
@@ -161,12 +202,194 @@ export class SubscriptionEffects {
       concatMap((action: any) => {
         const token = localStorage.getItem('token') || '';
         const id = action && action.id ? action.id : null;
+        const language = action && action.language ? action.language : undefined;
 
-        return this.subscriptionService.getSubscription(token, id).pipe(
-          map((subscription: any) => getSubscriptionSuccess({ subscription })),
-          catchError((error) => of(getSubscriptionFailure({ error: error.message || error })))
+        return this.subscriptionService.getSubscription(token, id, language).pipe(
+          map((subscription: any) => {
+            const payload = subscription?.data ? subscription.data : subscription;
+            if (!payload || payload.id == null) {
+              throw new Error('Invalid subscription response');
+            }
+            return getSubscriptionSuccess({ subscription });
+          }),
+          catchError((error) => of(getSubscriptionFailure({ error: this.getEffectErrorMessage(error) })))
         );
       })
     );
   });
+
+  getSubscriptionFailure$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(getSubscriptionFailure),
+      tap((action: any) => {
+        try {
+          this.toastr.error(this.getEffectErrorMessage(action.error), 'Error');
+        } catch (e) { }
+      })
+    ), { dispatch: false }
+  );
+
+  updateSubscription$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(updateSubscription),
+      concatMap((action: any) => {
+        const token = localStorage.getItem('token') || '';
+        const id = action && action.id ? action.id : null;
+        const payload = action && action.payload ? action.payload : null;
+
+        return this.subscriptionService.updateSubscription(token, id, payload).pipe(
+          switchMap((res: any) => [
+            updateSubscriptionSuccess({ subscription: res }),
+            getSubscriptions()
+          ]),
+          catchError((error) => of(updateSubscriptionFailure({ error: this.getEffectErrorMessage(error) })))
+        );
+      })
+    );
+  });
+
+  updateSubscriptionSuccess$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(updateSubscriptionSuccess),
+      tap((action: any) => {
+        try {
+          this.toastr.success('Subscription updated successfully', 'Success');
+          this.router.navigate(['/subscription']);
+        } catch (e) {
+          console.error(e);
+        }
+      })
+    ),
+    { dispatch: false }
+  );
+
+  updateSubscriptionFailure$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(updateSubscriptionFailure),
+      tap((action: any) => {
+        try {
+          this.toastr.error(action.error || 'Failed to update subscription', 'Error');
+        } catch (e) { }
+      })
+    ), { dispatch: false }
+  )
+
+  deleteSubscription$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(deleteSubscription),
+      concatMap((action: any) => {
+        const token = localStorage.getItem('token') || '';
+        const id = action && action.id ? action.id : null;
+
+        return this.subscriptionService.deleteSubscription(token, id).pipe(
+          switchMap((res: any) => [
+            deleteSubscriptionSuccess({ success: res, id }),
+            getSubscriptions()
+          ]),
+          catchError((error) => of(deleteSubscriptionFailure({ error: this.getEffectErrorMessage(error) })))
+        );
+      })
+    );
+  });
+
+  deleteSubscriptionSuccess$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(deleteSubscriptionSuccess),
+      tap((action: any) => {
+        try {
+          this.toastr.success('Subscription deleted successfully', 'Success');
+          this.router.navigate(['/subscription']);
+        } catch (e) {
+          console.error(e);
+        }
+      })
+    ),
+    { dispatch: false }
+  );
+
+  deleteSubscriptionFailure$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(deleteSubscriptionFailure),
+      tap((action: any) => {
+        try {
+          this.toastr.error(action.error || 'Failed to delete subscription', 'Error');
+        } catch (e) { }
+      })
+    ), { dispatch: false }
+  )
+
+  getLanguages$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(getLanguages),
+      concatMap((action: any) => {
+        const token = localStorage.getItem('token') || '';
+
+        return this.subscriptionService.getLanguages(token).pipe(
+          switchMap((res: any) => {
+            const languages = Array.isArray(res) ? res : res?.data ?? res?.languages ?? [];
+            return [
+              getLanguagesSuccess({ languages: languages })
+            ];
+          }),
+          catchError((error) => of(getLanguagesFailure({ error: this.getEffectErrorMessage(error) })))
+        );
+      })
+    );
+  });
+
+  getLanguagesFailure$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(getLanguagesFailure),
+      tap((action: any) => {
+        try {
+          this.toastr.error(this.getEffectErrorMessage(action.error), 'Error');
+        } catch (e) { }
+      })
+    ), { dispatch: false }
+  );
+
+  translateToAllLanguages$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(translateToAllLanguages),
+      concatMap((action: any) => {
+        const token = localStorage.getItem('token') || '';
+        const id = action && action.id ? action.id : null;
+
+        return this.subscriptionService.translateToAllLanguages(token, id).pipe(
+          switchMap((res: any) => {
+            const languages = Array.isArray(res) ? res : res?.data ?? res?.languages ?? [];
+            return [
+              translateToAllLanguagesSuccess({ success: languages })
+            ];
+          }),
+          catchError((error) => of(translateToAllLanguagesFailure({ error: this.getEffectErrorMessage(error) })))
+        );
+      })
+    );
+  });
+
+  translateToAllLanguagesSuccess$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(translateToAllLanguagesSuccess),
+      tap((action: any) => {
+        try {
+          this.toastr.success('Translated to all languages successfully', 'Success');
+        } catch (e) {
+          console.error(e);
+        }
+      })
+    ),
+    { dispatch: false }
+  );
+
+  translateToAllLanguagesFailure$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(translateToAllLanguagesFailure),
+      tap((action: any) => {
+        try {
+          this.toastr.error(action.error || 'Failed to translate all languages', 'Error');
+        } catch (e) { }
+      })
+    ), { dispatch: false }
+  );
 }

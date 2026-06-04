@@ -39,7 +39,7 @@
               <tbody class="list form-check-all">
                 <tr *ngFor="let user of allusers; let i = index" id="u_{{user.id}}" (click)="viewUserDetails(user.id)"
                   style="cursor: pointer;">
-                  <td>{{ user.id }}</td>
+                  <td>{{ getRowNumber(i) }}</td>
                   <td class="customer_name">{{ user.full_name }}</td>
                   <td class="email">{{ user.email }}</td>
                   <td class="phone">{{ user.phone_number }}</td>

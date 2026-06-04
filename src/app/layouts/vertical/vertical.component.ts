@@ -1,22 +1,28 @@
-import { Component } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router, } from '@angular/router';
+import { Component, OnDestroy } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-vertical',
-    templateUrl: './vertical.component.html',
-    styleUrls: ['./vertical.component.scss'],
-    standalone: false
+  selector: 'app-vertical',
+  templateUrl: './vertical.component.html',
+  styleUrls: ['./vertical.component.scss'],
+  standalone: false
 })
-export class VerticalComponent {
+export class VerticalComponent implements OnDestroy {
 
   isCondensed = false;
   dataloader: any;
   isLoading: any;
+  private destroy$ = new Subject<void>();
+  private resizeListener!: () => void;
 
   constructor(private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    this.router.events.subscribe((event: any) => {
+    this.router.events.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((event: any) => {
       if (document.documentElement.getAttribute('data-preloader') == 'enable') {
         if (event instanceof NavigationEnd) {
           // Update the attribute state based on the current route or any other conditions
@@ -32,10 +38,10 @@ export class VerticalComponent {
             (document.getElementById("preloader") as HTMLElement).style.visibility = "hidden";
           }
         }
-      } 
+      }
     });
 
-    window.addEventListener('resize', function () {
+    this.resizeListener = () => {
       if (document.documentElement.clientWidth <= 767) {
         document.documentElement.setAttribute('data-sidebar-size', '');
         document.querySelector('.hamburger-icon')?.classList.add('open')
@@ -50,7 +56,8 @@ export class VerticalComponent {
         document.querySelector('.hamburger-icon')?.classList.remove('open');
         document.body.classList.remove('vertical-sidebar-enable');
       }
-    })
+    };
+    window.addEventListener('resize', this.resizeListener);
 
   }
 
@@ -88,6 +95,16 @@ export class VerticalComponent {
     //   rightBar.setAttribute('style', "visibility: visible;");
 
     // }
+  }
+
+  ngOnDestroy(): void {
+    // Clean up resize listener
+    if (this.resizeListener) {
+      window.removeEventListener('resize', this.resizeListener);
+    }
+    // Complete destroy subject
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }

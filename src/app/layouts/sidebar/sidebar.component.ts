@@ -1,23 +1,26 @@
-import { Component, ElementRef, EventEmitter, HostListener, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Output, ViewChild, OnDestroy } from '@angular/core';
 
 import { MenuItem } from './menu.model';
 import { MENU } from './menu';
 import { Router, NavigationEnd } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-sidebar',
-    templateUrl: './sidebar.component.html',
-    styleUrls: ['./sidebar.component.scss'],
-    standalone: false
+  selector: 'app-sidebar',
+  templateUrl: './sidebar.component.html',
+  styleUrls: ['./sidebar.component.scss'],
+  standalone: false
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnDestroy {
   menu: any;
   toggle: any = true;
   menuItems: MenuItem[] = [];
   @ViewChild('sideMenu') sideMenu!: ElementRef;
   @Output() mobileMenuButtonClicked = new EventEmitter();
   lastroute: any;
+  private destroy$ = new Subject<void>();
 
   constructor(private router: Router, public translate: TranslateService) {
     translate.setDefaultLang('en');
@@ -27,7 +30,9 @@ export class SidebarComponent {
     // Menu Items
     this.menuItems = MENU;
 
-    this.router.events.subscribe((event) => {
+    this.router.events.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((event) => {
       if (document.documentElement.getAttribute('data-layout') == 'vertical' || document.documentElement.getAttribute('data-layout') == 'horizontal') {
         if (event instanceof NavigationEnd) {
           this.initActiveMenu();
@@ -63,7 +68,7 @@ export class SidebarComponent {
       item.classList.remove("active");
     });
   }
-  
+
   toggleItem(event: any, item: any) {
     item.isOpen = !item.isOpen;
     const isCurrentMenuId = event.target.closest('a.nav-link');
@@ -240,5 +245,9 @@ export class SidebarComponent {
     document.body.classList.remove('vertical-sidebar-enable');
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
 }

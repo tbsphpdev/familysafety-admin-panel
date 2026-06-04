@@ -1,9 +1,23 @@
 <div class="card">
   <div class="card-header">
-    <h4 class="card-title mb-0">Create Subscription</h4>
+    <h4 class="card-title mb-0">Edit Subscription</h4>
   </div>
   <div class="card-body">
     <form [formGroup]="editForm" (ngSubmit)="onSubmit()">
+      <div class="row">
+        <div class="col-md-12 mb-3">
+          <label class="form-label d-block">Language</label>
+          <div class="d-flex gap-3 flex-wrap">
+            <div class="form-check" *ngFor="let lang of languages">
+              <input class="form-check-input" [id]="'lang-' + (lang.code || lang.id)" type="radio" name="lang"
+                [value]="lang.code || lang.id" [checked]="selectedLanguage == (lang.code || lang.id)"
+                (change)="onLanguageChange(lang.code || lang.id)">
+              <label class="form-check-label" [for]="'lang-' + (lang.code || lang.id)">{{ lang.name ||
+                lang.language_name }}</label>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="row">
 
         <div class="col-md-4 mb-3">
@@ -25,8 +39,7 @@
               <label class="form-check-label" for="intervalMonthly">Monthly</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" formControlName="interval" id="intervalYearly" value="yearly"
-                type="radio">
+              <input class="form-check-input" formControlName="interval" id="intervalYearly" value="year" type="radio">
               <label class="form-check-label" for="intervalYearly">Yearly</label>
             </div>
           </div>
@@ -103,13 +116,20 @@
           [formGroupName]="i">
           <div class="col-md-12">
             <div class="input-group">
+
               <input type="hidden" formControlName="id">
               <input type="hidden" formControlName="order">
+
               <input type="text" formControlName="feature_name" class="form-control" placeholder="Enter Feature">
 
+              <button *ngIf="features.length > 1" class="btn btn-danger" type="button" (click)="removeFeature(i)">
+                <i class="ri-delete-bin-line"></i>
+              </button>
+
               <button *ngIf="isLast" class="btn btn-primary" type="button"
-                (click)="addFeature(null, '', features.length + 1)">+</button>
-              <button *ngIf="!isLast" class="btn btn-danger" type="button" (click)="removeFeature(i)">&times;</button>
+                (click)="addFeature(null, '', features.length + 1)">
+                <i class="ri-add-line"></i>
+              </button>
 
             </div>
           </div>
@@ -121,6 +141,11 @@
         <button class="btn btn-primary" type="submit" [disabled]="editForm.invalid || loading">
           <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
           Update Subscription
+        </button>
+        <button class="btn btn-primary" type="button" *ngIf="selectedLanguage == `en`"
+          (click)="translateToAllLanguages()" [disabled]="loading">
+          <span *ngIf=" loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          Translate to all languages
         </button>
       </div>
 

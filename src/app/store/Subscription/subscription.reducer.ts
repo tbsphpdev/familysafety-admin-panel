@@ -2,10 +2,31 @@ import { createReducer, on } from '@ngrx/store';
 import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 import { Subscription } from './subscription.model';
 import {
+  createSubscription,
+  createSubscriptionFailure,
+  createSubscriptionSuccess,
+  deleteSubscription,
+  deleteSubscriptionFailure,
+  deleteSubscriptionSuccess,
+  getLanguages,
+  getLanguagesFailure,
+  getLanguagesSuccess,
+  getSubscription,
+  getSubscriptionFailure,
+  getSubscriptionSuccess,
   getSubscriptions,
   getSubscriptionsSuccess,
   getSubscriptionsFailure,
-  SubscriptionActions
+  statusChange,
+  statusChangeFailure,
+  statusChangeSuccess,
+  SubscriptionActions,
+  translateToAllLanguages,
+  translateToAllLanguagesFailure,
+  translateToAllLanguagesSuccess,
+  updateSubscription,
+  updateSubscriptionFailure,
+  updateSubscriptionSuccess
 } from './subscription.actions';
 
 export const subscriptionsFeatureKey = 'subscriptions';
@@ -31,26 +52,98 @@ export const initialState: State = adapter.getInitialState({
 export const reducer = createReducer(
   initialState,
 
-  // API Request Lifecycle Handlers
-  on(getSubscriptions, (state) => ({
+  on(
+    getSubscriptions,
+    statusChange,
+    createSubscription,
+    getSubscription,
+    updateSubscription,
+    deleteSubscription,
+    getLanguages,
+    translateToAllLanguages,
+    SubscriptionActions.updateSubscription,
+    (state) => ({
     ...state,
     loading: true,
     error: null
-  })),
-  on(getSubscriptionsSuccess, (state, action) =>
-    adapter.setAll(action.subscriptions, {
+    })
+  ),
+  on(getSubscriptionsSuccess, (state, action) => {
+    // Safely extract the array if your listing endpoint wraps data in an envelope: { data: [...] }
+    const listData = (action as any).subscriptions?.data ? (action as any).subscriptions.data : action.subscriptions;
+    return adapter.setAll(listData, {
+      ...state,
+      loading: false,
+      error: null
+    });
+  }),
+  on(
+    getSubscriptionsFailure,
+    statusChangeFailure,
+    createSubscriptionFailure,
+    getSubscriptionFailure,
+    updateSubscriptionFailure,
+    deleteSubscriptionFailure,
+    getLanguagesFailure,
+    translateToAllLanguagesFailure,
+    SubscriptionActions.updateSubscriptionFailure,
+    (state, action) => ({
+    ...state,
+    loading: false,
+    error: action.error
+    })
+  ),
+
+  on(
+    statusChangeSuccess,
+    createSubscriptionSuccess,
+    updateSubscriptionSuccess,
+    getLanguagesSuccess,
+    translateToAllLanguagesSuccess,
+    (state) => ({
       ...state,
       loading: false,
       error: null
     })
   ),
-  on(getSubscriptionsFailure, (state, action) => ({
-    ...state,
-    loading: false,
-    error: action.error
-  })),
 
-  // Standard Entity Mutations via Action Group
+  // 2. Fetch Single Record Success Handler
+  on(getSubscriptionSuccess, SubscriptionActions.getSubscriptionSuccess, (state, action) => {
+    const subscriptionData = action.subscription?.data ? action.subscription.data : action.subscription;
+    return adapter.upsertOne(subscriptionData, {
+      ...state,
+      loading: false,
+      error: null
+    });
+  }),
+
+  // 3. Update Mutation Handlers (FIXED)
+  on(updateSubscriptionSuccess, SubscriptionActions.updateSubscriptionSuccess, (state, action) => {
+    const updatedData = action.subscription?.data ? action.subscription.data : action.subscription;
+
+    if (!updatedData || !updatedData.id) {
+      return { ...state, loading: false };
+    }
+
+    return adapter.updateOne(
+      { id: updatedData.id, changes: updatedData },
+      {
+        ...state,
+        loading: false,
+        error: null
+      }
+    );
+  }),
+
+  on(deleteSubscriptionSuccess, (state, action) =>
+    adapter.removeOne(action.id, {
+      ...state,
+      loading: false,
+      error: null
+    })
+  ),
+
+  // 4. Standard Secondary Entity Mutations
   on(SubscriptionActions.addSubscription,
     (state, action) => adapter.addOne(action.subscription, state)
   ),
@@ -63,30 +156,15 @@ export const reducer = createReducer(
   on(SubscriptionActions.upsertSubscriptions,
     (state, action) => adapter.upsertMany(action.subscriptions, state)
   ),
-  on(SubscriptionActions.updateSubscription,
-    (state, action) => adapter.updateOne(action.subscription, state)
-  ),
   on(SubscriptionActions.updateSubscriptions,
     (state, action) => adapter.updateMany(action.subscriptions, state)
-  ),
-  on(SubscriptionActions.deleteSubscription,
-    (state, action) => adapter.removeOne(action.id, state)
   ),
   on(SubscriptionActions.deleteSubscriptions,
     (state, action) => adapter.removeMany(action.ids, state)
   ),
   on(SubscriptionActions.clearSubscriptions,
     state => adapter.removeAll(state)
-  ),
-  on(SubscriptionActions.getSubscriptionSuccess, (state, action) => {
-    const subscriptionData = action.subscription?.data ? action.subscription.data : action.subscription;
-
-    return adapter.upsertOne(subscriptionData, {
-      ...state,
-      loading: false,
-      error: null
-    });
-  })
+  )
 );
 
 export const subscriptionReducer = reducer;

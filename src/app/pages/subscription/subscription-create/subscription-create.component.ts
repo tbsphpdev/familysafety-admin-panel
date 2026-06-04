@@ -1,8 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
-import { createSubscription } from 'src/app/store/Subscription/subscription.actions';
+import { Actions, ofType } from '@ngrx/effects';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { createSubscription, createSubscriptionSuccess, createSubscriptionFailure } from 'src/app/store/Subscription/subscription.actions';
 
 @Component({
   selector: 'app-subscription-create',
@@ -10,16 +13,23 @@ import { createSubscription } from 'src/app/store/Subscription/subscription.acti
   templateUrl: './subscription-create.component.html',
   styleUrl: './subscription-create.component.scss',
 })
-export class SubscriptionCreateComponent {
+export class SubscriptionCreateComponent implements OnInit, OnDestroy {
   breadCrumbItems!: Array<{ label: string; active?: boolean }>;
 
   subscriptions: any[] = [];
   loading: boolean = false;
   createForm!: FormGroup;
+  private destroy$ = new Subject<void>();
 
-  constructor(public store: Store, private fb: FormBuilder) { }
+  constructor(public store: Store, private fb: FormBuilder, private actions$: Actions) { }
 
   ngOnInit(): void {
+    this.actions$.pipe(
+      ofType(createSubscriptionSuccess, createSubscriptionFailure),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.hidePreloader();
+    });
     this.createForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       price: ['', [Validators.required, Validators.min(0)]],
@@ -48,17 +58,18 @@ export class SubscriptionCreateComponent {
       return;
     }
 
+    this.showPreloader();
     const formValue = this.createForm.value;
 
     const formattedFeatures = (formValue.features || [])
       .filter((f: string) => f && f.trim() !== '')
-      .map((f: string) => ({ name: f.trim() }));
+      .map((f: string) => ({ feature_name: f.trim() }));
 
     const payload = {
       name: formValue.name,
       price: String(formValue.price),
       description: formValue.description || '',
-      interval: formValue.interval === 'yearly' ? 'year' : 'month',
+      interval: formValue.interval === 'year' ? 'year' : 'month',
       is_active: true,
       features: formattedFeatures,
       limits: {
@@ -87,5 +98,41 @@ export class SubscriptionCreateComponent {
   // Removes the specific row index clicked
   removeFeature(index: number): void {
     this.features.removeAt(index);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private showPreloader(): void {
+    try {
+      const pre = document.getElementById('preloader');
+      if (pre) {
+        const el = pre as HTMLElement;
+        el.style.display = 'block';
+        el.style.opacity = '1';
+        el.style.visibility = 'visible';
+      }
+      try { document.documentElement.setAttribute('data-preloader', 'enable'); } catch (e) { }
+      this.loading = true;
+    } catch (e) {
+      this.loading = true;
+    }
+  }
+
+  private hidePreloader(): void {
+    try {
+      const pre = document.getElementById('preloader');
+      if (pre) {
+        const el = pre as HTMLElement;
+        el.style.opacity = '0';
+        el.style.visibility = 'hidden';
+        el.style.display = 'none';
+      }
+      this.loading = false;
+    } catch (e) {
+      this.loading = false;
+    }
   }
 }

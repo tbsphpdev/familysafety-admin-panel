@@ -70,6 +70,14 @@
         "SUBSCRIPTION": "Subscription"
       }
     },
+    "MONITORING": {
+      "TEXT": "Monitoring",
+      "LIST": {
+        "GEOFENCELOG": "Geofence Logs",
+        "SOSALERT": "SOS Alerts",
+        "REFERRAL": "Referrals List"
+      }
+    },
     "PAGES": {
       "TEXT": "Pages"
     },

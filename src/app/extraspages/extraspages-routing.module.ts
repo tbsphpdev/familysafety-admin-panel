@@ -8,17 +8,17 @@ import { ComingSoonComponent } from "./coming-soon/coming-soon.component";
 const routes: Routes = [
   {
     path: "maintenance",
-    component:MaintenanceComponent
+    component: MaintenanceComponent
   },
   {
     path: "coming-soon",
-    component:ComingSoonComponent
+    component: ComingSoonComponent
   }
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
-    exports: [RouterModule]
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
 })
 
 export class ExtrapagesRoutingModule { }

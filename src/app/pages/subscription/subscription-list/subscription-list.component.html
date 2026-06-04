@@ -1,5 +1,5 @@
 <!-- Start Breadcrumbs -->
-<app-breadcrumbs title="Subscription List" [breadCrumbItems]="breadCrumbItems"></app-breadcrumbs>
+<app-breadcrumbs title="Subscription List" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
 <!-- End Breadcrumbs -->
 
 <div class="row">
@@ -35,7 +35,7 @@
               <tbody class="list form-check-all">
                 <tr *ngFor="let subscription of subscriptions; let i = index" id="u_{{subscription.id}}"
                   [routerLink]="['/subscription/edit', subscription.id]" style="cursor: pointer;">
-                  <td>{{ subscription.id }}</td>
+                  <td>{{ i + 1 }}</td>
                   <td class="customer_name">{{ subscription.name }}</td>
                   <td class="email">{{ subscription.price | currency }}</td>
                   <td class="phone">{{ subscription.interval }}</td>
@@ -45,6 +45,10 @@
                       <div class="edit">
                         <button class="btn btn-sm btn-primary edit-item-btn"
                           [routerLink]="['/subscription/edit', subscription.id]">Edit</button>
+                      </div>
+                      <div class="edit">
+                        <button class="btn btn-sm btn-danger delete-item-btn"
+                          (click)="deleteSubscription(subscription.id)">Delete</button>
                       </div>
                       @if(subscription.is_active){
                       <div class="unsuspend">

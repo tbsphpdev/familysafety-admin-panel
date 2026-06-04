@@ -180,7 +180,7 @@ export class AuthenticationService {
                 localStorage.removeItem('token');
                 this.currentUserSubject.next(null!);
                 this.store.dispatch(logoutSuccess());
-                return of(undefined);
+                return throwError(() => errorMessage);
             })
         );
     }
@@ -212,7 +212,7 @@ export class AuthenticationService {
                     errorMessage = error.message;
                 }
                 this.toastr.error(errorMessage, 'Error');
-                throw new Error(errorMessage);
+                return throwError(() => errorMessage);
             })
         );
     }
@@ -243,7 +243,7 @@ export class AuthenticationService {
                     errorMessage = error.message;
                 }
                 this.toastr.error(errorMessage, 'Error');
-                throw new Error(errorMessage);
+                return throwError(() => errorMessage);
             })
         );
     }
@@ -274,7 +274,7 @@ export class AuthenticationService {
                     errorMessage = error.message;
                 }
                 this.toastr.error(errorMessage, 'Error');
-                throw new Error(errorMessage);
+                return throwError(() => errorMessage);
             })
         );
     }

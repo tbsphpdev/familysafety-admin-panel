@@ -10,6 +10,32 @@ import { UserService } from '../../pages/users/user.service';
 
 @Injectable()
 export class UserEffects {
+  private getEffectErrorMessage(error: any): string {
+    if (!error) {
+      return 'Request failed';
+    }
+    if (typeof error === 'string' && error.trim()) {
+      return error;
+    }
+    if (error.message) {
+      return error.message;
+    }
+    if (error.error) {
+      if (typeof error.error === 'string' && error.error.trim()) {
+        return error.error;
+      }
+      if (error.error.message) {
+        return error.error.message;
+      }
+    }
+    if (error.status && error.statusText) {
+      return `${error.status} ${error.statusText}`;
+    }
+    if (error.status) {
+      return `Request failed with status ${error.status}`;
+    }
+    return 'Request failed';
+  }
 
   loadUsers$ = createEffect(() => {
     return this.actions$.pipe(
@@ -28,7 +54,7 @@ export class UserEffects {
               total_users: data && data.total_users ? data.total_users : 0,
             }
           })),
-          catchError((error) => of(loadUsersFailure({ error })))
+          catchError((error) => of(loadUsersFailure({ error: this.getEffectErrorMessage(error) })))
         )
       })
     );
@@ -49,7 +75,7 @@ export class UserEffects {
             userSuspendSuccess({ id, response: res }),
             loadUsers({ page: currentPage, search: currentSearch })
           ]),
-          catchError((error) => of(userSuspendFailure({ error: error.message || error })))
+          catchError((error) => of(userSuspendFailure({ error: this.getEffectErrorMessage(error) })))
         );
       })
     );
@@ -70,7 +96,7 @@ export class UserEffects {
             userUnsuspendSuccess({ id, response: res }),
             loadUsers({ page: currentPage, search: currentSearch })
           ]),
-          catchError((error) => of(userUnsuspendFailure({ error: error.message || error })))
+          catchError((error) => of(userUnsuspendFailure({ error: this.getEffectErrorMessage(error) })))
         );
       })
     )
@@ -84,7 +110,7 @@ export class UserEffects {
         const id = action && action.id ? action.id : null;
         return this.userService.getUser(token, id).pipe(
           map((data: any) => loadUserSuccess({ user: data && data.user ? data.user : data })),
-          catchError((error) => of(loadUserFailure({ error })))
+          catchError((error) => of(loadUserFailure({ error: this.getEffectErrorMessage(error) })))
         );
       })
     );
@@ -99,7 +125,7 @@ export class UserEffects {
         const changes = action && action.changes ? action.changes : {};
         return this.userService.updateUser(token, id, changes).pipe(
           map((res: any) => updateUserSuccess({ user: res && res.user ? res.user : res })),
-          catchError((error) => of(updateUserFailure({ error })))
+          catchError((error) => of(updateUserFailure({ error: this.getEffectErrorMessage(error) })))
         );
       })
     );
@@ -123,8 +149,13 @@ export class UserEffects {
 
   logLoadUsersFailure$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(loadUsersFailure),
-      tap((action: any) => console.error('[UserEffects] loadUsersFailure', action.error))
+      ofType(loadUsersFailure, userSuspendFailure, userUnsuspendFailure, loadUserFailure, updateUserFailure),
+      tap((action: any) => {
+        console.error('[UserEffects] API failure', action.error);
+        try {
+          this.toastr.error(this.getEffectErrorMessage(action.error), 'Error');
+        } catch (e) { }
+      })
     ), { dispatch: false }
   );
 }

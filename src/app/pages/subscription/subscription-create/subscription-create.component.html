@@ -25,8 +25,7 @@
               <label class="form-check-label" for="intervalMonthly">Monthly</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" formControlName="interval" id="intervalYearly" value="yearly"
-                type="radio">
+              <input class="form-check-input" formControlName="interval" id="intervalYearly" value="year" type="radio">
               <label class="form-check-label" for="intervalYearly">Yearly</label>
             </div>
           </div>
@@ -105,12 +104,14 @@
 
               <input type="text" [formControlName]="i" class="form-control" placeholder="Enter Feature">
 
-              <button *ngIf="isLast" class="btn btn-primary" type="button" (click)="addFeature()">
-                Add Feature
+              <!-- Remove Button with Icon -->
+              <button *ngIf="features.length > 1" class="btn btn-danger" type="button" (click)="removeFeature(i)">
+                <i class="ri-delete-bin-line"></i>
               </button>
 
-              <button *ngIf="!isLast" class="btn btn-danger" type="button" (click)="removeFeature(i)">
-                Remove Feature
+              <!-- Add Button with Icon -->
+              <button *ngIf="isLast" class="btn btn-primary" type="button" (click)="addFeature()">
+                <i class="ri-add-line"></i>
               </button>
 
             </div>
