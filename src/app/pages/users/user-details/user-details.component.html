@@ -30,7 +30,7 @@
         </p>
       </div>
       <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Is Suspended</label>
+        <label class="form-label fw-bold">Status</label>
         <p class="text-muted">
           <span class="badge"
             [ngClass]="userdetails.is_suspended ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success'">
@@ -59,30 +59,46 @@
           <label class="form-label fw-bold">Interval</label>
           <p class="text-muted">{{ subscriptionDetails.plan.interval }}</p>
         </div>
+        @if(subscriptionDetails.role == "member" && subscriptionDetails.is_family_managed) {
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Plan Owner</label>
+          <p class="text-muted">{{ subscriptionDetails.owner.full_name }}</p>
+        </div>
+        }
+        @if (subscriptionDetails.payment_source) {
         <div class="col-md-6 mb-3">
           <label class="form-label fw-bold">Payment Source</label>
-          <p class="text-muted">{{ subscriptionDetails.payment_source_name }}</p>
+          <p class="text-muted">{{ subscriptionDetails.payment_source }}</p>
         </div>
+        }
         <div class="col-md-6 mb-3">
           <label class="form-label fw-bold">Subscription Status</label>
           <p class="text-muted">{{ subscriptionDetails.status }}</p>
         </div>
+        @if (subscriptionDetails.trial_start_at) {
         <div class="col-md-6 mb-3">
           <label class="form-label fw-bold">Trial Start At</label>
           <p class="text-muted">{{ subscriptionDetails.trial_start_at | date:'yyyy-MM-dd' }}</p>
         </div>
+        }
+        @if (subscriptionDetails.trial_end_at) {
         <div class="col-md-6 mb-3">
           <label class="form-label fw-bold">Trial End At</label>
           <p class="text-muted">{{ subscriptionDetails.trial_end_at | date:'yyyy-MM-dd' }}</p>
         </div>
+        }
+        @if (subscriptionDetails.current_period_start) {
         <div class="col-md-6 mb-3">
           <label class="form-label fw-bold">Current Period Start At</label>
           <p class="text-muted">{{ subscriptionDetails.current_period_start | date:'yyyy-MM-dd' }}</p>
         </div>
+        }
+        @if (subscriptionDetails.current_period_end) {
         <div class="col-md-6 mb-3">
           <label class="form-label fw-bold">Current Period End At</label>
           <p class="text-muted">{{ subscriptionDetails.current_period_end | date:'yyyy-MM-dd' }}</p>
         </div>
+        }
       </ng-container>
       <div class="col-12 mt-4">
         <button class="btn btn-primary" [routerLink]="['/users/edit', userdetails.id]">Edit User</button>

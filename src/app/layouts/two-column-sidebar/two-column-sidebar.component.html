@@ -5,19 +5,19 @@
     <!-- Dark Logo-->
     <a routerLink="/" class="logo logo-dark">
       <span class="logo-sm">
-        <img src="assets/images/logo-sm.png" alt="" height="22">
+        <img src="assets/images/logo-sm.png" alt="" height="45">
       </span>
       <span class="logo-lg">
-        <img src="assets/images/logo-dark.png" alt="" height="22">
+        <img src="assets/images/logo-dark.png" alt="" height="45">
       </span>
     </a>
     <!-- Light Logo-->
     <a routerLink="/" class="logo logo-light">
       <span class="logo-sm">
-        <img src="assets/images/logo-sm.png" alt="" height="22">
+        <img src="assets/images/logo-sm.png" alt="" height="45">
       </span>
       <span class="logo-lg">
-        <img src="assets/images/logo-light.png" alt="" height="22">
+        <img src="assets/images/logo-light.png" alt="" height="45">
       </span>
     </a>
     <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
@@ -34,7 +34,8 @@
           <div class="simplebar-wrapper" style="margin: 0px;">
             <div class="simplebar-mask">
               <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
-                <div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content" style="height: 100%; overflow: hidden scroll;">
+                <div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content"
+                  style="height: 100%; overflow: hidden scroll;">
                   <div class="simplebar-content" style="padding: 0px;">
                     <a href="javascript:void(0);" class="logo">
                       <img src="assets/images/logo-sm.png" alt="" height="22">
@@ -43,12 +44,14 @@
                     @if(!item.isTitle && !item.isLayout){
                     <li>
                       @if(hasItems(item)){
-                      <a href="javascript:void(0);" [attr.subitems]="item.collapseid" class="nav-icon" (click)="toggleItem($event)">
+                      <a href="javascript:void(0);" [attr.subitems]="item.collapseid" class="nav-icon"
+                        (click)="toggleItem($event)">
                         <i class="{{ item.icon }}" class=""></i>
                         <span data-key="t-dashboards" class="d-none">{{item.label | translate}}</span>
                       </a>
                       }@else {
-                      <a [routerLink]="item.link" [attr.subitems]="item.collapseid" class="nav-icon" (click)="toggleParentItem($event)">
+                      <a [routerLink]="item.link" [attr.subitems]="item.collapseid" class="nav-icon"
+                        (click)="toggleParentItem($event)">
                         <i class="{{ item.icon }}" class=""></i>
                         <span data-key="t-widget" class="d-none">{{item.label | translate}}</span>
                       </a>
@@ -76,15 +79,19 @@
                   <li class="menu-title"><span data-key="t-menu">Menu</span></li>
                   @for(item of menuItems;track $index){
                   <li class="nav-item">
-                    <div class="collapse menu-dropdown" id="{{item.collapseid}}" [attr.data-name]="item.label | translate" aria-expanded="true">
+                    <div class="collapse menu-dropdown" id="{{item.collapseid}}"
+                      [attr.data-name]="item.label | translate" aria-expanded="true">
                       @if(hasItems(item)){
                       <ul class="nav nav-sm flex-column" aria-expanded="false">
                         @for(subitem of item.subItems;track $index){
                         <li class="nav-item">
                           @if(hasItems(subitem)){
-                          <a class="nav-link ecomm" data-bs-toggle="collapse" [attr.aria-expanded]="false" href="javascript:void(0);" [attr.data-parent]="subitem.parentId" (click)="toggleSubItem($event)">
+                          <a class="nav-link ecomm" data-bs-toggle="collapse" [attr.aria-expanded]="false"
+                            href="javascript:void(0);" [attr.data-parent]="subitem.parentId"
+                            (click)="toggleSubItem($event)">
                             {{ subitem.label | translate}}
-                            @if(subitem.badge){<span class="badge badge-pill {{subitem.badge.variant}}">{{subitem.badge.text
+                            @if(subitem.badge){<span
+                              class="badge badge-pill {{subitem.badge.variant}}">{{subitem.badge.text
                               | translate}}</span>}
                           </a>
                           <div class="collapse menu-dropdown sub-menu" id="{{item.collapseid}}">
@@ -92,16 +99,19 @@
                               @for(subSubitem of subitem.subItems;track $index){
                               <li class="nav-item">
                                 @if(hasItems(subSubitem)){
-                                <a class="nav-link" href="javascript:void(0);" [attr.data-parent]="subSubitem.parentId" data-bs-toggle="collapse" aria-expanded="false" (click)="toggleExtraSubItem($event)">
+                                <a class="nav-link" href="javascript:void(0);" [attr.data-parent]="subSubitem.parentId"
+                                  data-bs-toggle="collapse" aria-expanded="false" (click)="toggleExtraSubItem($event)">
                                   {{ subSubitem.label | translate}}
-                                  @if(subSubitem.badge){<span class="badge badge-pill {{subSubitem.badge.variant}}">{{subSubitem.badge.text
+                                  @if(subSubitem.badge){<span
+                                    class="badge badge-pill {{subSubitem.badge.variant}}">{{subSubitem.badge.text
                                     | translate}}</span>}
                                 </a>
                                 <div class="collapse menu-dropdown extra-sub-menu">
                                   <ul class="nav nav-sm flex-column" aria-expanded="false">
                                     @for(subSubitem1 of subSubitem.subItems;track $index){
                                     <li class="nav-item">
-                                      <a [attr.data-parent]="subSubitem1.parentId" [routerLink]="subSubitem1.link" class="nav-link" (click)="updateActive($event)">
+                                      <a [attr.data-parent]="subSubitem1.parentId" [routerLink]="subSubitem1.link"
+                                        class="nav-link" (click)="updateActive($event)">
                                         {{ subSubitem1.label | translate }}
                                       </a>
 
@@ -110,9 +120,11 @@
                                   </ul>
                                 </div>
                                 }@else{
-                                <a [attr.data-parent]="subSubitem.parentId" [routerLink]="subSubitem.link" class="nav-link" (click)="updateActive($event)">
+                                <a [attr.data-parent]="subSubitem.parentId" [routerLink]="subSubitem.link"
+                                  class="nav-link" (click)="updateActive($event)">
                                   {{ subSubitem.label | translate }}
-                                  @if(subSubitem.badge){<span class="badge badge-pill {{subSubitem.badge.variant}}">{{subSubitem.badge.text
+                                  @if(subSubitem.badge){<span
+                                    class="badge badge-pill {{subSubitem.badge.variant}}">{{subSubitem.badge.text
                                     | translate}}</span>}
                                 </a>
                                 }
@@ -121,9 +133,11 @@
                             </ul>
                           </div>
                           }@else {
-                          <a [routerLink]="subitem.link" class="nav-link" [attr.data-parent]="subitem.parentId" (click)="updateActive($event)">
+                          <a [routerLink]="subitem.link" class="nav-link" [attr.data-parent]="subitem.parentId"
+                            (click)="updateActive($event)">
                             {{ subitem.label | translate}}
-                            @if(subitem.badge){<span class="badge badge-pill {{subitem.badge.variant}}">{{subitem.badge.text
+                            @if(subitem.badge){<span
+                              class="badge badge-pill {{subitem.badge.variant}}">{{subitem.badge.text
                               | translate}}</span>}
                           </a>
                           }
