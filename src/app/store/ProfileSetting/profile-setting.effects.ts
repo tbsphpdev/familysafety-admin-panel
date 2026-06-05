@@ -6,12 +6,13 @@ import { updateProfile, updateProfileSuccess, updateProfileFailure, changePasswo
 import { ProfileSettingsService } from '../../pages/extrapages/profile-settings/profile-settings.service';
 import { ToastrService } from 'ngx-toastr';
 import { environment } from '../../../environments/environment';
+import { EventService } from '../../core/services/event.service';
 
 
 @Injectable()
 export class ProfileSettingEffects {
 
-  constructor(private actions$: Actions, private ProfileSettingsService: ProfileSettingsService, private toastr: ToastrService) { }
+  constructor(private actions$: Actions, private ProfileSettingsService: ProfileSettingsService, private toastr: ToastrService, private eventService: EventService) { }
 
   profileUpdate$ = createEffect(() => {
     return this.actions$.pipe(
@@ -33,10 +34,11 @@ export class ProfileSettingEffects {
     this.actions$.pipe(
       ofType(updateProfileSuccess),
       tap((action: any) => {
-        const jsonResponse = action.response.data;
+        const jsonResponse = action.response?.data || action.response;
         try {
           if (jsonResponse) {
             localStorage.setItem('currentUser', JSON.stringify(jsonResponse));
+            this.eventService.broadcast('currentUserUpdated', jsonResponse);
             const newProfile = jsonResponse.profile_picture;
             if (newProfile) {
               document.querySelectorAll('.header-profile-user, #user-img').forEach((element: any) => {

@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, Inject, ViewChild, DOCUMENT } from '@angular/core';
+import { Component, Output, EventEmitter, Inject, ViewChild, DOCUMENT, OnDestroy } from '@angular/core';
 
 import { EventService } from 'src/app/core/services/event.service';
 import { LanguageService } from 'src/app/core/services/language.service';
@@ -13,6 +13,7 @@ import { Store } from '@ngrx/store';
 import { changeMode } from 'src/app/store/layouts/layout-action';
 import { getLayoutmode } from 'src/app/store/layouts/layout-selector';
 import { TokenStorageService } from 'src/app/core/services/token-storage.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-topbar',
@@ -20,7 +21,7 @@ import { TokenStorageService } from 'src/app/core/services/token-storage.service
   styleUrls: ['./topbar.component.scss'],
   standalone: false
 })
-export class TopbarComponent {
+export class TopbarComponent implements OnDestroy {
   getInitials(name?: string): string {
     if (!name) return '';
     const parts = name.trim().split(/\s+/);
@@ -53,6 +54,7 @@ export class TopbarComponent {
   tax: any;
 
   notificationList: any;
+  private eventSubscription?: Subscription;
 
   @Output() mobileMenuButtonClicked = new EventEmitter();
   @ViewChild('removeNotificationModal', { static: false }) removeNotificationModal?: ModalDirective;
@@ -97,6 +99,9 @@ export class TopbarComponent {
     }
 
     this.notificationList = notification
+    this.eventSubscription = this.eventService.subscribe('currentUserUpdated', (updatedUser: any) => {
+      this.userData = updatedUser;
+    });
     this.notificationList.forEach((element: any) => {
       this.totalNotify += element.items.length
       if (element.title == 'New') {
@@ -356,5 +361,9 @@ export class TopbarComponent {
         this.router.navigate(['/auth/login']);
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.eventSubscription?.unsubscribe();
   }
 }
