@@ -43,8 +43,10 @@ export class UserEffects {
       concatMap((action: any) => {
         const token = localStorage.getItem('token') || '';
         const page = action && action.page ? action.page : 1;
+        const perPage = action && action.per_page ? action.per_page : undefined;
         const search = action && action.search ? action.search : undefined;
-        return this.userService.getUsers(token, page, search).pipe(
+        const ordering = action && action.ordering ? action.ordering : undefined;
+        return this.userService.getUsers(token, page, search, perPage, ordering).pipe(
           tap((data: any) => console.debug('[UserEffects] getUsers response:', data)),
           map((data: any) => loadUsersSuccess({
             users: (data && data.users) ? data.users : [],
@@ -68,12 +70,14 @@ export class UserEffects {
         const id = action && action.id ? action.id : null;
 
         const currentPage = action && action.page ? action.page : 1;
+        const currentPerPage = action && action.per_page ? action.per_page : undefined;
         const currentSearch = action && action.search ? action.search : undefined;
+        const currentOrdering = action && action.ordering ? action.ordering : undefined;
 
         return this.userService.suspendUser(token, id).pipe(
           switchMap((res: any) => [
             userSuspendSuccess({ id, response: res }),
-            loadUsers({ page: currentPage, search: currentSearch })
+            loadUsers({ page: currentPage, per_page: currentPerPage, search: currentSearch, ordering: currentOrdering })
           ]),
           catchError((error) => of(userSuspendFailure({ error: this.getEffectErrorMessage(error) })))
         );
@@ -89,12 +93,14 @@ export class UserEffects {
         const id = action && action.id ? action.id : null;
 
         const currentPage = action && action.page ? action.page : 1;
+        const currentPerPage = action && action.per_page ? action.per_page : undefined;
         const currentSearch = action && action.search ? action.search : undefined;
+        const currentOrdering = action && action.ordering ? action.ordering : undefined;
 
         return this.userService.unsuspendUser(token, id).pipe(
           switchMap((res: any) => [
             userUnsuspendSuccess({ id, response: res }),
-            loadUsers({ page: currentPage, search: currentSearch })
+            loadUsers({ page: currentPage, per_page: currentPerPage, search: currentSearch, ordering: currentOrdering })
           ]),
           catchError((error) => of(userUnsuspendFailure({ error: this.getEffectErrorMessage(error) })))
         );

@@ -10,10 +10,22 @@
           <div class="row g-4 mb-3">
             <div class="col-sm-auto">
             </div>
-            <div class="col-sm">
-              <div class="d-flex justify-content-sm-end">
-                <div class="search-box ms-2 d-flex align-items-center">
-                  <input type="text" class="form-control search" placeholder="Search..." [(ngModel)]="term">
+            <div class="col-sm d-flex justify-content-between align-items-center gap-2">
+              <div class="d-flex justify-content-sm-start align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2">
+                  <label class="mb-0 item-per-page-label" for="pageSizeSelect">Show</label>
+                  <select id="pageSizeSelect" #pageSizeSelect class="form-select form-select-sm" [value]="pageSize"
+                    (change)="onPageSizeChange(pageSizeSelect.value)">
+                    <option *ngFor="let size of pageSizeOptions" [value]="size" [selected]="size === pageSize">
+                      {{ size }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="d-flex justify-content-sm-end align-items-center gap-2">
+                <div class="search-box d-flex align-items-center">
+                  <input type="text" class="form-control search" placeholder="Search..." [(ngModel)]="term"
+                    (keyup.enter)="onSearchClick()">
                   <button class="btn btn-primary ms-2" type="button" (click)="onSearchClick()">Search</button>
                   <i class="ri-search-line search-icon ms-2"></i>
                 </div>
@@ -25,22 +37,45 @@
             <table class="table align-middle table-nowrap" id="customerTable">
               <thead class="table-light">
                 <tr>
-                  <th>ID</th>
-                  <th>Full Name</th>
-                  <th>Email</th>
+                  <th>#</th>
+                  <th class="sort cursor-pointer" (click)="onSort('full_name')">
+                    Full Name <i class="ms-1" [ngClass]="getSortIcon('full_name')"></i>
+                  </th>
+                  <th class="sort cursor-pointer" (click)="onSort('email')">
+                    Email <i class="ms-1" [ngClass]="getSortIcon('email')"></i>
+                  </th>
                   <th>Phone</th>
                   <th>Date of Birth</th>
                   <th>Minor</th>
                   <th>Status</th>
                   <th>Suspended By</th>
+                  <th>Last Active</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody class="list form-check-all">
                 <tr *ngFor="let user of allusers; let i = index" id="u_{{user.id}}" (click)="viewUserDetails(user.id)"
-                  style="cursor: pointer;">
-                  <td>{{ getRowNumber(i) }}</td>
-                  <td class="customer_name">{{ user.full_name }}</td>
+                  class="clickable-row">
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <!-- {{ getRowNumber(i) }} -->
+                      <ng-container *ngIf="user.profile_picture; else initialsAvatar">
+                        <img [src]="user.profile_picture" alt="{{ user.full_name }}"
+                          class="rounded-circle object-fit-cover" width="36" height="36"
+                          onerror="this.src='assets/images/users/avatar-1.jpg'">
+                      </ng-container>
+                      <ng-template #initialsAvatar>
+                        <div
+                          class="avatar-xs rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white fw-bold"
+                          style="width: 36px; height: 36px; font-size: 0.85rem;">
+                          {{ getInitials(user.full_name) }}
+                        </div>
+                      </ng-template>
+                    </div>
+                  </td>
+                  <td class="customer_name">
+                    <span>{{ user.full_name }}</span>
+                  </td>
                   <td class="email">{{ user.email }}</td>
                   <td class="phone">{{ user.phone_number }}</td>
                   <td>{{ user.date_of_birth | date:'yyyy-MM-dd' }}</td>
@@ -55,24 +90,21 @@
                       {{ user.is_suspended ? 'Suspended' : 'Active' }}</span>
                   </td>
                   <td>{{ user.suspended_by ?? '-' }}</td>
-                  <td (click)="$event.stopPropagation()" style="cursor: default;">
+                  <td>{{ user.last_active | date:'yyyy-MM-dd H:m:s' }}</td>
+                  <td (click)="$event.stopPropagation()" class="actions-cell">
                     <div class="d-flex gap-2">
                       <div class="edit">
                         <button class="btn btn-sm btn-success edit-item-btn"
                           [routerLink]="['/users/edit', user.id]">Edit</button>
                       </div>
-                      @if(user.is_suspended){
-                      <div class="unsuspend">
+                      <div class="unsuspend" *ngIf="user.is_suspended">
                         <button class="btn btn-sm btn-success remove-item-btn"
                           (click)="userUnsuspend(user.id)">Unsuspend</button>
                       </div>
-                      } @else {
-                      <div class="suspend">
+                      <div class="suspend" *ngIf="!user.is_suspended">
                         <button class="btn btn-sm btn-danger remove-item-btn"
                           (click)="userSuspend(user.id)">Suspend</button>
                       </div>
-                      }
-
                     </div>
                   </td>
                 </tr>
@@ -81,7 +113,7 @@
             <div class="noresult" [ngClass]="(allusers?.length != 0)?'d-none':''">
               <div class="text-center">
                 <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                  colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                  colors="primary:#121331,secondary:#08a88a" class="empty-state-icon"></lord-icon>
                 <h5 class="mt-2">Sorry! No Result Found</h5>
               </div>
             </div>

@@ -58,14 +58,20 @@ export class UserService {
     return throwError(() => this.parseApiError(error));
   }
 
-  getUsers(token: string, page?: number, search?: string): Observable<any> {
+  getUsers(token: string, page?: number, search?: string, per_page?: number, ordering?: string): Observable<any> {
     let url = API_URL + 'user_list';
     const params: string[] = [];
     if (page) {
       params.push(`page=${page}`);
     }
+    if (per_page) {
+      params.push(`per_page=${per_page}`);
+    }
     if (search) {
       params.push(`search=${encodeURIComponent(search)}`);
+    }
+    if (ordering) {
+      params.push(`ordering=${encodeURIComponent(ordering)}`);
     }
     if (params.length) {
       url += '?' + params.join('&');

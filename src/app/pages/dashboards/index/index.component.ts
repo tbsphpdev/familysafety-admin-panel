@@ -11,16 +11,17 @@ import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 import am5geodata_worldLow from "@amcharts/amcharts5-geodata/worldLow";
 import { shuffleArray } from 'src/app/shared/commonFunction';
 import { Store } from '@ngrx/store';
-import { fetchorderData,  fetchsalesData } from 'src/app/store/Ecommerce/ecommerce.actions';
-import { selectData, selectorderata, selectproductData } from 'src/app/store/Ecommerce/ecommerce-selector';
+import { DashboardActions } from 'src/app/store/Dashboard/dashboard.actions';
+import { selectDashboard } from 'src/app/store/Dashboard/dashboard.selector';
+import { Dashboard, RecentTransaction, RecentUser } from 'src/app/store/Dashboard/dashboard.model';
 import { products } from './data';
 
 @Component({
-    selector: 'app-index',
-    templateUrl: './index.component.html',
-    styleUrls: ['./index.component.scss'],
-    providers: [DecimalPipe],
-    standalone: false
+  selector: 'app-index',
+  templateUrl: './index.component.html',
+  styleUrls: ['./index.component.scss'],
+  providers: [DecimalPipe],
+  standalone: false
 })
 export class IndexComponent {
 
@@ -28,13 +29,16 @@ export class IndexComponent {
   columnChart: any;
   mini6Chart: any;
   mini7Chart: any;
-  salesList: any;
-  orderList: any;
+  planPieChart: any;
+  weekChart: any;
+  recentTransactions: RecentTransaction[] = [];
+  recentUsers: RecentUser[] = [];
   produtlist: any;
+  dashboardData?: Dashboard | null;
 
   @ViewChild('productModal', { static: false }) productModal?: ModalDirective;
   productdetail: any;
-  sortValue: any = 'Order Date';
+  sortValue: any = 'Transaction Date';
 
   constructor(public store: Store) { }
 
@@ -43,18 +47,22 @@ export class IndexComponent {
     this._columnChart('["--tb-primary", "--tb-light"]');
     this._mini6Chart('["--tb-primary"]');
     this._mini7Chart('["--tb-info"]');
+    this.planPieChart = {
+      series: [],
+      chart: { type: 'pie', height: 220 },
+      labels: [],
+      legend: { position: 'bottom' },
+      colors: this.getChartColorsArray('["--tb-primary","--tb-info","--tb-success"]')
+    };
 
-    this.produtlist = products
+    this.produtlist = products;
 
-    // Recent Sales
-    this.store.dispatch(fetchsalesData());
-    this.store.select(selectData).subscribe((data) => {
-      this.salesList = data;
-    });
-    // Latest Orders
-    this.store.dispatch(fetchorderData());
-    this.store.select(selectorderata).subscribe((data) => {
-      this.orderList = data;
+    this.store.dispatch(DashboardActions.loadDashboard());
+    this.store.select(selectDashboard).subscribe((dashboard) => {
+      this.dashboardData = dashboard;
+      this.recentTransactions = dashboard?.recent_transactions ? [...dashboard.recent_transactions] : [];
+      this.recentUsers = dashboard?.recent_users ? [...dashboard.recent_users] : [];
+      this._updateDashboardCharts(dashboard);
     });
 
     // Set world-map-markers amchart
@@ -139,6 +147,72 @@ export class IndexComponent {
 *Market Overview Charts
 */
 
+  private _updateDashboardCharts(dashboard: Dashboard | null) {
+    if (!dashboard) {
+      return;
+    }
+
+    const monthlyRevenue = [...(dashboard.monthly_revenue?.months ?? [])]
+      .sort((a, b) => a.month_number - b.month_number);
+    const monthLabels = monthlyRevenue.map((item) => item.month.slice(0, 3));
+    const monthRevenue = monthlyRevenue.map((item) => Number(item.revenue) || 0);
+    const weekLabels = dashboard.revenue.by_week?.map((item) => item.week) ?? [];
+    const weekRevenue = dashboard.revenue.by_week?.map((item) => item.revenue) ?? [];
+    const planRevenue = dashboard.revenue.by_plan?.map((item) => item.revenue) ?? [];
+
+    if (monthLabels.length > 0) {
+      this.marketverviewChart = {
+        ...this.marketverviewChart,
+        series: [{ name: `${dashboard.monthly_revenue?.year || ''} Revenue`, data: monthRevenue }],
+        xaxis: {
+          ...this.marketverviewChart.xaxis,
+          categories: monthLabels,
+        },
+      };
+    } else if (weekLabels.length > 0) {
+      this.marketverviewChart = {
+        ...this.marketverviewChart,
+        series: [{ name: 'Revenue', data: weekRevenue }],
+        xaxis: {
+          ...this.marketverviewChart.xaxis,
+          categories: weekLabels,
+        },
+      };
+    }
+
+    if (planRevenue.length > 0) {
+      this.mini6Chart = {
+        ...this.mini6Chart,
+        series: [{ data: planRevenue }],
+      };
+    }
+
+    if (weekRevenue.length > 0) {
+      this.mini7Chart = {
+        ...this.mini7Chart,
+        series: [{ data: weekRevenue }],
+      };
+    }
+    // Plan pie chart
+    const planLabels = dashboard.revenue.by_plan?.map(p => p.plan_name) ?? [];
+    const planSeries = dashboard.revenue.by_plan?.map(p => p.revenue) ?? [];
+    this.planPieChart = {
+      series: planSeries,
+      chart: { type: 'pie', height: 220 },
+      labels: planLabels,
+      legend: { position: 'bottom' },
+      colors: this.getChartColorsArray('["--tb-primary","--tb-info","--tb-success"]')
+    };
+
+    // Week revenue chart
+    this.weekChart = {
+      series: [{ name: 'Revenue', data: weekRevenue }],
+      chart: { type: 'bar', height: 200, toolbar: { show: false } },
+      xaxis: { categories: weekLabels },
+      colors: this.getChartColorsArray('["--tb-primary"]')
+    };
+  }
+
   changeRevenue() {
     var EarningSeries = [26, 24.65, 18.24, 29.02, 23.65, 27, 21.18, 24.65, 27.32, 25, 24.65, 29.32]
     const shuffledEarningSeries = [...EarningSeries];
@@ -164,18 +238,13 @@ export class IndexComponent {
     colors = this.getChartColorsArray(colors);
     this.marketverviewChart = {
       series: [{
-        name: 'Earning',
-        data: [26, 24.65, 18.24, 29.02, 23.65, 27, 21.18, 24.65, 27.32, 25, 24.65, 29.32]
-      },
-      {
-        name: 'Expense',
-        data: [-10, -17.32, -15.45, -12.30, -19.15, -15.45, -11, -14.32, -15.67, -10, -17.32, -19.2]
-      }
-      ],
+        name: 'Revenue',
+        data: Array(12).fill(0)
+      }],
       chart: {
         type: 'bar',
         height: 328,
-        stacked: true,
+        stacked: false,
         toolbar: {
           show: false
         },
@@ -221,9 +290,12 @@ export class IndexComponent {
         labels: {
           show: true,
           formatter: function (y: any) {
-            return y.toFixed(0) + "k";
+            return "$" + Number(y || 0).toFixed(0);
           }
         },
+      },
+      tooltip: {
+        enabled: false
       },
       legend: {
         show: false,
@@ -251,6 +323,7 @@ export class IndexComponent {
 
     const observer = new MutationObserver(() => {
       this._marketverviewChart('["--tb-primary", "--tb-secondary"]');
+      this._updateDashboardCharts(this.dashboardData || null);
     });
     observer.observe(document.documentElement, {
       attributes: true,
@@ -460,15 +533,28 @@ export class IndexComponent {
     } else {
       this.direction = 'asc';
     }
-    const sortedArray = [...this.orderList]; // Create a new array
+    const sortedArray = [...this.recentTransactions];
     sortedArray.sort((a, b) => {
-      const res = this.compare(a[column], b[column]);
+      const res = this.compare((a as any)[column], (b as any)[column]);
       return this.direction === 'asc' ? res : -res;
     });
-    this.orderList = sortedArray;
+    this.recentTransactions = sortedArray;
   }
-  compare(v1: string | number, v2: string | number) {
+  compare(v1: string | number | null | undefined, v2: string | number | null | undefined) {
+    v1 = v1 ?? '';
+    v2 = v2 ?? '';
     return v1 < v2 ? -1 : v1 > v2 ? 1 : 0;
+  }
+
+  getInitials(name?: string): string {
+    if (!name) {
+      return '';
+    }
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) {
+      return parts[0].substring(0, 2).toUpperCase();
+    }
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   }
 
   /**

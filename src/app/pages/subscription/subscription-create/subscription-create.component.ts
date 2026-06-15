@@ -6,6 +6,7 @@ import { Actions, ofType } from '@ngrx/effects';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { createSubscription, createSubscriptionSuccess, createSubscriptionFailure } from 'src/app/store/Subscription/subscription.actions';
+import { ListStateService } from 'src/app/core/services/list-state.service';
 
 @Component({
   selector: 'app-subscription-create',
@@ -20,8 +21,11 @@ export class SubscriptionCreateComponent implements OnInit, OnDestroy {
   loading: boolean = false;
   createForm!: FormGroup;
   private destroy$ = new Subject<void>();
+  currentPage = 1;
+  pageSize = 10;
+  searchTerm = '';
 
-  constructor(public store: Store, private fb: FormBuilder, private actions$: Actions) { }
+  constructor(public store: Store, private fb: FormBuilder, private actions$: Actions, private listState: ListStateService) { }
 
   ngOnInit(): void {
     this.actions$.pipe(
@@ -32,7 +36,7 @@ export class SubscriptionCreateComponent implements OnInit, OnDestroy {
     });
     this.createForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
-      price: ['', [Validators.required, Validators.min(0)]],
+      price: ['', [Validators.required, Validators.min(0), Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
       interval: ['monthly', [Validators.required]],
       description: ['', []],
       max_groups: ['', []],
@@ -44,6 +48,11 @@ export class SubscriptionCreateComponent implements OnInit, OnDestroy {
       max_family_members: ['', []],
       features: this.fb.array([])
     });
+
+    const savedState = this.listState.getState('subscriptions');
+    this.currentPage = savedState.page;
+    this.pageSize = savedState.per_page;
+    this.searchTerm = savedState.search || '';
 
     this.breadCrumbItems = [
       { label: 'Subscription' },
@@ -83,7 +92,12 @@ export class SubscriptionCreateComponent implements OnInit, OnDestroy {
       }
     };
 
-    this.store.dispatch(createSubscription({ payload: payload }));
+    this.store.dispatch(createSubscription({
+      payload,
+      page: this.currentPage,
+      per_page: this.pageSize,
+      search: this.searchTerm
+    }));
   }
 
   get features(): FormArray {
@@ -114,7 +128,7 @@ export class SubscriptionCreateComponent implements OnInit, OnDestroy {
         el.style.opacity = '1';
         el.style.visibility = 'visible';
       }
-      try { document.documentElement.setAttribute('data-preloader', 'enable'); } catch (e) { }
+      document.documentElement.setAttribute('data-preloader', 'enable');
       this.loading = true;
     } catch (e) {
       this.loading = true;
@@ -130,6 +144,7 @@ export class SubscriptionCreateComponent implements OnInit, OnDestroy {
         el.style.visibility = 'hidden';
         el.style.display = 'none';
       }
+      document.documentElement.removeAttribute('data-preloader');
       this.loading = false;
     } catch (e) {
       this.loading = false;

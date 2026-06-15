@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { catchError, map } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 import { GlobalComponent } from '../../global-component';
@@ -64,9 +64,22 @@ export class SubscriptionService {
     return throwError(() => message);
   }
 
-  getSubscriptions(token: string): Observable<any> {
+  getSubscriptions(token: string, params?: { page?: number; per_page?: number; search?: string }): Observable<any> {
     const url = API_URL + 'subscriptions/';
-    return this.http.get<any>(url, this.createHeaders(token)).pipe(
+    let httpParams = new HttpParams();
+    if (params) {
+      if (typeof params.page !== 'undefined' && params.page !== null) {
+        httpParams = httpParams.set('page', String(params.page));
+      }
+      if (typeof params.per_page !== 'undefined' && params.per_page !== null) {
+        httpParams = httpParams.set('per_page', String(params.per_page));
+      }
+      if (typeof params.search !== 'undefined' && params.search !== null && params.search !== '') {
+        httpParams = httpParams.set('search', params.search);
+      }
+    }
+
+    return this.http.get<any>(url, { ...this.createHeaders(token), params: httpParams }).pipe(
       map((response: any) => this.handleApiResponse(response, 200)),
       catchError((error: any) => this.handleError(error))
     );

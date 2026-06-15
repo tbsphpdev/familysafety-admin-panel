@@ -6,13 +6,25 @@ import { MonitoringActions } from './monitoring.actions';
 export const monitoringsFeatureKey = 'monitorings';
 
 export interface State extends EntityState<Monitoring> {
-  // additional entities state properties
+  paymentHistory: any[];
+  paymentHistoryCurrentPage: number;
+  paymentHistoryTotalPages: number;
+  paymentHistoryTotalItems: number;
+  paymentHistoryPageSize: number;
+  paymentHistoryLoading: boolean;
+  paymentHistoryError: any;
 }
 
 export const adapter: EntityAdapter<Monitoring> = createEntityAdapter<Monitoring>();
 
 export const initialState: State = adapter.getInitialState({
-  // additional entity state properties
+  paymentHistory: [],
+  paymentHistoryCurrentPage: 1,
+  paymentHistoryTotalPages: 1,
+  paymentHistoryTotalItems: 0,
+  paymentHistoryPageSize: 10,
+  paymentHistoryLoading: false,
+  paymentHistoryError: null,
 });
 
 export const reducer = createReducer(
@@ -47,6 +59,32 @@ export const reducer = createReducer(
   on(MonitoringActions.clearMonitorings,
     state => adapter.removeAll(state)
   ),
+  on(MonitoringActions.loadPaymentHistory,
+    (state) => ({
+      ...state,
+      paymentHistoryLoading: true,
+      paymentHistoryError: null
+    })
+  ),
+  on(MonitoringActions.loadPaymentHistorySuccess,
+    (state, action) => ({
+      ...state,
+      paymentHistory: action.response.items,
+      paymentHistoryCurrentPage: action.response.current_page,
+      paymentHistoryTotalItems: action.response.total_items,
+      paymentHistoryTotalPages: Math.max(action.response.total_pages, Math.ceil(action.response.total_items / action.pageSize) || 1),
+      paymentHistoryPageSize: action.pageSize,
+      paymentHistoryLoading: false,
+      paymentHistoryError: null
+    })
+  ),
+  on(MonitoringActions.loadPaymentHistoryFailure,
+    (state, action) => ({
+      ...state,
+      paymentHistoryLoading: false,
+      paymentHistoryError: action.error
+    })
+  ),
 );
 
 export const monitoringsFeature = createFeature({
@@ -62,4 +100,11 @@ export const {
   selectEntities,
   selectAll,
   selectTotal,
+  selectPaymentHistory,
+  selectPaymentHistoryCurrentPage,
+  selectPaymentHistoryTotalPages,
+  selectPaymentHistoryTotalItems,
+  selectPaymentHistoryPageSize,
+  selectPaymentHistoryLoading,
+  selectPaymentHistoryError,
 } = monitoringsFeature;

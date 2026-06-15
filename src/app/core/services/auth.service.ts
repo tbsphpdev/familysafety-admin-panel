@@ -9,7 +9,7 @@ import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { GlobalComponent } from "../../global-component";
 
 // Action
-import { login, loginSuccess, loginFailure, logout, logoutSuccess, RegisterSuccess } from '../../store/Authentication/authentication.actions';
+import { loginFailure, logout, logoutSuccess, RegisterSuccess } from '../../store/Authentication/authentication.actions';
 
 // Firebase
 import { AngularFireAuth } from '@angular/fire/compat/auth';
@@ -106,8 +106,6 @@ export class AuthenticationService {
     }
 
     login(email: string, password: string) {
-        this.store.dispatch(login({ email, password }));
-
         return this.http.post(AUTH_API + 'log_in/', {
             email,
             password
@@ -115,13 +113,11 @@ export class AuthenticationService {
             map((response: any) => {
                 if (response && response.status === 200) {
                     const user = response;
-                    this.store.dispatch(loginSuccess({ user }));
                     this.toastr.success('Login successful', 'Success');
                     return user;
                 } else {
                     const errorMessage = response && response.message ? response.message : 'Login failed';
                     this.toastr.error(errorMessage, 'Error');
-                    this.store.dispatch(loginFailure({ error: errorMessage }));
                     throw new Error(errorMessage);
                 }
             }),
@@ -135,7 +131,6 @@ export class AuthenticationService {
                     errorMessage = error;
                 }
                 this.toastr.error(errorMessage, 'Error');
-                this.store.dispatch(loginFailure({ error: errorMessage }));
                 return throwError(() => errorMessage);
             })
         );

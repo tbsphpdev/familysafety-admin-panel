@@ -1,0 +1,99 @@
+<div class="card-body">
+  <div class="mb-3 pb-1 text-center">
+    <h6 class="mb-0">Summary as of today</h6>
+  </div>
+
+  <ng-container *ngIf="summary as summary">
+    <div class="row align-items-center mb-3">
+      <div class="col-lg-4">
+        <div class="hstack gap-2">
+          <p class="mb-0 flex-grow-1">Active</p>
+          <h6 class="mb-0">{{ summary.active }}</h6>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="animated-progress">
+          <progressbar [value]="summary.total_subscribers ? (summary.active) * 100 / summary.total_subscribers : 0"
+            type="success" [striped]="true" [animate]="true"></progressbar>
+        </div>
+      </div><!--end col-->
+    </div><!--end row-->
+
+    <div class="row align-items-center mb-3">
+      <div class="col-lg-4">
+        <div class="hstack gap-2">
+          <p class="mb-0 flex-grow-1">Trialing</p>
+          <h6 class="mb-0">{{ summary.trialing }}</h6>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="animated-progress">
+          <progressbar [value]="summary.total_subscribers ? (summary.trialing) * 100 / summary.total_subscribers : 0"
+            type="warning" [striped]="true" [animate]="true"></progressbar>
+        </div>
+      </div><!--end col-->
+    </div><!--end row-->
+
+    <div class="row align-items-center mb-3">
+      <div class="col-lg-4">
+        <div class="hstack gap-2">
+          <p class="mb-0 flex-grow-1">Cancelled</p>
+          <h6 class="mb-0">{{ summary.cancelled }}</h6>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="animated-progress">
+          <progressbar [value]="summary.total_subscribers ? (summary.cancelled) * 100 / summary.total_subscribers : 0"
+            type="danger" [striped]="true" [animate]="true"></progressbar>
+        </div>
+      </div><!--end col-->
+    </div><!--end row-->
+
+    <div class="row align-items-center mb-3">
+      <div class="col-lg-4">
+        <div class="hstack gap-2">
+          <p class="mb-0 flex-grow-1">Expired</p>
+          <h6 class="mb-0">{{ summary.expired }}</h6>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="animated-progress">
+          <progressbar [value]="summary.total_subscribers ? (summary.expired) * 100 / summary.total_subscribers : 0"
+            type="danger" [striped]="true" [animate]="true"></progressbar>
+        </div>
+      </div><!--end col-->
+    </div><!--end row-->
+
+    <div class="row align-items-center mb-3">
+      <div class="col-lg-4">
+        <div class="hstack gap-2">
+          <p class="mb-0 flex-grow-1">Grace</p>
+          <h6 class="mb-0">{{ summary.referral_grace }}</h6>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="animated-progress">
+          <progressbar
+            [value]="summary.total_subscribers ? (summary.referral_grace) * 100 / summary.total_subscribers : 0"
+            type="info" [striped]="true" [animate]="true"></progressbar>
+        </div>
+      </div><!--end col-->
+    </div><!--end row-->
+
+    <div class="row align-items-center">
+      <div class="col-lg-4">
+        <div class="hstack gap-2">
+          <p class="mb-0 flex-grow-1">Access Granted</p>
+          <h6 class="mb-0">{{ summary.currently_access_granted }}</h6>
+        </div>
+      </div><!--end col-->
+      <div class="col-lg-8">
+        <div class="animated-progress">
+          <progressbar
+            [value]="summary.total_subscribers ? (summary.currently_access_granted) * 100 / summary.total_subscribers : 0"
+            type="success" [striped]="true" [animate]="true"></progressbar>
+        </div>
+      </div><!--end col-->
+    </div><!--end row-->
+  </ng-container>
+</div>

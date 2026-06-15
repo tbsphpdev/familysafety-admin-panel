@@ -4,6 +4,26 @@
   </div>
   <div class="card-body">
     <div *ngIf="userdetails; else loading" class="row">
+      <div class="col-12 mb-4">
+        <div class="d-flex align-items-center gap-3">
+          <ng-container *ngIf="userdetails.profile_picture; else initialsAvatar">
+            <img [src]="userdetails.profile_picture" alt="{{ userdetails.full_name }}"
+              class="rounded-circle object-fit-cover" width="80" height="80"
+              onerror="this.src='assets/images/users/avatar-1.jpg'">
+          </ng-container>
+          <ng-template #initialsAvatar>
+            <div
+              class="avatar-lg rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white fw-bold"
+              style="width: 80px; height: 80px; font-size: 1.5rem;">
+              {{ getInitials(userdetails.full_name) }}
+            </div>
+          </ng-template>
+          <div>
+            <h5 class="mb-1">{{ userdetails.full_name }}</h5>
+            <p class="text-muted mb-0">{{ userdetails.email }}</p>
+          </div>
+        </div>
+      </div>
       <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Full Name</label>
         <p class="text-muted">{{ userdetails.full_name }}</p>

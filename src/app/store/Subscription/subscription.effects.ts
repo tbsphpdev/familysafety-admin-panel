@@ -38,10 +38,15 @@ export class SubscriptionEffects {
   getSubscriptions$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(getSubscriptions),
-      concatMap(() => {
+      concatMap((action: any) => {
         const token = localStorage.getItem('token') || '';
+        const params = {
+          page: action.page,
+          per_page: action.per_page,
+          search: action.search
+        };
 
-        return this.subscriptionService.getSubscriptions(token).pipe(
+        return this.subscriptionService.getSubscriptions(token, params).pipe(
           map((data: any) => getSubscriptionsSuccess({
             subscriptions: this.getSubscriptionsFromResponse(data),
           })),
@@ -122,7 +127,7 @@ export class SubscriptionEffects {
         return this.subscriptionService.suspendUser(token, id).pipe(
           switchMap((res: any) => [
             statusChangeSuccess({ response: res }),
-            getSubscriptions()
+            getSubscriptions({ page: action.page, per_page: action.per_page, search: action.search })
           ]),
           catchError((error) => of(statusChangeFailure({ error: this.getEffectErrorMessage(error) })))
         );
@@ -161,8 +166,8 @@ export class SubscriptionEffects {
 
         return this.subscriptionService.createSubscription(token, payload).pipe(
           switchMap((res: any) => [
-            createSubscriptionSuccess({ response: res }),
-            getSubscriptions()
+            createSubscriptionSuccess({ response: res, page: action.page, per_page: action.per_page, search: action.search }),
+            getSubscriptions({ page: action.page, per_page: action.per_page, search: action.search })
           ]),
           catchError((error) => of(createSubscriptionFailure({ error: this.getEffectErrorMessage(error) })))
         );
@@ -239,8 +244,8 @@ export class SubscriptionEffects {
 
         return this.subscriptionService.updateSubscription(token, id, payload).pipe(
           switchMap((res: any) => [
-            updateSubscriptionSuccess({ subscription: res }),
-            getSubscriptions()
+            updateSubscriptionSuccess({ subscription: res, page: action.page, per_page: action.per_page, search: action.search }),
+            getSubscriptions({ page: action.page, per_page: action.per_page, search: action.search })
           ]),
           catchError((error) => of(updateSubscriptionFailure({ error: this.getEffectErrorMessage(error) })))
         );
@@ -283,8 +288,8 @@ export class SubscriptionEffects {
 
         return this.subscriptionService.deleteSubscription(token, id).pipe(
           switchMap((res: any) => [
-            deleteSubscriptionSuccess({ success: res, id }),
-            getSubscriptions()
+            deleteSubscriptionSuccess({ success: res, id, page: action.page, per_page: action.per_page, search: action.search }),
+            getSubscriptions({ page: action.page, per_page: action.per_page, search: action.search })
           ]),
           catchError((error) => of(deleteSubscriptionFailure({ error: this.getEffectErrorMessage(error) })))
         );

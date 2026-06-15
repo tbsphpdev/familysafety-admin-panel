@@ -7,6 +7,7 @@ import { SharedModule } from '../../shared/shared.module';
 import { ReferralListComponent } from './referral-list/referral-list.component';
 import { GeoFenceEventsComponent } from './geo-fence-events/geo-fence-events.component';
 import { SosAlertsListComponent } from './sos-alerts-list/sos-alerts-list.component';
+import { PaymentHistoryComponent } from './payment-history/payment-history.component';
 
 @NgModule({
   imports: [
@@ -16,6 +17,7 @@ import { SosAlertsListComponent } from './sos-alerts-list/sos-alerts-list.compon
     GeoFenceEventsComponent,
     SosAlertsListComponent,
     ReferralListComponent,
+    PaymentHistoryComponent,
     MonitoringRoutingModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

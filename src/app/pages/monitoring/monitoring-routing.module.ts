@@ -3,11 +3,13 @@ import { RouterModule, Routes } from '@angular/router';
 import { ReferralListComponent } from './referral-list/referral-list.component';
 import { GeoFenceEventsComponent } from './geo-fence-events/geo-fence-events.component';
 import { SosAlertsListComponent } from './sos-alerts-list/sos-alerts-list.component';
+import { PaymentHistoryComponent } from './payment-history/payment-history.component';
 
 const routes: Routes = [
   { path: 'referral-list', component: ReferralListComponent },
   { path: 'geofence-logs', component: GeoFenceEventsComponent },
   { path: 'sos-alerts', component: SosAlertsListComponent },
+  { path: 'payment-history', component: PaymentHistoryComponent },
 ];
 
 @NgModule({

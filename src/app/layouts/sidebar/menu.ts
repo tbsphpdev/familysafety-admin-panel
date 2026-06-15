@@ -10,38 +10,39 @@ export const MENU: MenuItem[] = [
         id: 2,
         label: 'MENUITEMS.DASHBOARD.TEXT',
         icon: 'ph-gauge',
-        subItems: [
-            {
-                id: 3,
-                label: 'MENUITEMS.DASHBOARD.LIST.ANALYTICS',
-                link: '/analytics',
-                parentId: 2
-            },
-            {
-                id: 4,
-                label: 'MENUITEMS.DASHBOARD.LIST.CRM',
-                link: '/crm',
-                parentId: 2
-            },
-            {
-                id: 5,
-                label: 'MENUITEMS.DASHBOARD.LIST.ECOMMERCE',
-                link: '/',
-                parentId: 2
-            },
-            {
-                id: 6,
-                label: 'MENUITEMS.DASHBOARD.LIST.LEARNING',
-                link: '/learning',
-                parentId: 2
-            },
-            {
-                id: 7,
-                label: 'MENUITEMS.DASHBOARD.LIST.REALESTATE',
-                link: '/real-estate',
-                parentId: 2
-            }
-        ]
+        link: '/',
+        // subItems: [
+        //     {
+        //         id: 3,
+        //         label: 'MENUITEMS.DASHBOARD.LIST.ANALYTICS',
+        //         link: '/analytics',
+        //         parentId: 2
+        //     },
+        //     {
+        //         id: 4,
+        //         label: 'MENUITEMS.DASHBOARD.LIST.CRM',
+        //         link: '/crm',
+        //         parentId: 2
+        //     },
+        //     {
+        //         id: 5,
+        //         label: 'MENUITEMS.DASHBOARD.LIST.ECOMMERCE',
+        //         link: '/',
+        //         parentId: 2
+        //     },
+        //     {
+        //         id: 6,
+        //         label: 'MENUITEMS.DASHBOARD.LIST.LEARNING',
+        //         link: '/learning',
+        //         parentId: 2
+        //     },
+        //     {
+        //         id: 7,
+        //         label: 'MENUITEMS.DASHBOARD.LIST.REALESTATE',
+        //         link: '/real-estate',
+        //         parentId: 2
+        //     }
+        // ]
     },
     {
         id: 175,
@@ -81,6 +82,13 @@ export const MENU: MenuItem[] = [
         label: 'MENUITEMS.MONITORING.LIST.REFERRAL',
         icon: 'ph-users',
         link: '/monitoring/referral-list',
+        parentId: 178
+    },
+    {
+        id: 182,
+        label: 'MENUITEMS.MONITORING.LIST.PAYMENTHISTORY',
+        icon: 'ph-receipt',
+        link: '/monitoring/payment-history',
         parentId: 178
     },
     // {

@@ -13,6 +13,15 @@ export class PrivacyPolicyComponent {
     breadCrumbItems!: Array<{}>;
   
     ngOnInit(): void {
+      document.documentElement.setAttribute('data-preloader', 'disable');
+
+      const preloader = document.getElementById('preloader');
+      if (preloader) {
+        preloader.style.opacity = '0';
+        preloader.style.visibility = 'hidden';
+        preloader.style.display = 'none';
+      }
+
       /**
        * BreadCrumb
        */

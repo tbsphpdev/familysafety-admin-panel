@@ -28,6 +28,7 @@ import { rootReducer } from './store';
 import { fakebackendInterceptor } from './core/helpers/fake-backend';
 import { ErrorInterceptor } from './core/helpers/error.interceptor';
 import { JwtInterceptor } from './core/helpers/jwt.interceptor';
+import { PreloaderInterceptor } from './core/helpers/preloader.interceptor';
 import { CRMEffects } from './store/CRM/crm.effects';
 import { ECoEffects } from './store/Ecommerce/ecommerce.effects';
 import { LearningEffects } from './store/Learning/learning.effects';
@@ -50,6 +51,9 @@ import { CourcesEffects } from './store/Learning-cources/cources.effect';
 import { UserEffects } from './store/Users/user.effects';
 import { ProfileSettingEffects } from './store/ProfileSetting/profile-setting.effects';
 import { SubscriptionEffects } from './store/Subscription/subscription.effects';
+import { DashboardEffects } from './store/Dashboard/dashboard.effects';
+import { MonitoringEffects } from './store/Monitoring/monitoring.effects';
+import { SubscriptionSummaryComponent } from './pages/dashboards/index/subscription-summary.component';
 
 export function createTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader();
@@ -63,7 +67,7 @@ if (environment.defaultauth === 'firebase') {
 @NgModule({
   declarations: [
     AppComponent,
-    AuthlayoutComponent
+    AuthlayoutComponent,
   ],
   bootstrap: [AppComponent], imports: [TranslateModule.forRoot({
     defaultLanguage: 'en',
@@ -101,7 +105,9 @@ if (environment.defaultauth === 'firebase') {
     InstructorEffects,
     UserEffects,
     ProfileSettingEffects,
-    SubscriptionEffects
+    SubscriptionEffects,
+    DashboardEffects,
+    MonitoringEffects
   ]),
   AngularFireModule.initializeApp(environment.firebaseConfig),
     BrowserModule,
@@ -111,7 +117,8 @@ if (environment.defaultauth === 'firebase') {
   ToastrModule.forRoot(),
     FormsModule,
     ReactiveFormsModule,
-    AngularFireAuthModule], providers: [
+    AngularFireAuthModule,
+    SubscriptionSummaryComponent], providers: [
       {
         provide: TRANSLATE_HTTP_LOADER_CONFIG,
         useValue: {
@@ -120,6 +127,7 @@ if (environment.defaultauth === 'firebase') {
         },
       },
       { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+      { provide: HTTP_INTERCEPTORS, useClass: PreloaderInterceptor, multi: true },
       { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
       { provide: HTTP_INTERCEPTORS, useClass: fakebackendInterceptor, multi: true },
       provideHttpClient(withInterceptorsFromDi()),

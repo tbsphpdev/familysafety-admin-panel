@@ -16,6 +16,14 @@ export const environment = {
     messagingSenderId: "916438010670",
     appId: "1:916438010670:web:c70cf404da6c0fe7b048bf",
     measurementId: "G-1N6FB2GG55"
+  },
+  digitalOceanSpaces: {
+    accessKey: 'DO00F3ZL9XHFUPXFT7DV',
+    secretKey: 'DxFF5QQlCkkGPXMe1TDRtIZtDWHk/VA13h58tCkN1eY',
+    bucket: 'angel-protect-app-images',
+    region: 'nyc3',
+    endpoint: 'https://nyc3.digitaloceanspaces.com',
+    cdnBase: 'https://angel-protect-app-images.nyc3.cdn.digitaloceanspaces.com'
   }
 };
 

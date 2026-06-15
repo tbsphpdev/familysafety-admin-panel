@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Actions, ofType } from '@ngrx/effects';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { selectEntities } from 'src/app/store/Subscription/subscription.reducer';
 import { getSubscription, getSubscriptionSuccess, getSubscriptionFailure, updateSubscription, getLanguages, getLanguagesSuccess, getLanguagesFailure, translateToAllLanguages, translateToAllLanguagesSuccess, translateToAllLanguagesFailure } from 'src/app/store/Subscription/subscription.actions';
+import { ListStateService } from 'src/app/core/services/list-state.service';
 
 @Component({
   selector: 'app-subscription-edit',
@@ -27,7 +28,7 @@ export class SubscriptionEditComponent implements OnDestroy {
   selectedLanguage: string = 'en';
   private destroy$ = new Subject<void>();
 
-  constructor(private route: ActivatedRoute, private fb: FormBuilder, private store: Store, private actions$: Actions, private router: Router) { }
+  constructor(private route: ActivatedRoute, private fb: FormBuilder, private store: Store, private actions$: Actions, private listState: ListStateService) { }
 
   ngOnInit(): void {
     this.editForm = this.fb.group({
@@ -215,7 +216,14 @@ export class SubscriptionEditComponent implements OnDestroy {
       }
     };
 
-    this.store.dispatch(updateSubscription({ id: this.subscriptionId, payload: payload }));
+    const listState = this.listState.getState('subscriptions');
+    this.store.dispatch(updateSubscription({
+      id: this.subscriptionId,
+      payload,
+      page: listState.page,
+      per_page: listState.per_page,
+      search: listState.search || ''
+    }));
   }
 
   get features(): FormArray {

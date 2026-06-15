@@ -27,7 +27,9 @@
 
         <div class="col-md-4 mb-3">
           <label class="form-label">Price <span class="text-danger">*</span></label>
-          <input class="form-control" formControlName="price" type="number" placeholder="Price">
+          <input class="form-control" formControlName="price" type="text" placeholder="Price" inputmode="decimal"
+            pattern="^\d+(\.\d{0,2})?$"
+            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
         </div>
 
         <div class="col-md-4 mb-3">
@@ -55,24 +57,28 @@
       <div class="row">
         <div class="col-md-4 mb-3">
           <label class="form-label">Max Group</label>
-          <input type="number" class="form-control" formControlName="max_groups" placeholder="Max Groups">
+          <input type="text" class="form-control" formControlName="max_groups" placeholder="Max Groups"
+            inputmode="numeric" pattern="\d*" oninput="this.value = this.value.replace(/\D/g, '');">
         </div>
         <div class="col-md-4 mb-3">
           <label class="form-label">Max Members per Group</label>
-          <input type="number" class="form-control" formControlName="max_members_per_group"
-            placeholder="Max Members per Group">
+          <input type="text" class="form-control" formControlName="max_members_per_group"
+            placeholder="Max Members per Group" inputmode="numeric" pattern="\d*"
+            oninput="this.value = this.value.replace(/\D/g, '');">
         </div>
         <div class="col-md-4 mb-3">
           <label class="form-label">Max Safe Zones</label>
-          <input type="number" class="form-control" formControlName="max_safe_zones" placeholder="Max Safe Zones">
+          <input type="text" class="form-control" formControlName="max_safe_zones" placeholder="Max Safe Zones"
+            inputmode="numeric" pattern="\d*" oninput="this.value = this.value.replace(/\D/g, '');">
         </div>
         <div class="col-md-4 mb-3">
           <label class="form-label">Location History Days</label>
-          <input type="number" class="form-control" formControlName="location_history_days"
-            placeholder="Location History Days">
+          <input type="text" class="form-control" formControlName="location_history_days"
+            placeholder="Location History Days" inputmode="numeric" pattern="\d*"
+            oninput="this.value = this.value.replace(/\D/g, '');">
         </div>
         <div class="col-md-4 mb-3">
-          <label class="form-label d-block">Offline Support</label>
+          <label class="form-label d-block">Offline SMS Support</label>
           <div class="d-flex gap-3">
             <div class="form-check">
               <input class="form-check-input" formControlName="offline_support" id="offlineSupportYes" value="true"
@@ -104,8 +110,8 @@
         </div>
         <div class="col-md-4 mb-3">
           <label class="form-label">Max Family Members</label>
-          <input type="number" class="form-control" formControlName="max_family_members"
-            placeholder="Max Family Members">
+          <input type="text" class="form-control" formControlName="max_family_members" placeholder="Max Family Members"
+            inputmode="numeric" pattern="\d*" oninput="this.value = this.value.replace(/\D/g, '');">
         </div>
       </div>
       <hr>

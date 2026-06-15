@@ -69,7 +69,7 @@ export class MonitoringService {
 
     const current_page = response?.current_page ?? response?.page ?? 1;
     const total_pages = response?.total_pages ?? response?.totalPages ?? 1;
-    const total_items = response?.total_alerts ?? response?.total_events ?? response?.total_items ?? response?.totalItems ?? items.length;
+    const total_items = response?.count ?? response?.total_alerts ?? response?.total_events ?? response?.total_items ?? response?.totalItems ?? items.length;
 
     return {
       items,
@@ -109,5 +109,9 @@ export class MonitoringService {
       map((response: any) => this.normalizeResponse(response, slug)),
       catchError((error: any) => throwError(() => this.parseApiError(error)))
     );
+  }
+
+  getPaymentHistory(page?: number, search?: string, filterParams?: { [key: string]: string }): Observable<MonitoringListResponse> {
+    return this.getMonitoringList('payment-history/', page, search, filterParams);
   }
 }

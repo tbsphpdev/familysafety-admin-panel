@@ -7,8 +7,17 @@
     <div class="card">
       <div class="card-body">
         <div id="customerList">
-          <div class="row g-4 mb-3">
+          <div class="row g-4 mb-3 align-items-center">
             <div class="col-sm-auto">
+              <div class="d-flex align-items-center gap-2">
+                <label class="mb-0 item-per-page-label" for="pageSizeSelect">Show</label>
+                <select id="pageSizeSelect" #pageSizeSelect class="form-select form-select-sm" [value]="pageSize"
+                  (change)="onPageSizeChange(pageSizeSelect.value)">
+                  <option *ngFor="let size of pageSizeOptions" [value]="size" [selected]="size === pageSize">
+                    {{ size }}
+                  </option>
+                </select>
+              </div>
             </div>
             <div class="col-sm">
               <div class="d-flex justify-content-sm-end">
@@ -34,13 +43,13 @@
               </thead>
               <tbody class="list form-check-all">
                 <tr *ngFor="let subscription of subscriptions; let i = index" id="u_{{subscription.id}}"
-                  [routerLink]="['/subscription/edit', subscription.id]" style="cursor: pointer;">
+                  [routerLink]="['/subscription/edit', subscription.id]" class="clickable-row">
                   <td>{{ i + 1 }}</td>
                   <td class="customer_name">{{ subscription.name }}</td>
                   <td class="email">{{ subscription.price | currency }}</td>
                   <td class="phone">{{ subscription.interval }}</td>
                   <td>{{ subscription.is_active ? 'Active' : 'Deactivate' }}</td>
-                  <td (click)="$event.stopPropagation()" style="cursor: default;">
+                  <td (click)="$event.stopPropagation()" class="actions-cell">
                     <div class="d-flex gap-2">
                       <div class="edit">
                         <button class="btn btn-sm btn-primary edit-item-btn"
@@ -50,18 +59,14 @@
                         <button class="btn btn-sm btn-danger delete-item-btn"
                           (click)="deleteSubscription(subscription.id)">Delete</button>
                       </div>
-                      @if(subscription.is_active){
-                      <div class="unsuspend">
-                        <button class="btn btn-sm btn-success remove-item-btn"
-                          (click)="statusChange(subscription.id)">Deactivate</button>
-                      </div>
-                      } @else {
-                      <div class="suspend">
+                      <div class="unsuspend" *ngIf="subscription.is_active">
                         <button class="btn btn-sm btn-danger remove-item-btn"
-                          (click)="statusChange(subscription.id)">Activate</button>
+                          (click)="statusChange(subscription.id, subscription.is_active)">Deactivate</button>
                       </div>
-                      }
-
+                      <div class="suspend" *ngIf="!subscription.is_active">
+                        <button class="btn btn-sm btn-success remove-item-btn"
+                          (click)="statusChange(subscription.id, subscription.is_active)">Activate</button>
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -70,7 +75,7 @@
             <div class="noresult text-center py-5" *ngIf="!loading && subscriptions.length === 0">
               <div class="text-center">
                 <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                  colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                  colors="primary:#121331,secondary:#08a88a" class="empty-state-icon"></lord-icon>
                 <h5 class="mt-2">Sorry! No Result Found</h5>
               </div>
             </div>

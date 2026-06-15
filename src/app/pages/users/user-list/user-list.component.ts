@@ -10,6 +10,8 @@ import { loadUsers, userSuspend, userUnsuspend } from '../../../store/Users/user
 import { selectAll as selectAllUsers, selectCurrentPage, selectTotalPages, selectTotalUsers } from '../../../store/Users/user.reducer';
 import { Router } from '@angular/router';
 import { takeUntil } from 'rxjs/operators';
+import Swal from 'sweetalert2';
+import { ListStateService } from 'src/app/core/services/list-state.service';
 
 @Component({
   selector: 'app-user-list',
@@ -39,24 +41,23 @@ export class UserListComponent implements OnDestroy {
   currentPage: number = 1;
   totalPages: number = 1;
   totalUsers: number = 0;
+  pageSize: number = 10;
+  pageSizeOptions = [10, 50, 100];
   itemsPerPage: number = 10;
+  ordering: string = '';
+  sortField: 'full_name' | 'email' | '' = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
   private destroy$ = new Subject<void>();
 
-  constructor(private formBuilder: UntypedFormBuilder, public store: Store, public datepipe: DatePipe, private router: Router) {
+  constructor(private formBuilder: UntypedFormBuilder, public store: Store, public datepipe: DatePipe, private router: Router, private listState: ListStateService) {
   }
 
   ngOnInit(): void {
-    /**
-     * BreadCrumb
-     */
     this.breadCrumbItems = [
       { label: 'Dashboard' },
       { label: 'Users', active: true }
     ];
 
-    /**
-     * Form Validation
-     */
     this.ListForm = this.formBuilder.group({
       id: [''],
       clientName: ['', [Validators.required]],
@@ -66,7 +67,14 @@ export class UserListComponent implements OnDestroy {
       priority: ['', [Validators.required]],
       status: ['', [Validators.required]]
     });
-    this.store.dispatch(loadUsers({ page: 1 }));
+
+    const savedState = this.listState.getState('users');
+    this.currentPage = savedState.page;
+    this.pageSize = savedState.per_page;
+    this.term = savedState.search || '';
+    this.setOrderingState(savedState.ordering || '');
+    this.loadUsers();
+    console.log("User Current Page:- ", this.currentPage, "Page Size:- ", this.pageSize, "Search Term:- ", this.term, "Ordering:- ", this.ordering);
 
     this.store.select(selectAllUsers).pipe(
       takeUntil(this.destroy$)
@@ -96,35 +104,124 @@ export class UserListComponent implements OnDestroy {
       const perPage = tp && tp > 0 ? Math.ceil((this.totalUsers || 0) / tp) : 10;
       this.itemsPerPage = Math.max(this.itemsPerPage, perPage > 0 ? perPage : 10);
     });
-
   }
 
   getRowNumber(index: number): number {
     return ((this.currentPage || 1) - 1) * (this.itemsPerPage || 10) + index + 1;
   }
 
+  getInitials(name?: string): string {
+    if (!name) {
+      return '';
+    }
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) {
+      return parts[0].substring(0, 2).toUpperCase();
+    }
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
   onSearch(value: string) {
     this.term = value;
     this.currentPage = 1;
-    this.store.dispatch(loadUsers({ page: 1, search: this.term }));
+    this.loadUsers();
   }
 
   onSearchClick() {
     this.currentPage = 1;
-    this.store.dispatch(loadUsers({ page: 1, search: this.term }));
+    this.loadUsers();
+  }
+
+  onPageSizeChange(size: string | number) {
+    this.pageSize = Number(size);
+    this.currentPage = 1;
+    this.loadUsers();
   }
 
   tablepageChanged(event: any) {
     const page = (event && event.page) ? event.page : (typeof event === 'number' ? event : 1);
-    this.store.dispatch(loadUsers({ page, search: this.term }));
+    this.currentPage = page;
+    this.loadUsers();
+  }
+
+  onSort(field: 'full_name' | 'email') {
+    if (this.sortField === field) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = field;
+      this.sortDirection = 'asc';
+    }
+    this.ordering = this.sortDirection === 'asc' ? field : `-${field}`;
+    this.currentPage = 1;
+    this.loadUsers();
+  }
+
+  getSortIcon(field: 'full_name' | 'email'): string {
+    if (this.sortField !== field) {
+      return 'ri-arrow-up-down-line';
+    }
+    return this.sortDirection === 'asc' ? 'ri-arrow-up-line' : 'ri-arrow-down-line';
+  }
+
+  private setOrderingState(ordering: string) {
+    this.ordering = ordering;
+    const field = ordering.replace('-', '');
+    if (field === 'full_name' || field === 'email') {
+      this.sortField = field;
+      this.sortDirection = ordering.startsWith('-') ? 'desc' : 'asc';
+    } else {
+      this.sortField = '';
+      this.sortDirection = 'asc';
+    }
+  }
+
+  private loadUsers() {
+    this.listState.setState('users', {
+      page: this.currentPage,
+      per_page: this.pageSize,
+      search: this.term || '',
+      ordering: this.ordering || ''
+    });
+    this.store.dispatch(loadUsers({
+      page: this.currentPage,
+      per_page: this.pageSize,
+      search: this.term,
+      ordering: this.ordering || undefined
+    }));
   }
 
   userSuspend(id: any) {
-    this.store.dispatch(userSuspend({ id, page: this.currentPage, search: this.term }));
+    Swal.fire({
+      title: 'Suspend User',
+      text: 'Are you sure you want to suspend this user?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, suspend',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.store.dispatch(userSuspend({ id, page: this.currentPage, per_page: this.pageSize, search: this.term, ordering: this.ordering || undefined }));
+      }
+    });
   }
 
   userUnsuspend(id: any) {
-    this.store.dispatch(userUnsuspend({ id, page: this.currentPage, search: this.term }));
+    Swal.fire({
+      title: 'Unsuspend User',
+      text: 'Are you sure you want to unsuspend this user?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, unsuspend',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.store.dispatch(userUnsuspend({ id, page: this.currentPage, per_page: this.pageSize, search: this.term, ordering: this.ordering || undefined }));
+      }
+    });
   }
 
   viewUserDetails(id: any) {

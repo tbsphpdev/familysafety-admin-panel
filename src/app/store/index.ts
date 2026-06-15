@@ -21,6 +21,8 @@ import { StudentsReducer, studentState } from "./students/student.reducer";
 import { CourcesReducer, CourcesState } from "./Learning-cources/cources.reducer";
 import { userReducer, UserState } from './Users/user.reducer';
 import { subscriptionReducer, SubscriptionState } from './Subscription/subscription.reducer';
+import { dashboardReducer, DashboardState } from './Dashboard/dashboard.reducer';
+import { reducer as monitoringReducer, State as MonitoringState } from './Monitoring/monitoring.reducer';
 
 
 export interface RootReducerState {
@@ -47,6 +49,8 @@ export interface RootReducerState {
     Instructorlist: InstructorState;
     users: UserState;
     subscriptions: SubscriptionState;
+    dashboard: DashboardState;
+    monitorings: MonitoringState;
 }
 
 export const rootReducer: ActionReducerMap<RootReducerState> = {
@@ -72,5 +76,7 @@ export const rootReducer: ActionReducerMap<RootReducerState> = {
     CourcesList: CourcesReducer,
     Instructorlist: InstructorReducer,
     users: userReducer,
-    subscriptions: subscriptionReducer
+    subscriptions: subscriptionReducer,
+    dashboard: dashboardReducer,
+    monitorings: monitoringReducer
 }

@@ -75,7 +75,8 @@
       "LIST": {
         "GEOFENCELOG": "Geofence Logs",
         "SOSALERT": "SOS Alerts",
-        "REFERRAL": "Referrals List"
+        "REFERRAL": "Referrals List",
+        "PAYMENTHISTORY": "Payment History"
       }
     },
     "PAGES": {

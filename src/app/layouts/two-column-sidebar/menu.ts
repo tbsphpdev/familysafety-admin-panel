@@ -85,6 +85,13 @@ export const MENU: MenuItem[] = [
         link: '/monitoring/referral-list',
         parentId: 178
     },
+    {
+        id: 182,
+        label: 'MENUITEMS.MONITORING.LIST.PAYMENTHISTORY',
+        icon: 'ph-receipt',
+        link: '/monitoring/payment-history',
+        parentId: 178
+    },
     // {
     //     id: 8,
     //     label: 'MENUITEMS.APPS.TEXT',

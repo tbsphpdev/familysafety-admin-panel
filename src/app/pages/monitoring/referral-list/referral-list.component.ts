@@ -18,6 +18,8 @@ export class ReferralListComponent implements OnInit {
   title = 'Referrals';
   slug = 'referrals';
   term = '';
+  pageSize = 10;
+  pageSizeOptions = [10, 50, 100];
   monitoringList: any[] = [];
   tableColumns: string[] = [];
   currentPage = 1;
@@ -31,21 +33,23 @@ export class ReferralListComponent implements OnInit {
   ngOnInit(): void {
     this.breadCrumbItems = [
       { label: 'Dashboard' },
-      { label: 'Monitoring', active: true }
+      { label: 'Referrals', active: true }
     ];
     this.loadMonitoringPage(1);
   }
 
   loadMonitoringPage(page = 1): void {
     this.isLoading = true;
-    this.monitoringService.getMonitoringList(this.slug, page, this.term).subscribe(
+    this.monitoringService.getMonitoringList(this.slug, page, this.term, {
+      per_page: String(this.pageSize)
+    }).subscribe(
       (response) => {
         this.isLoading = false;
         this.currentPage = response.current_page;
         this.totalPages = response.total_pages;
         this.totalItems = response.total_items;
         this.monitoringList = response.items;
-        this.itemsPerPage = Math.max(this.itemsPerPage, response.items.length || 0);
+        this.itemsPerPage = this.pageSize;
         this.tableColumns = this.monitoringList.length ? Object.keys(this.monitoringList[0]) : [];
       },
       (error) => {
@@ -56,6 +60,11 @@ export class ReferralListComponent implements OnInit {
   }
 
   onSearchClick(): void {
+    this.loadMonitoringPage(1);
+  }
+
+  onPageSizeChange(size: number): void {
+    this.pageSize = Number(size);
     this.loadMonitoringPage(1);
   }
 

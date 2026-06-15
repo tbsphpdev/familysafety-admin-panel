@@ -5,16 +5,36 @@
     <div class="card">
       <div class="card-body">
         <div id="monitoringList">
-          <div class="row g-4 mb-3">
-            <div class="col-sm-6"></div>
+          <div class="row d-flex justify-content-between g-4 mb-3">
+            <div class="col-sm-auto">
+              <div class="d-flex align-items-center">
+                <label class="me-2 mb-0">Show</label>
+                <select title="Page Size" class="form-select form-select-sm" [(ngModel)]="pageSize"
+                  (change)="onPageSizeChange(pageSize)">
+                  <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+                </select>
+              </div>
+            </div>
             <div class="col-sm-6">
-              <div class="d-flex justify-content-sm-end align-items-center">
+              <div class="d-flex justify-content-sm-end align-items-center flex-nowrap gap-3">
                 <div class="me-2 d-flex align-items-center">
-                  <label class="me-2 mb-0">Event type</label>
+                  <label class="me-2 event-label mb-0">Event type</label>
                   <select class="form-select" [(ngModel)]="eventType" (change)="onFilterChange()"
                     aria-label="Event type filter">
                     <option *ngFor="let option of eventTypeOptions" [value]="option.value">{{ option.label }}</option>
                   </select>
+                </div>
+                <div class="me-2 d-flex align-items-center">
+                  <label class="me-2 event-label mb-0">Date range</label>
+                  <div class="input-group input-group-sm">
+                    <input type="text" class="form-control" placeholder="Select date range" bsDaterangepicker
+                      [bsConfig]="datePickerConfig" [(ngModel)]="dateRange" (bsValueChange)="onDateRangeChange($event)"
+                      readonly>
+                    <button type="button" class="btn btn-outline-secondary" (click)="clearDateFilter()"
+                      [disabled]="!createdAfter && !createdBefore" title="Clear date range">
+                      <i class="bi bi-x-lg"></i>
+                    </button>
+                  </div>
                 </div>
                 <div class="search-box d-flex align-items-center">
                   <input type="text" class="form-control search" placeholder="Search..." [(ngModel)]="term"
@@ -57,7 +77,7 @@
                   <td>{{ item.safe_zone_name }}</td>
                   <td>{{ item.latitude }}</td>
                   <td>{{ item.longitude }}</td>
-                  <td>{{ item.radius }}</td>
+                  <td>{{ item.radius }} Meter</td>
                   <td>{{ item.event_type }}</td>
                   <td>{{ item.created_at | date:'dd-MM-yyyy HH:mm' }}</td>
                 </tr>

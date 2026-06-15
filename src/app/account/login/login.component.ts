@@ -57,6 +57,10 @@ export class LoginComponent {
   onSubmit() {
     this.submitted = true;
 
+    if (this.loginForm.invalid) {
+      return;
+    }
+
     const email = this.f['email'].value; // Get the username from the form
     const password = this.f['password'].value; // Get the password from the form
 
