@@ -66,7 +66,7 @@
                   <td>{{ item.triggered_by_email }}</td>
                   <td>{{ item.triggered_by_phone }}</td>
                   <td>{{ item.resolved_by_name ?? '-' }}</td>
-                  <td>{{ item.sos_status }}</td>
+                  <td class="text-capitalize">{{ item.sos_status }}</td>
                   <td>{{ item.triggered_at | date:'dd-MM-yyyy HH:mm' }}</td>
                   <td>{{ item.resolved_at | date:'dd-MM-yyyy HH:mm' }}</td>
                 </tr>

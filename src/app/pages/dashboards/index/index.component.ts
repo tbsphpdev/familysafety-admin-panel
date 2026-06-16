@@ -30,6 +30,7 @@ export class IndexComponent {
   mini6Chart: any;
   mini7Chart: any;
   planPieChart: any;
+  renewalsPlanChart: any;
   weekChart: any;
   recentTransactions: RecentTransaction[] = [];
   recentUsers: RecentUser[] = [];
@@ -48,6 +49,13 @@ export class IndexComponent {
     this._mini6Chart('["--tb-primary"]');
     this._mini7Chart('["--tb-info"]');
     this.planPieChart = {
+      series: [],
+      chart: { type: 'pie', height: 220 },
+      labels: [],
+      legend: { position: 'bottom' },
+      colors: this.getChartColorsArray('["--tb-primary","--tb-info","--tb-success"]')
+    };
+    this.renewalsPlanChart = {
       series: [],
       chart: { type: 'pie', height: 220 },
       labels: [],
@@ -200,6 +208,17 @@ export class IndexComponent {
       series: planSeries,
       chart: { type: 'pie', height: 220 },
       labels: planLabels,
+      legend: { position: 'bottom' },
+      colors: this.getChartColorsArray('["--tb-primary","--tb-info","--tb-success"]')
+    };
+
+    // Renewals plan chart
+    const renewalLabels = dashboard.renewals?.by_plan?.map(p => p.plan_name) ?? [];
+    const renewalSeries = dashboard.renewals?.by_plan?.map(p => p.count) ?? [];
+    this.renewalsPlanChart = {
+      series: renewalSeries,
+      chart: { type: 'pie', height: 220 },
+      labels: renewalLabels,
       legend: { position: 'bottom' },
       colors: this.getChartColorsArray('["--tb-primary","--tb-info","--tb-success"]')
     };

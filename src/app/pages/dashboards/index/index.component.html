@@ -1,9 +1,9 @@
 <div class="row">
-    <div class="col-xl-4">
-        <div class="card card-height-100 border-0 overflow-hidden">
+    <div class="col-xl-12">
+        <div class="card border-0 overflow-hidden">
             <div class="card-body p-0">
                 <div class="row g-0">
-                    <div class="col-md-4">
+                    <div class="col-xl-3 col-md-6">
                         <!-- card -->
                         <div class="card shadow-none border-end-md border-bottom rounded-0 mb-0">
                             <div class="card-body">
@@ -19,9 +19,9 @@
                             </div><!-- end card body -->
                         </div><!-- end card -->
                     </div><!-- end col -->
-                    <div class="col-md-4">
+                    <div class="col-xl-3 col-md-6">
                         <!-- card -->
-                        <div class="card shadow-none border-end-md border-bottom rounded-0 mb-0">
+                        <div class="card shadow-none border-end-xl border-bottom rounded-0 mb-0">
                             <div class="card-body">
                                 <div class="avatar-sm">
                                     <span class="avatar-title bg-dark-subtle text-dark rounded-circle fs-3">
@@ -38,9 +38,9 @@
                             </div><!-- end card body -->
                         </div><!-- end card -->
                     </div><!-- end col -->
-                    <div class="col-md-4">
+                    <div class="col-xl-3 col-md-6">
                         <!-- card -->
-                        <div class="card shadow-none border-bottom rounded-0 mb-0">
+                        <div class="card shadow-none border-end-md border-bottom rounded-0 mb-0">
                             <div class="card-body">
                                 <div class="avatar-sm">
                                     <span class="avatar-title bg-light text-body rounded-circle fs-3">
@@ -56,9 +56,9 @@
                             </div><!-- end card body -->
                         </div><!-- end card -->
                     </div><!-- end col -->
-                    <div class="col-md-4">
+                    <div class="col-xl-3 col-md-6">
                         <!-- card -->
-                        <div class="card shadow-none border-end-md rounded-0 mb-0">
+                        <div class="card shadow-none border-bottom rounded-0 mb-0">
                             <div class="card-body">
                                 <div class="avatar-sm">
                                     <span class="avatar-title bg-info-subtle text-info rounded-circle fs-3">
@@ -75,9 +75,9 @@
                             </div><!-- end card body -->
                         </div><!-- end card -->
                     </div><!-- end col -->
-                    <div class="col-md-4">
+                    <div class="col-xl-3 col-md-6">
                         <!-- card -->
-                        <div class="card shadow-none border-end-md rounded-0 mb-0">
+                        <div class="card shadow-none border-end-md border-bottom-md border-bottom-xl-0 rounded-0 mb-0">
                             <div class="card-body">
                                 <div class="avatar-sm">
                                     <span class="avatar-title bg-warning-subtle text-warning rounded-circle fs-3">
@@ -92,9 +92,9 @@
                             </div><!-- end card body -->
                         </div><!-- end card -->
                     </div><!-- end col -->
-                    <div class="col-md-4">
+                    <div class="col-xl-3 col-md-6">
                         <!-- card -->
-                        <div class="card shadow-none rounded-0 mb-0">
+                        <div class="card shadow-none border-end-xl border-bottom-md border-bottom-xl-0 rounded-0 mb-0">
                             <div class="card-body">
                                 <div class="avatar-sm">
                                     <span class="avatar-title bg-danger-subtle text-danger rounded-circle fs-3">
@@ -109,17 +109,67 @@
                             </div><!-- end card body -->
                         </div><!-- end card -->
                     </div><!-- end col -->
+                    <div class="col-xl-3 col-md-6">
+                        <!-- card -->
+                        <div class="card shadow-none border-end-md rounded-0 mb-0">
+                            <div class="card-body">
+                                <div class="avatar-sm">
+                                    <span class="avatar-title bg-success-subtle text-success rounded-circle fs-3">
+                                        <i class="ph-arrows-clockwise"></i>
+                                    </span>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="text-uppercase fw-medium text-muted text-truncate fs-sm">Total Renewals</p>
+                                    <h4 class="fw-semibold mb-3">
+                                        <span class="counter-value" [countUp]="dashboardData?.renewals?.total_renewals ?? 0">0</span>
+                                    </h4>
+                                </div>
+                            </div><!-- end card body -->
+                        </div><!-- end card -->
+                    </div><!-- end col -->
+                    <div class="col-xl-3 col-md-6">
+                        <!-- card -->
+                        <div class="card shadow-none rounded-0 mb-0">
+                            <div class="card-body">
+                                <div class="avatar-sm">
+                                    <span class="avatar-title bg-info-subtle text-info rounded-circle fs-3">
+                                        <i class="ph-calendar-check"></i>
+                                    </span>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="text-uppercase fw-medium text-muted text-truncate fs-sm">Renewals This Month</p>
+                                    <h4 class="fw-semibold mb-3">
+                                        <span class="counter-value" [countUp]="dashboardData?.renewals?.renewals_this_month ?? 0">0</span>
+                                    </h4>
+                                </div>
+                            </div><!-- end card body -->
+                        </div><!-- end card -->
+                    </div><!-- end col -->
                 </div> <!-- end row-->
             </div>
         </div>
     </div><!--end col-->
-    <div class="col-xl-8">
+</div><!--end row-->
+<div class="row">
+    <div class="col-xl-6">
         <div class="card card-height-100">
             <div class="card-body">
                 <p class="text-muted mb-2">Revenue by Plan</p>
                 <div id="plan-pie-chart" class="apex-charts" style="height:220px;">
                     <apx-chart [series]="planPieChart.series" [chart]="planPieChart.chart"
                         [labels]="planPieChart.labels" [legend]="planPieChart.legend" [colors]="planPieChart.colors"
+                        dir="ltr"></apx-chart>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-6">
+        <div class="card card-height-100">
+            <div class="card-body">
+                <p class="text-muted mb-2">Renewals by Plan</p>
+                <div id="renewals-plan-chart" class="apex-charts" style="height:220px;">
+                    <apx-chart [series]="renewalsPlanChart.series" [chart]="renewalsPlanChart.chart"
+                        [labels]="renewalsPlanChart.labels" [legend]="renewalsPlanChart.legend" [colors]="renewalsPlanChart.colors"
                         dir="ltr"></apx-chart>
                 </div>
             </div>

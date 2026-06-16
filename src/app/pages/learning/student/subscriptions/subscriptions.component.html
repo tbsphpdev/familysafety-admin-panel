@@ -9,16 +9,19 @@
                 <div class="row align-items-center g-3">
                     <div class="col-xxl-3 col-lg-6 me-auto">
                         <h6 class="card-title">My Subscriptions</h6>
-                        <p class="text-muted mb-0">Monthly: <b class="text-primary-emphasis">$326.95</b> Yearly: <b class="text-primary-emphasis">$1452.32</b></p>
+                        <p class="text-muted mb-0">Monthly: <b class="text-primary-emphasis">$326.95</b> Yearly: <b
+                                class="text-primary-emphasis">$1452.32</b></p>
                     </div><!--end col-->
                     <div class="col-xxl-3 col">
                         <div class="search-box">
-                            <input type="text" class="form-control search" [(ngModel)]="term" (keyup)="filterdata()" placeholder="Search courses, category price etc...">
+                            <input type="text" class="form-control search" [(ngModel)]="term" (keyup)="filterdata()"
+                                placeholder="Search courses, category price etc...">
                             <i class="ri-search-line search-icon"></i>
                         </div>
                     </div><!--end col-->
                     <div class="col-xxl-auto col-auto">
-                        <a routerLink="/learning/list" class="btn btn-primary"><i class="bi bi-plus-circle align-baseline me-1"></i> Add New</a>
+                        <a routerLink="/learning/list" class="btn btn-primary"><i
+                                class="bi bi-plus-circle align-baseline me-1"></i> Add New</a>
                     </div><!--end col-->
                 </div><!--end row-->
             </div>
@@ -57,18 +60,21 @@
                         </td>
                         <td class="price">{{data.price}}</td>
                         <td class="duration">{{data.duration}}</td>
-                        <td><span class="badge status" [ngClass]="{'bg-success-subtle text-success': data.status === 'Active','bg-danger-subtle text-danger': data.status === 'Unactive'}">{{data.status}}</span>
+                        <td><span class="badge status"
+                                [ngClass]="{'bg-success-subtle text-success': data.status === 'Active','bg-danger-subtle text-danger': data.status === 'Unactive'}">{{data.status}}</span>
                         </td>
                         <td>
                             <p class="mb-0 payment_due" [ngClass]="data.due === true? 'text-danger':'text-muted'">
                                 @if (data.due) {<i class="bi bi-clock align-baseline me-1"></i> } {{data.duedate}}</p>
                         </td>
                         <td>
-                            @if (data.status == 'Active' && !data.due) {<p class="mb-0 text-muted" disabled>{{data.action}}</p>}
-                            @if (data.status == 'Unactive' || data.due) {<a href="javascript:void(0);" class="text-decoration-underline">{{data.action}} </a>}
+                            @if (data.status == 'Active' && !data.due) {<p class="mb-0 text-muted" disabled>
+                                {{data.action}}</p>}
+                            @if (data.status == 'Unactive' || data.due) {<a href="javascript:void(0);"
+                                class="text-decoration-underline">{{data.action}} </a>}
                         </td>
                     </tr>
-                }
+                    }
                 </tbody>
             </table>
 

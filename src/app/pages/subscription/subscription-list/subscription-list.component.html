@@ -45,9 +45,9 @@
                 <tr *ngFor="let subscription of subscriptions; let i = index" id="u_{{subscription.id}}"
                   [routerLink]="['/subscription/edit', subscription.id]" class="clickable-row">
                   <td>{{ i + 1 }}</td>
-                  <td class="customer_name">{{ subscription.name }}</td>
-                  <td class="email">{{ subscription.price | currency }}</td>
-                  <td class="phone">{{ subscription.interval }}</td>
+                  <td class="name">{{ subscription.name }}</td>
+                  <td class="price">{{ subscription.price | currency }}</td>
+                  <td class="interval text-capitalize">{{ subscription.interval }}</td>
                   <td>{{ subscription.is_active ? 'Active' : 'Deactivate' }}</td>
                   <td (click)="$event.stopPropagation()" class="actions-cell">
                     <div class="d-flex gap-2">
