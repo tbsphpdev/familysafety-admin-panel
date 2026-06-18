@@ -565,6 +565,10 @@ export class IndexComponent {
     return v1 < v2 ? -1 : v1 > v2 ? 1 : 0;
   }
 
+  openUserInNewTab(id: any): void {
+    if (id) { window.open('/users/' + id, '_blank'); }
+  }
+
   getInitials(name?: string): string {
     if (!name) {
       return '';

@@ -3,7 +3,7 @@ import { Component, ViewChild, OnDestroy } from '@angular/core';
 // Get Modal
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 import { Store } from '@ngrx/store';
 import { loadUsers, userSuspend, userUnsuspend } from '../../../store/Users/user.actions';
@@ -68,6 +68,11 @@ export class UserListComponent implements OnDestroy {
       status: ['', [Validators.required]]
     });
 
+    const prevUrl = this.router.lastSuccessfulNavigation()?.previousNavigation?.finalUrl?.toString() ?? '';
+    if (prevUrl && !prevUrl.startsWith('/users')) {
+      this.listState.resetState('users');
+    }
+
     const savedState = this.listState.getState('users');
     this.currentPage = savedState.page;
     this.pageSize = savedState.per_page;
@@ -130,6 +135,13 @@ export class UserListComponent implements OnDestroy {
   onSearchClick() {
     this.currentPage = 1;
     this.loadUsers();
+  }
+
+  onSearchInput(): void {
+    if (this.term.length >= 3 || this.term.length === 0) {
+      this.currentPage = 1;
+      this.loadUsers();
+    }
   }
 
   onPageSizeChange(size: string | number) {
@@ -225,7 +237,7 @@ export class UserListComponent implements OnDestroy {
   }
 
   viewUserDetails(id: any) {
-    this.router.navigate(['/users/details', id]);
+    this.router.navigate(['/users', id]);
   }
 
   ngOnDestroy(): void {

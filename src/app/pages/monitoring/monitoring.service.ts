@@ -69,7 +69,7 @@ export class MonitoringService {
 
     const current_page = response?.current_page ?? response?.page ?? 1;
     const total_pages = response?.total_pages ?? response?.totalPages ?? 1;
-    const total_items = response?.count ?? response?.total_alerts ?? response?.total_events ?? response?.total_items ?? response?.totalItems ?? items.length;
+    const total_items = response?.count ?? response?.total_alerts ?? response?.total_events ?? response?.total_items ?? response?.totalItems ?? response?.total_records ?? items.length;
 
     return {
       items,
@@ -113,5 +113,17 @@ export class MonitoringService {
 
   getPaymentHistory(page?: number, search?: string, filterParams?: { [key: string]: string }): Observable<MonitoringListResponse> {
     return this.getMonitoringList('payment-history/', page, search, filterParams);
+  }
+
+  getSosAlertDetail(id: number): Observable<any> {
+    const token = localStorage.getItem('token') || '';
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    });
+    return this.http.get<any>(`${this.apiUrl}sos_alerts/${id}/`, { headers }).pipe(
+      map((response: any) => response?.data ?? response?.alert ?? response),
+      catchError((error: any) => throwError(() => this.parseApiError(error)))
+    );
   }
 }

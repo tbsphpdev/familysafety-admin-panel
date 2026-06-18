@@ -1,0 +1,269 @@
+<app-breadcrumbs [title]="title" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-body">
+        <div id="groupList">
+
+          <!-- Toolbar -->
+          <div class="row g-4 mb-3">
+            <div class="col-sm-auto d-flex align-items-center gap-2">
+              <label class="mb-0">Show</label>
+              <select title="Page Size" class="form-select form-select-sm" [(ngModel)]="pageSize"
+                (change)="onPageSizeChange(pageSize)">
+                <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+              </select>
+            </div>
+            <div class="col-sm">
+              <div class="d-flex justify-content-sm-end">
+                <div class="search-box d-flex align-items-center">
+                  <input type="text" class="form-control search" placeholder="Search..."
+                    [(ngModel)]="searchTerm" (input)="onSearch(searchTerm)" />
+                  <i class="ri-search-line search-icon ms-2"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Loading -->
+          <div *ngIf="loading" class="text-center my-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="table-responsive table-card mt-3 mb-1" *ngIf="!loading">
+            <table class="table align-middle table-nowrap table-hover" id="groupTable">
+              <thead class="table-light" *ngIf="groups.length > 0">
+                <tr>
+                  <th class="col-num">#</th>
+                  <th>Group</th>
+                  <th>Admin</th>
+                  <th class="col-members text-center">Members</th>
+                  <th class="col-status">Status</th>
+                  <th>Created</th>
+                </tr>
+              </thead>
+              <tbody class="list">
+                <tr *ngFor="let g of groups; let i = index" class="cursor-pointer" (click)="viewGroup(g.id)">
+                  <td>{{ getRowNumber(i) }}</td>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <ng-container *ngIf="g.group_picture; else grpInitials">
+                        <img [src]="g.group_picture" alt="{{ g.name || g.group_name }}"
+                          class="rounded-circle object-fit-cover flex-shrink-0"
+                          width="36" height="36"
+                          onerror="this.src='assets/images/users/avatar-1.jpg'" />
+                      </ng-container>
+                      <ng-template #grpInitials>
+                        <div class="bg-primary text-white avatar-group">{{ getInitials(g.name || g.group_name) }}</div>
+                      </ng-template>
+                      <span class="fw-medium">{{ g.name || g.group_name || '-' }}</span>
+                    </div>
+                  </td>
+                  <td>{{ g.admin_name || '-' }}</td>
+                  <td class="text-center">
+                    <span class="badge bg-secondary-subtle text-secondary">
+                      {{ g.member_count ?? 0 }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge text-capitalize"
+                      [ngClass]="g.is_active ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'">
+                      {{ g.is_active ? 'Active' : 'Inactive' }}
+                    </span>
+                  </td>
+                  <td>{{ g.created_at ? (g.created_at | date:'yyyy-MM-dd') : '-' }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="noresult" *ngIf="groups.length === 0">
+              <div class="text-center">
+                <lord-icon class="lord-icon-small" src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                  colors="primary:#121331,secondary:#08a88a"></lord-icon>
+                <h5 class="mt-2">Sorry! No Result Found</h5>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pagination -->
+          <div class="d-flex justify-content-between align-items-center mt-2" *ngIf="totalGroups > 0 && !loading">
+            <div class="text-muted small">
+              Showing {{ (currentPage - 1) * pageSize + 1 }} to
+              {{ currentPage * pageSize > totalGroups ? totalGroups : currentPage * pageSize }}
+              of {{ totalGroups | number }} entries
+            </div>
+            <nav aria-label="Group list pagination">
+              <ul class="pagination mb-0">
+                <li class="page-item" [class.disabled]="currentPage <= 1">
+                  <button type="button" class="page-link" (click)="tablePageChanged(currentPage - 1)"
+                    [disabled]="currentPage <= 1">Previous</button>
+                </li>
+                <li class="page-item" *ngFor="let page of paginationPages"
+                  [class.active]="page === currentPage" [class.disabled]="page === '...'">
+                  <button type="button" class="page-link" *ngIf="page !== '...'"
+                    (click)="tablePageChanged(page)" [disabled]="page === currentPage">{{ page }}</button>
+                  <span class="page-link" *ngIf="page === '...'">...</span>
+                </li>
+                <li class="page-item" [class.disabled]="currentPage >= totalPages">
+                  <button type="button" class="page-link" (click)="tablePageChanged(currentPage + 1)"
+                    [disabled]="currentPage >= totalPages">Next</button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Group Detail Modal ──────────────────────────────────────────────────── -->
+<div *ngIf="selectedItem" class="modal fade show d-block" tabindex="-1" role="dialog"
+  (click)="closeDetail()">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable"
+    (click)="$event.stopPropagation()">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header">
+        <div class="d-flex align-items-center gap-3">
+          <ng-container *ngIf="selectedItem.group_picture; else hdrInitial">
+            <img [src]="selectedItem.group_picture" alt="{{ selectedItem.name }}"
+              class="rounded-circle object-fit-cover" width="52" height="52"
+              onerror="this.src='assets/images/users/avatar-1.jpg'" />
+          </ng-container>
+          <ng-template #hdrInitial>
+            <div class="bg-primary text-white avatar-modal">{{ getInitials(selectedItem.name) }}</div>
+          </ng-template>
+          <div>
+            <h5 class="modal-title mb-0">{{ selectedItem.name }}</h5>
+            <div class="text-muted small">
+              Admin: {{ selectedItem.admin_name }}
+              <span *ngIf="selectedItem.admin_email">&nbsp;&middot;&nbsp;{{ selectedItem.admin_email }}</span>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn-close" title="Close" aria-label="Close" (click)="closeDetail()"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <div class="row g-4">
+
+          <!-- Left: group info -->
+          <div class="col-lg-4">
+            <div class="card border mb-0 h-100">
+              <div class="card-header">
+                <h6 class="card-title mb-0 fw-semibold">Group Info</h6>
+              </div>
+              <div class="card-body">
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                  <span class="text-muted small">Status</span>
+                  <span class="badge"
+                    [ngClass]="selectedItem.is_active ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'">
+                    {{ selectedItem.is_active ? 'Active' : 'Inactive' }}
+                  </span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                  <span class="text-muted small">Invite Code</span>
+                  <span class="fw-medium small">{{ selectedItem.invite_code || '-' }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                  <span class="text-muted small">Members</span>
+                  <span class="badge bg-secondary-subtle text-secondary">{{ selectedItem.member_count ?? 0 }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                  <span class="text-muted small">Created</span>
+                  <span class="fw-medium small">{{ selectedItem.created_at | date:'yyyy-MM-dd' }}</span>
+                </div>
+                <div class="pt-3" *ngIf="selectedItem.description">
+                  <p class="text-muted small mb-1 fw-semibold">Description</p>
+                  <p class="mb-0 small">{{ selectedItem.description }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: members -->
+          <div class="col-lg-8">
+            <div class="card border mb-0 h-100">
+              <div class="card-header">
+                <h6 class="card-title mb-0 fw-semibold">
+                  Members
+                  <span class="badge bg-secondary-subtle text-secondary ms-2">
+                    {{ (selectedItem.members || []).length }}
+                  </span>
+                </h6>
+              </div>
+              <div class="card-body">
+                <div *ngIf="(selectedItem.members || []).length === 0" class="text-center py-4">
+                  <i class="ri-group-line fs-1 text-muted mb-2 d-block"></i>
+                  <p class="text-muted mb-0">No members found.</p>
+                </div>
+
+                <div class="table-responsive" *ngIf="(selectedItem.members || []).length > 0">
+                  <table class="table align-middle table-nowrap table-hover mb-0">
+                    <thead class="table-light">
+                      <tr>
+                        <th>#</th>
+                        <th>Member</th>
+                        <th>Role</th>
+                        <th>Phone</th>
+                        <th>Joined</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let m of selectedItem.members; let i = index"
+                        [class.cursor-pointer]="m.id" (click)="m.id && openUserInNewTab(m.id)">
+                        <td>{{ i + 1 }}</td>
+                        <td>
+                          <div class="d-flex align-items-center gap-2">
+                            <ng-container *ngIf="m.profile_picture; else memInitials">
+                              <img [src]="m.profile_picture" alt="{{ m.full_name }}"
+                                class="rounded-circle object-fit-cover flex-shrink-0"
+                                width="36" height="36"
+                                onerror="this.src='assets/images/users/avatar-1.jpg'" />
+                            </ng-container>
+                            <ng-template #memInitials>
+                              <div class="bg-secondary text-white avatar-group">{{ getInitials(m.full_name) }}</div>
+                            </ng-template>
+                            <div>
+                              <p class="mb-0 fw-medium small">{{ m.full_name }}</p>
+                              <small class="text-muted">{{ m.email }}</small>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <span class="badge"
+                            [ngClass]="(m.is_admin || m.email === selectedItem.admin_email) ? 'bg-primary-subtle text-primary' : 'bg-secondary-subtle text-secondary'">
+                            {{ (m.is_admin || m.email === selectedItem.admin_email) ? 'Admin' : 'Member' }}
+                          </span>
+                        </td>
+                        <td>{{ m.phone_number || '-' }}</td>
+                        <td>{{ m.joined_at ? (m.joined_at | date:'yyyy-MM-dd') : '-' }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" (click)="closeDetail()">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade show" *ngIf="selectedItem"></div>

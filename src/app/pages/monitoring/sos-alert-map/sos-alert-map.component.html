@@ -1,0 +1,37 @@
+<app-breadcrumbs title="SOS Live Map" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+
+<!-- Status bar -->
+<div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+  <!-- Connection badge -->
+  <span class="badge fs-6 px-3 py-2" [ngClass]="{
+      'bg-warning text-dark': connectionStatus === 'connecting',
+      'bg-success':           connectionStatus === 'connected',
+      'bg-secondary':         connectionStatus === 'disconnected',
+      'bg-danger':            connectionStatus === 'error'
+    }">
+    <i class="me-1" [ngClass]="{
+        'ri-loader-4-line':       connectionStatus === 'connecting',
+        'ri-wifi-line':           connectionStatus === 'connected',
+        'ri-wifi-off-line':       connectionStatus === 'disconnected',
+        'ri-error-warning-line':  connectionStatus === 'error'
+      }"></i>
+    <span *ngIf="connectionStatus === 'connecting'">Connecting…</span>
+    <span *ngIf="connectionStatus === 'connected'">Live</span>
+    <span *ngIf="connectionStatus === 'disconnected'">Disconnected</span>
+    <span *ngIf="connectionStatus === 'error'">Connection Error</span>
+  </span>
+
+  <!-- Active alert counter -->
+  <span class="badge bg-danger-subtle text-danger border border-danger fs-6 px-3 py-2">
+    <i class="ri-alarm-warning-line me-1"></i>
+    {{ activeAlertCount }} Active Alert{{ activeAlertCount !== 1 ? 's' : '' }}
+  </span>
+
+</div>
+
+<!-- Map card -->
+<div class="card">
+  <div class="card-body p-0">
+    <div id="sos-map" style="height: 640px; width: 100%;"></div>
+  </div>
+</div>

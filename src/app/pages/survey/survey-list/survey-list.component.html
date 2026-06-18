@@ -1,0 +1,303 @@
+<app-breadcrumbs [title]="title" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-body">
+        <div id="surveyList">
+
+          <!-- Toolbar -->
+          <div class="row g-4 mb-3">
+            <div class="col-sm-auto d-flex align-items-center gap-2">
+              <label class="mb-0">Show</label>
+              <select title="Page Size" class="form-select form-select-sm" [(ngModel)]="pageSize"
+                (change)="onPageSizeChange(pageSize)">
+                <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+              </select>
+            </div>
+            <div class="col-sm">
+              <div class="d-flex justify-content-sm-end align-items-center gap-3">
+                <!-- <div class="search-box d-flex align-items-center">
+                  <input type="text" class="form-control search" placeholder="Search..." [(ngModel)]="term"
+                    (input)="onSearchInput()" />
+                  <i class="ri-search-line search-icon ms-2"></i>
+                </div> -->
+                <button type="button" class="btn btn-primary flex-shrink-0" (click)="openCreateModal()">
+                  <i class="ri-add-line me-1"></i> Add Question
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Loading -->
+          @if (isLoading) {
+          <div class="text-center my-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+          }
+
+          <!-- Table -->
+          @if (!isLoading) {
+          <div class="table-responsive table-card mt-3 mb-1">
+            <table class="table align-middle table-nowrap table-hover" id="surveyTable">
+              @if (surveyList.length > 0) {
+              <thead class="table-light">
+                <tr>
+                  <th class="col-id">#</th>
+                  <th>Question</th>
+                  <th class="col-status">Status</th>
+                  <th class="col-action text-center">Action</th>
+                </tr>
+              </thead>
+              }
+              <tbody class="list">
+                @for (item of surveyList; track item.id) {
+                <tr class="cursor-pointer" (click)="openEditModal(item.id)">
+                  <td>{{ getRowNumber($index) }}</td>
+                  <td>{{ item.text ?? '-' }}</td>
+                  <td>
+                    <span class="badge text-capitalize"
+                      [ngClass]="item.is_active ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'">
+                      {{ item.is_active ? 'Active' : 'Inactive' }}
+                    </span>
+                  </td>
+                  <td (click)="$event.stopPropagation()">
+                    <div class="d-flex gap-2">
+                      <div class="edit">
+                        <button type="button" class="btn btn-sm btn-primary edit-item-btn" title="Edit"
+                          (click)="openEditModal(item.id, $event)">
+                          <i class="ri-edit-line"></i>
+                        </button>
+                      </div>
+                      <div class="delete">
+                        <button type="button" class="btn btn-sm btn-danger delete-item-btn" title="Delete"
+                          (click)="deleteQuestion(item.id, $event)">
+                          <i class="ri-delete-bin-line"></i>
+                        </button>
+                      </div>
+                      <div class="analysis">
+                        <button type="button" class="btn btn-sm btn-info" title="Analysis"
+                          (click)="openStatsModal(item.id, $event)">
+                          <i class="ri-bar-chart-line"></i>
+                        </button>
+                      </div>
+                      @if (item.is_active) {
+                      <div class="status">
+                        <button type="button" class="btn btn-sm btn-danger remove-item-btn"
+                          (click)="toggleStatus(item, $event)">Deactivate</button>
+                      </div>
+                      } @else {
+                      <div class="status">
+                        <button type="button" class="btn btn-sm btn-success remove-item-btn"
+                          (click)="toggleStatus(item, $event)">Activate</button>
+                      </div>
+                      }
+                    </div>
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+
+            @if (surveyList.length === 0) {
+            <div class="noresult">
+              <div class="text-center">
+                <!-- Fallback SVG instead of lord-icon -->
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" stroke="#e6e9ef" stroke-width="2" fill="#f8fafc" />
+                  <path d="M8 12h8" stroke="#c7ccd6" stroke-width="1.5" stroke-linecap="round" />
+                  <path d="M8 15h5" stroke="#c7ccd6" stroke-width="1.5" stroke-linecap="round" />
+                </svg>
+                <h5 class="mt-2">Sorry! No Result Found</h5>
+              </div>
+            </div>
+            }
+          </div>
+          }
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Create / Edit Modal ─────────────────────────────────────────────────── -->
+@if (showModal) {
+<div class="modal fade show d-block" tabindex="-1" role="dialog" (click)="closeModal()">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">{{ isEditing ? 'Edit Question' : 'Add Question' }}</h5>
+        <button type="button" class="btn-close" title="Close" aria-label="Close" (click)="closeModal()"></button>
+      </div>
+
+      <div class="modal-body">
+        @if (modalLoading) {
+        <div class="text-center py-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+        }
+
+        @if (!modalLoading && form) {
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+          <!-- Question text -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Question <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="text" placeholder="Enter question text">
+            @if (form.get('text')?.invalid && form.get('text')?.touched) {
+            <div class="text-danger small mt-1">Question is required.</div>
+            }
+          </div>
+
+          <!-- Order + Status row -->
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Order</label>
+              <input type="number" class="form-control" formControlName="order" min="1">
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+              <div class="form-check form-switch mb-1">
+                <input class="form-check-input" type="checkbox" formControlName="is_active" id="modalIsActive">
+                <label class="form-check-label" for="modalIsActive">Active</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Options -->
+          <div class="mb-2">
+            <label class="form-label fw-semibold">Options</label>
+            <div formArrayName="options">
+              <div *ngFor="let opt of options.controls; let i = index"
+                [formGroupName]="i" class="d-flex gap-2 mb-2 align-items-center">
+                <span class="text-muted small flex-shrink-0 option-num">{{ i + 1 }}.</span>
+                <input type="text" class="form-control" formControlName="text" placeholder="Option text">
+                <input type="number" class="form-control flex-shrink-0 option-order-input" formControlName="order"
+                  placeholder="Order" title="Option order" min="1">
+                <button type="button" class="btn btn-sm btn-soft-danger flex-shrink-0"
+                  (click)="removeOption(i, $event)" title="Remove option">
+                  <i class="ri-delete-bin-line"></i>
+                </button>
+              </div>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-primary mt-1" (click)="addOption()">
+              <i class="ri-add-line me-1"></i> Add Option
+            </button>
+          </div>
+
+        </form>
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" (click)="closeModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="onSubmit()"
+          [disabled]="!form || form.invalid || modalLoading">
+          @if (modalLoading) {
+          <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+          }
+          {{ isEditing ? 'Update' : 'Create' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade show"></div>
+}
+
+<!-- ── Analysis / Stats Modal ──────────────────────────────────────────────── -->
+@if (showStatsModal) {
+<div class="modal fade show d-block" tabindex="-1" role="dialog" (click)="closeStatsModal()">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="ri-bar-chart-line me-2"></i>Question Analysis
+        </h5>
+        <button type="button" class="btn-close" title="Close" aria-label="Close" (click)="closeStatsModal()"></button>
+      </div>
+
+      <div class="modal-body">
+
+        @if (statsLoading) {
+        <div class="text-center py-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+        }
+
+        @if (!statsLoading && statsData) {
+        <!-- Question -->
+        <div class="mb-4">
+          <p class="text-muted small mb-1 fw-semibold text-uppercase">Question</p>
+          <h6 class="mb-0">{{ statsData.text }}</h6>
+        </div>
+
+        <!-- Skip count -->
+        <div class="mb-4">
+          <div class="d-flex align-items-center gap-2 p-3 rounded bg-light border">
+            <i class="ri-skip-forward-line text-muted fs-5"></i>
+            <span class="text-muted small fw-semibold">Questions Skipped</span>
+            <span class="ms-auto fw-bold fs-6">{{ statsData.skip_count ?? 0 }}</span>
+          </div>
+        </div>
+
+        <!-- Options table -->
+        @if (statsData.options && statsData.options.length > 0) {
+        <div>
+          <p class="text-muted small mb-2 fw-semibold text-uppercase">Response Breakdown</p>
+          <div class="table-responsive">
+            <table class="table align-middle table-bordered mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="col-opt-num">#</th>
+                  <th>Option</th>
+                  <th class="col-opt-responses text-center">Responses</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (opt of statsData.options; track opt.id) {
+                <tr>
+                  <td class="text-muted">{{ opt.order }}</td>
+                  <td>{{ opt.text }}</td>
+                  <td class="text-center">
+                    <span class="badge fs-6 px-3 py-1"
+                      [ngClass]="opt.response_count > 0 ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'">
+                      {{ opt.response_count ?? 0 }}
+                    </span>
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+        }
+        }
+
+        @if (!statsLoading && !statsData) {
+        <div class="text-center py-4">
+          <i class="ri-bar-chart-line fs-1 text-muted mb-2 d-block"></i>
+          <p class="text-muted mb-0">No stats available.</p>
+        </div>
+        }
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" (click)="closeStatsModal()">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade show"></div>
+}

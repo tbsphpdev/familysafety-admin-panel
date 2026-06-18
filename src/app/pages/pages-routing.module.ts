@@ -18,6 +18,12 @@ const routes: Routes = [
     path: 'monitoring', loadChildren: () => import('./monitoring/monitoring.module').then(m => m.MonitoringModule)
   },
   {
+    path: 'survey', loadChildren: () => import('./survey/survey.module').then(m => m.SurveyModule)
+  },
+  {
+    path: 'group', loadChildren: () => import('./group/group.module').then(m => m.GroupModule)
+  },
+  {
     path: 'ecommerce', loadChildren: () => import('./ecommerce/ecommerce.module').then(m => m.EcommerceModule)
   },
   {
@@ -31,9 +37,6 @@ const routes: Routes = [
   },
   {
     path: 'advance-ui', loadChildren: () => import('./advanceui/advanceui.module').then(m => m.AdvanceuiModule)
-  },
-  {
-    path: 'maps', loadChildren: () => import('./maps/maps.module').then(m => m.MapsModule)
   },
   {
     path: 'tickets', loadChildren: () => import('./tickets/tickets.module').then(m => m.TicketsModule)

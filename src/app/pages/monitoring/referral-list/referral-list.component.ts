@@ -1,5 +1,6 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { MonitoringService } from '../monitoring.service';
@@ -10,7 +11,7 @@ import { ToastrService } from 'ngx-toastr';
   selector: 'app-referral-list',
   templateUrl: './referral-list.component.html',
   styleUrls: ['./referral-list.component.scss'],
-  imports: [CommonModule, FormsModule, SharedModule],
+  imports: [CommonModule, RouterModule, FormsModule, SharedModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ReferralListComponent implements OnInit {
@@ -63,6 +64,12 @@ export class ReferralListComponent implements OnInit {
     this.loadMonitoringPage(1);
   }
 
+  onSearchInput(): void {
+    if (this.term.length >= 3 || this.term.length === 0) {
+      this.loadMonitoringPage(1);
+    }
+  }
+
   onPageSizeChange(size: number): void {
     this.pageSize = Number(size);
     this.loadMonitoringPage(1);
@@ -99,6 +106,10 @@ export class ReferralListComponent implements OnInit {
     }
 
     return pages;
+  }
+
+  openUserInNewTab(id: any): void {
+    if (id) { window.open('/users/' + id, '_blank'); }
   }
 
   getRowNumber(index: number): number {

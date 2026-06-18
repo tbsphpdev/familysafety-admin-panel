@@ -1,5 +1,6 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ToastrService } from 'ngx-toastr';
@@ -23,7 +24,7 @@ import {
   selector: 'app-payment-history',
   templateUrl: './payment-history.component.html',
   styleUrls: ['./payment-history.component.scss'],
-  imports: [CommonModule, FormsModule, SharedModule, BsDatepickerModule],
+  imports: [CommonModule, RouterModule, FormsModule, SharedModule, BsDatepickerModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class PaymentHistoryComponent implements OnInit, OnDestroy {
@@ -127,6 +128,12 @@ export class PaymentHistoryComponent implements OnInit, OnDestroy {
     this.loadPaymentHistory(1);
   }
 
+  onSearchInput(): void {
+    if (this.term.length >= 3 || this.term.length === 0) {
+      this.loadPaymentHistory(1);
+    }
+  }
+
   onPageSizeChange(size: number): void {
     this.pageSize = Number(size);
     this.loadPaymentHistory(1);
@@ -180,6 +187,10 @@ export class PaymentHistoryComponent implements OnInit, OnDestroy {
       return 'ri-arrow-up-down-line';
     }
     return this.sortDirection === 'asc' ? 'ri-arrow-up-line' : 'ri-arrow-down-line';
+  }
+
+  openUserInNewTab(id: any): void {
+    if (id) { window.open('/users/' + id, '_blank'); }
   }
 
   getRowNumber(index: number): number {

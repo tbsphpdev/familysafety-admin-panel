@@ -7,18 +7,20 @@ export interface ListState {
   ordering?: string;
 }
 
-type ListStateKey = 'users' | 'subscriptions';
+type ListStateKey = 'users' | 'subscriptions' | 'group';
 
 @Injectable({ providedIn: 'root' })
 export class ListStateService {
   private readonly defaults: Record<ListStateKey, ListState> = {
     users: { page: 1, per_page: 10, search: '', ordering: '' },
-    subscriptions: { page: 1, per_page: 10, search: '' }
+    subscriptions: { page: 1, per_page: 10, search: '' },
+    group: { page: 1, per_page: 10, search: '' }
   };
 
   private readonly states: Record<ListStateKey, ListState> = {
     users: { ...this.defaults.users },
-    subscriptions: { ...this.defaults.subscriptions }
+    subscriptions: { ...this.defaults.subscriptions },
+    group: { ...this.defaults.group }
   };
 
   getState(key: ListStateKey): ListState {

@@ -38,7 +38,7 @@
                   <th>Price</th>
                   <th>Interval</th>
                   <th>Status</th>
-                  <th>Action</th>
+                  <th style="width: 1%; white-space: nowrap;">Action</th>
                 </tr>
               </thead>
               <tbody class="list form-check-all">
@@ -53,11 +53,11 @@
                     <div class="d-flex gap-2">
                       <div class="edit">
                         <button class="btn btn-sm btn-primary edit-item-btn"
-                          [routerLink]="['/subscription/edit', subscription.id]">Edit</button>
+                          [routerLink]="['/subscription/edit', subscription.id]"><i class="ri-edit-line"></i></button>
                       </div>
                       <div class="edit">
                         <button class="btn btn-sm btn-danger delete-item-btn"
-                          (click)="deleteSubscription(subscription.id)">Delete</button>
+                          (click)="deleteSubscription(subscription.id)"><i class="ri-delete-bin-line"></i></button>
                       </div>
                       <div class="unsuspend" *ngIf="subscription.is_active">
                         <button class="btn btn-sm btn-danger remove-item-btn"

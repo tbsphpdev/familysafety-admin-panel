@@ -1,5 +1,6 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { MonitoringService } from '../monitoring.service';
@@ -11,7 +12,7 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
   selector: 'app-sos-alerts-list',
   templateUrl: './sos-alerts-list.component.html',
   styleUrls: ['./sos-alerts-list.component.scss'],
-  imports: [CommonModule, FormsModule, SharedModule, BsDatepickerModule],
+  imports: [CommonModule, RouterModule, FormsModule, SharedModule, BsDatepickerModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class SosAlertsListComponent implements OnInit {
@@ -72,6 +73,12 @@ export class SosAlertsListComponent implements OnInit {
 
   onSearchClick(): void {
     this.loadMonitoringPage(1);
+  }
+
+  onSearchInput(): void {
+    if (this.term.length >= 3 || this.term.length === 0) {
+      this.loadMonitoringPage(1);
+    }
   }
 
   onDateRangeChange(value: (Date | undefined)[] | undefined): void {
@@ -144,6 +151,10 @@ export class SosAlertsListComponent implements OnInit {
     return pages;
   }
 
+  openUserInNewTab(id: any): void {
+    if (id) { window.open('/users/' + id, '_blank'); }
+  }
+
   getRowNumber(index: number): number {
     return ((this.currentPage || 1) - 1) * (this.itemsPerPage || 10) + index + 1;
   }
@@ -159,5 +170,9 @@ export class SosAlertsListComponent implements OnInit {
       return value.name ?? value.title ?? JSON.stringify(value);
     }
     return String(value);
+  }
+
+  viewMap(): void {
+    window.open('/monitoring/sos-alerts/map', '_blank');
   }
 }

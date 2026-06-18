@@ -70,6 +70,16 @@
         "SUBSCRIPTION": "Subscription"
       }
     },
+    "SURVEY": {
+      "LIST": {
+        "SURVEY": "Survey Questions"
+      }
+    },
+    "GROUP": {
+      "LIST": {
+        "GROUP": "Groups"
+      }
+    },
     "MONITORING": {
       "TEXT": "Monitoring",
       "LIST": {

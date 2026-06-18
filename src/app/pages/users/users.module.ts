@@ -5,7 +5,6 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
 
 import { UsersRoutingModule } from './users-routing.module';
 import { UserListComponent } from './user-list/user-list.component';
-import { UserEditComponent } from './user-edit/user-edit.component';
 import { SharedModule } from '../../shared/shared.module';
 
 
@@ -18,7 +17,6 @@ import { SharedModule } from '../../shared/shared.module';
     ReactiveFormsModule,
     PaginationModule.forRoot(),
     SharedModule,
-    UserEditComponent,
     UsersRoutingModule
   ],
   providers: [

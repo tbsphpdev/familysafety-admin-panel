@@ -128,11 +128,11 @@
 
               <input type="text" formControlName="feature_name" class="form-control" placeholder="Enter Feature">
 
-              <button *ngIf="features.length > 1" class="btn btn-danger" type="button" (click)="removeFeature(i)">
+              <button *ngIf="features.length > 1 && selectedLanguage === 'en'" class="btn btn-danger" type="button" (click)="removeFeature(i)">
                 <i class="ri-delete-bin-line"></i>
               </button>
 
-              <button *ngIf="isLast" class="btn btn-primary" type="button"
+              <button *ngIf="isLast && selectedLanguage === 'en'" class="btn btn-primary" type="button"
                 (click)="addFeature(null, '', features.length + 1)">
                 <i class="ri-add-line"></i>
               </button>

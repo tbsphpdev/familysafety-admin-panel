@@ -1,138 +1,288 @@
-<div class="card">
-  <div class="card-header">
-    <h4 class="card-title mb-0">User Details</h4>
+<div *ngIf="userdetails; else loadingTpl">
+
+  <!-- Page header -->
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <h4 class="mb-0">User Details</h4>
+    <div class="d-flex gap-2">
+      <button type="button" class="btn btn-light" (click)="goBack()">
+        <i class="ri-arrow-left-line me-1"></i> Back
+      </button>
+      <button type="submit" form="userForm" class="btn btn-primary" [disabled]="loading || form.invalid">
+        <span *ngIf="loading" class="spinner-border spinner-border-sm me-1" role="status"></span>
+        <i *ngIf="!loading" class="ri-save-line me-1"></i>
+        Update
+      </button>
+    </div>
   </div>
-  <div class="card-body">
-    <div *ngIf="userdetails; else loading" class="row">
-      <div class="col-12 mb-4">
-        <div class="d-flex align-items-center gap-3">
+
+  <div class="row g-4">
+
+    <!-- Left: Profile card -->
+    <div class="col-lg-3">
+      <div class="card text-center h-100">
+        <div class="card-body d-flex flex-column align-items-center py-4">
           <ng-container *ngIf="userdetails.profile_picture; else initialsAvatar">
             <img [src]="userdetails.profile_picture" alt="{{ userdetails.full_name }}"
-              class="rounded-circle object-fit-cover" width="80" height="80"
+              class="rounded-circle object-fit-cover mb-3" width="96" height="96"
               onerror="this.src='assets/images/users/avatar-1.jpg'">
           </ng-container>
           <ng-template #initialsAvatar>
             <div
-              class="avatar-lg rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white fw-bold"
-              style="width: 80px; height: 80px; font-size: 1.5rem;">
+              class="rounded-circle d-flex align-items-center bg-primary text-white fw-bold mb-3 avatar-initials justify-content-center">
               {{ getInitials(userdetails.full_name) }}
             </div>
           </ng-template>
-          <div>
-            <h5 class="mb-1">{{ userdetails.full_name }}</h5>
-            <p class="text-muted mb-0">{{ userdetails.email }}</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Full Name</label>
-        <p class="text-muted">{{ userdetails.full_name }}</p>
-      </div>
-      <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Email</label>
-        <p class="text-muted">{{ userdetails.email }}</p>
-      </div>
-      <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Phone Number</label>
-        <p class="text-muted">{{ userdetails.phone_number }}</p>
-      </div>
-      <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Date of Birth</label>
-        <p class="text-muted">{{ userdetails.date_of_birth | date:'yyyy-MM-dd' }}</p>
-      </div>
-      <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Is Minor</label>
-        <p class="text-muted">
-          <span class="badge"
-            [ngClass]="userdetails.is_minor ? 'bg-warning-subtle text-warning' : 'bg-success-subtle text-success'">
-            {{ userdetails.is_minor ? 'Yes' : 'No' }}
-          </span>
-        </p>
-      </div>
-      <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Status</label>
-        <p class="text-muted">
-          <span class="badge"
+
+          <h5 class="mb-1">{{ userdetails.full_name }}</h5>
+          <p class="text-muted mb-3 fs-sm">{{ userdetails.email }}</p>
+
+          <span class="badge fs-sm mb-2"
             [ngClass]="userdetails.is_suspended ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success'">
             {{ userdetails.is_suspended ? 'Suspended' : 'Active' }}
           </span>
-        </p>
-      </div>
-      <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Social Provider</label>
-        <p class="text-muted">{{ userdetails.social_provider }}</p>
-      </div>
-      <ng-container *ngIf="subscriptionDetails">
-        <hr>
-        <div>
-          <h5 class="card-title mb-3">Subscription Details</h5>
+
+          <div class="mt-3 w-100 text-start">
+            <div class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted fs-sm">Referral code</span>
+              <span class="fw-medium fs-sm text-capitalize">{{ userdetails.referral_code }}</span>
+            </div>
+            <div class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted fs-sm">Is Minor</span>
+              <span class="badge"
+                [ngClass]="userdetails.is_minor ? 'bg-warning-subtle text-warning' : 'bg-secondary-subtle text-secondary'">
+                {{ userdetails.is_minor ? 'Yes' : 'No' }}
+              </span>
+            </div>
+            <div class="d-flex justify-content-between py-2" *ngIf="userdetails.social_provider">
+              <span class="text-muted fs-sm">Social Login</span>
+              <span class="fw-medium fs-sm text-capitalize">{{ userdetails.social_provider }}</span>
+            </div>
+          </div>
         </div>
-        <div class="col-md-6 mb-3">
-          <label class="form-label fw-bold">Plan Name</label>
-          <p class="text-muted">{{ subscriptionDetails.plan.name }}</p>
-        </div>
-        <div class="col-md-6 mb-3">
-          <label class="form-label fw-bold">Plan Price</label>
-          <p class="text-muted">{{ subscriptionDetails.plan.price }}</p>
-        </div>
-        <div class="col-md-6 mb-3">
-          <label class="form-label fw-bold">Interval</label>
-          <p class="text-muted text-capitalize">{{ subscriptionDetails.plan.interval }}</p>
-        </div>
-        @if(subscriptionDetails.role == "member" && subscriptionDetails.is_family_managed) {
-        <div class="col-md-6 mb-3">
-          <label class="form-label fw-bold">Plan Owner</label>
-          <p class="text-muted">{{ subscriptionDetails.owner.full_name }}</p>
-        </div>
-        }
-        @if (subscriptionDetails.payment_source) {
-        <div class="col-md-6 mb-3">
-          <label class="form-label fw-bold">Payment Source</label>
-          <p class="text-muted text-capitalize">{{ subscriptionDetails.payment_source }}</p>
-        </div>
-        }
-        <div class="col-md-6 mb-3">
-          <label class="form-label fw-bold">Subscription Status</label>
-          <p class="text-muted text-capitalize">{{ subscriptionDetails.status }}</p>
-        </div>
-        @if (subscriptionDetails.trial_start_at) {
-        <div class="col-md-6 mb-3">
-          <label class="form-label fw-bold">Trial Start At</label>
-          <p class="text-muted">{{ subscriptionDetails.trial_start_at | date:'yyyy-MM-dd' }}</p>
-        </div>
-        }
-        @if (subscriptionDetails.trial_end_at) {
-        <div class="col-md-6 mb-3">
-          <label class="form-label fw-bold">Trial End At</label>
-          <p class="text-muted">{{ subscriptionDetails.trial_end_at | date:'yyyy-MM-dd' }}</p>
-        </div>
-        }
-        @if (subscriptionDetails.current_period_start) {
-        <div class="col-md-6 mb-3">
-          <label class="form-label fw-bold">Current Period Start At</label>
-          <p class="text-muted">{{ subscriptionDetails.current_period_start | date:'yyyy-MM-dd' }}</p>
-        </div>
-        }
-        @if (subscriptionDetails.current_period_end) {
-        <div class="col-md-6 mb-3">
-          <label class="form-label fw-bold">Current Period End At</label>
-          <p class="text-muted">{{ subscriptionDetails.current_period_end | date:'yyyy-MM-dd' }}</p>
-        </div>
-        }
-      </ng-container>
-      <div class="col-12 mt-4">
-        <button class="btn btn-primary" [routerLink]="['/users/edit', userdetails.id]">Edit User</button>
-        <button class="btn btn-secondary ms-2" (click)="goBack()">Back to List</button>
       </div>
     </div>
 
-    <ng-template #loading>
-      <div class="text-center py-5">
-        <div class="spinner-border" role="status">
-          <span class="visually-hidden">Loading...</span>
+    <!-- Right: Editable fields + subscription -->
+    <div class="col-lg-9">
+
+      <!-- Editable info card -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Personal Information</h5>
         </div>
-        <p class="mt-2">Loading user details...</p>
+        <div class="card-body">
+          <form id="userForm" [formGroup]="form" (ngSubmit)="onSubmit()">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Full Name</label>
+                <input type="text" class="form-control" formControlName="full_name" placeholder="Full Name">
+                <div *ngIf="form.get('full_name')?.invalid && form.get('full_name')?.touched"
+                  class="text-danger small mt-1">
+                  Full name is required.
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Email</label>
+                <input type="email" class="form-control" formControlName="email" placeholder="Email">
+                <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="text-danger small mt-1">
+                  <span *ngIf="form.get('email')?.errors?.['required']">Email is required.</span>
+                  <span *ngIf="form.get('email')?.errors?.['email']">Enter a valid email.</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Phone Number</label>
+                <input type="text" class="form-control" formControlName="phone_number" placeholder="Phone Number">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Date of Birth</label>
+                <input type="date" class="form-control" formControlName="date_of_birth" title="Date of Birth">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Is Minor</label>
+                <select class="form-select" formControlName="is_minor" title="Is Minor">
+                  <option [ngValue]="false">No</option>
+                  <option [ngValue]="true">Yes</option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
-    </ng-template>
+
+      <!-- Subscription card -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Subscription Details</h5>
+        </div>
+        @if (subscriptionDetails) {
+        <div class="card-body">
+          <!-- Subscription fields -->
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-muted">Plan Name</label>
+              <p class="mb-0 fw-medium">{{ subscriptionDetails.plan?.name ?? '-' }}</p>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-muted">Plan Price</label>
+              <p class="mb-0 fw-medium">{{ subscriptionDetails.plan?.price ?? '-' }}</p>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-muted">Interval</label>
+              <p class="mb-0 fw-medium text-capitalize">{{ subscriptionDetails.plan?.interval ?? '-' }}</p>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-muted">Status</label>
+              <p class="mb-0">
+                <span class="badge text-capitalize"
+                  [ngClass]="subscriptionDetails.status === 'active' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'">
+                  {{ subscriptionDetails.status }}
+                </span>
+              </p>
+            </div>
+            @if (subscriptionDetails.payment_source) {
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-muted">Payment Source</label>
+              <p class="mb-0 fw-medium text-capitalize">{{ subscriptionDetails.payment_source }}</p>
+            </div>
+            }
+            @if (subscriptionDetails.trial_start_at) {
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-muted">Trial Start</label>
+              <p class="mb-0 fw-medium">{{ subscriptionDetails.trial_start_at | date:'yyyy-MM-dd' }}</p>
+            </div>
+            }
+            @if (subscriptionDetails.trial_end_at) {
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-muted">Trial End</label>
+              <p class="mb-0 fw-medium">{{ subscriptionDetails.trial_end_at | date:'yyyy-MM-dd' }}</p>
+            </div>
+            }
+            @if (subscriptionDetails.current_period_start) {
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-muted">Period Start</label>
+              <p class="mb-0 fw-medium">{{ subscriptionDetails.current_period_start | date:'yyyy-MM-dd' }}</p>
+            </div>
+            }
+            @if (subscriptionDetails.current_period_end) {
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-muted">Period End</label>
+              <p class="mb-0 fw-medium">{{ subscriptionDetails.current_period_end | date:'yyyy-MM-dd' }}</p>
+            </div>
+            }
+          </div>
+
+          <!-- Family: owner first, then members, all in 3-column grid -->
+          @if (familyOwner || (familyMembers && familyMembers.length > 0)) {
+          <hr class="my-4">
+          <h6 class="fw-semibold mb-3">Plan Members</h6>
+          <div class="row g-3">
+            @if (familyOwner) {
+            <div class="col-md-3">
+              <div class="card border h-100 cursor-pointer" (click)="openUserInNewTab(familyOwner.id)">
+                <div class="card-body p-3">
+                  <div class="d-flex align-items-center gap-3 mb-2">
+                    <ng-container *ngIf="familyOwner.profile_picture; else ownerInitials">
+                      <img [src]="familyOwner.profile_picture" alt="{{ familyOwner.full_name }}"
+                        class="rounded-circle object-fit-cover" width="40" height="40"
+                        onerror="this.src='assets/images/users/avatar-1.jpg'">
+                    </ng-container>
+                    <ng-template #ownerInitials>
+                      <div
+                        class="rounded-circle d-flex align-items-center justify-content-center bg-primary text-white fw-bold flex-shrink-0"
+                        class="avatar-sm-initials">
+                        {{ getInitials(familyOwner.full_name) }}
+                      </div>
+                    </ng-template>
+                    <div class="flex-grow-1 overflow-hidden">
+                      <p class="mb-0 fw-medium text-truncate">{{ familyOwner.full_name }}</p>
+                      <small class="text-muted text-truncate d-block">{{ familyOwner.email }}</small>
+                    </div>
+                  </div>
+                  <span class="badge bg-primary-subtle text-primary">Owner</span>
+                </div>
+              </div>
+            </div>
+            }
+            @for (member of familyMembers; track member.id) {
+            <div class="col-md-3">
+              <div class="card border h-100 cursor-pointer" (click)="openUserInNewTab(member.id)">
+                <div class="card-body p-3">
+                  <div class="d-flex align-items-center gap-3 mb-2">
+                    <ng-container *ngIf="member.profile_picture; else memberInitials">
+                      <img [src]="member.profile_picture" alt="{{ member.full_name }}"
+                        class="rounded-circle object-fit-cover" width="40" height="40"
+                        onerror="this.src='assets/images/users/avatar-1.jpg'">
+                    </ng-container>
+                    <ng-template #memberInitials>
+                      <div
+                        class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white fw-bold flex-shrink-0"
+                        class="avatar-sm-initials">
+                        {{ getInitials(member.full_name) }}
+                      </div>
+                    </ng-template>
+                    <div class="flex-grow-1 overflow-hidden">
+                      <p class="mb-0 fw-medium text-truncate">{{ member.full_name }}</p>
+                      <small class="text-muted text-truncate d-block">{{ member.email }}</small>
+                    </div>
+                  </div>
+                  <span class="badge bg-secondary-subtle text-secondary">Member</span>
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+          }
+        </div>
+        } @else {
+        <div class="card-body text-center py-4">
+          <i class="ri-shopping-cart-line fs-1 text-muted mb-2 d-block"></i>
+          <p class="text-muted mb-0">Subscription not purchased yet.</p>
+        </div>
+        }
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Referral Details</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            @if (referralDetails && referralDetails.length > 0) {
+            <div class="col-md-12">
+              <table class="table table-striped table-centered mb-0">
+                <thead>
+                  <tr>
+                    <th>User Name</th>
+                    <th>Referral Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (referral of referralDetails; track referral.id) {
+                  <tr (click)="referral.id && openUserInNewTab(referral.id)" [class.cursor-pointer]="referral.id">
+                    <td>{{ referral.full_name }}</td>
+                    <td>{{ referral.referral_status }}</td>
+                  </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            } @else {
+            <div class="card-body text-center py-4">
+              <i class="ri-user-follow-line fs-1 text-muted mb-2 d-block"></i>
+              <p class="text-muted mb-0">No referrals found.</p>
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+<ng-template #loadingTpl>
+  <div class="text-center py-5">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading user details...</p>
+  </div>
+</ng-template>

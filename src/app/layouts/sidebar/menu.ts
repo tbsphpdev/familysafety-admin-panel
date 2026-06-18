@@ -59,6 +59,20 @@ export const MENU: MenuItem[] = [
         parentId: 1
     },
     {
+        id: 177,
+        label: 'MENUITEMS.SURVEY.LIST.SURVEY',
+        icon: 'ph-clipboard-text',
+        link: '/survey',
+        parentId: 1
+    },
+    {
+        id: 183,
+        label: 'MENUITEMS.GROUP.LIST.GROUP',
+        icon: 'ph-users-three',
+        link: '/group',
+        parentId: 1
+    },
+    {
         id: 178,
         label: 'MENUITEMS.MONITORING.TEXT',
         isTitle: true

@@ -23,6 +23,7 @@ import { userReducer, UserState } from './Users/user.reducer';
 import { subscriptionReducer, SubscriptionState } from './Subscription/subscription.reducer';
 import { dashboardReducer, DashboardState } from './Dashboard/dashboard.reducer';
 import { reducer as monitoringReducer, State as MonitoringState } from './Monitoring/monitoring.reducer';
+import { surveyReducer, SurveyState } from './Survey/survey.reducer';
 
 
 export interface RootReducerState {
@@ -51,6 +52,7 @@ export interface RootReducerState {
     subscriptions: SubscriptionState;
     dashboard: DashboardState;
     monitorings: MonitoringState;
+    survey: SurveyState;
 }
 
 export const rootReducer: ActionReducerMap<RootReducerState> = {
@@ -78,5 +80,6 @@ export const rootReducer: ActionReducerMap<RootReducerState> = {
     users: userReducer,
     subscriptions: subscriptionReducer,
     dashboard: dashboardReducer,
-    monitorings: monitoringReducer
+    monitorings: monitoringReducer,
+    survey: surveyReducer,
 }
