@@ -61,6 +61,7 @@ export class GroupListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.listState.resetState('group');
     this.destroy$.next();
     this.destroy$.complete();
   }

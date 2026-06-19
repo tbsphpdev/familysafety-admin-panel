@@ -45,9 +45,10 @@
 
 // avatar group
 .avatar-group {
-    padding-left: 12px;
+    // padding-left: 12px;
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
 
     .avatar-group-item {
         margin-left: -12px;

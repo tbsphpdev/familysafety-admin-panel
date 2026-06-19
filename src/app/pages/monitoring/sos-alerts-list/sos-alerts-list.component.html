@@ -57,8 +57,8 @@
                 <tr>
                   <th>Id</th>
                   <th>Name</th>
-                  <th>Email</th>
-                  <th>Phone Number</th>
+                  <!-- <th>Email</th>
+                  <th>Phone Number</th> -->
                   <th>Resolved By</th>
                   <th>SOS Status</th>
                   <th>Trigger AT</th>
@@ -70,8 +70,8 @@
                   <td>{{ getRowNumber(i) }}</td>
                   <td (click)="item.triggered_by_id && openUserInNewTab(item.triggered_by_id)"
                     [class.cursor-pointer]="item.triggered_by_id">{{ item.triggered_by_name }}</td>
-                  <td>{{ item.triggered_by_email }}</td>
-                  <td>{{ item.triggered_by_phone }}</td>
+                  <!-- <td>{{ item.triggered_by_email }}</td>
+                  <td>{{ item.triggered_by_phone }}</td> -->
                   <td (click)="item.resolved_by_id && openUserInNewTab(item.resolved_by_id)"
                     [class.cursor-pointer]="item.resolved_by_id">{{ item.resolved_by_name ?? '-' }}</td>
                   <td class="text-capitalize">{{ item.sos_status }}</td>

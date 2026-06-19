@@ -193,13 +193,12 @@
                                         </ng-container>
                                         <ng-template #transactionInitials>
                                             <span
-                                                class="avatar-xxs rounded-circle d-inline-flex align-items-center justify-content-center bg-secondary text-white fs-xs">
+                                                class="avatar-xxs rounded-circle d-inline-flex align-items-center justify-content-center bg-primary text-white fs-xs">
                                                 {{ getInitials(data.full_name) }}
                                             </span>
                                         </ng-template>
                                         <div>
                                             <h6 class="fs-sm mb-0 fw-medium">{{ data.full_name }}</h6>
-                                            <small class="text-muted">{{ data.email }}</small>
                                         </div>
                                     </div>
                                 </td>
@@ -237,34 +236,32 @@
                 </div>
             </div>
             <div class="card-body px-0">
-                <ngx-simplebar class="px-3" style="max-height: 360px;">
-                    <table class="table mb-0">
+                <ngx-simplebar class="px-3" style="max-height: 285px;">
+                    <table class="table table-sm mb-0">
                         <tbody>
                             @for (data of recentUsers; track data.id) {
                             <tr>
                                 <td (click)="openUserInNewTab(data.id)" class="cursor-pointer">
-                                    <div class="d-flex align-items-center gap-1">
+                                    <div class="d-flex align-items-center gap-2">
                                         <div class="flex-shrink-0">
                                             <ng-container *ngIf="data.profile_picture; else userInitials">
                                                 <img [src]="data.profile_picture" alt="{{ data.full_name }}"
-                                                    class="avatar-sm rounded-circle object-fit-cover p-1">
+                                                    class="rounded-circle object-fit-cover" width="32" height="32">
                                             </ng-container>
                                             <ng-template #userInitials>
                                                 <div
-                                                    class="avatar-sm rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white fw-semibold">
+                                                    class="avatar-user-sm rounded-circle d-flex align-items-center justify-content-center bg-primary text-white fw-semibold">
                                                     {{ getInitials(data.full_name) }}
                                                 </div>
                                             </ng-template>
                                         </div>
                                         <div class="flex-grow-1">
-                                            <h6 class="fs-md mb-1">{{ data.full_name }}</h6>
-                                            <p class="text-muted mb-0">{{ data.email }}</p>
+                                            <h6 class="fs-md mb-0">{{ data.full_name }}</h6>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="text-end">
                                     <h6 class="fs-sm mb-0">{{ data.created_at | date:'yyyy-MM-dd' }}</h6>
-                                    <small class="text-muted">{{ data.phone_number || '-' }}</small>
                                 </td>
                             </tr>
                             }

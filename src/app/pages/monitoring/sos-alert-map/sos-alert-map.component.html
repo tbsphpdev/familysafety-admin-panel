@@ -3,7 +3,7 @@
 <!-- Status bar -->
 <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
   <!-- Connection badge -->
-  <span class="badge fs-6 px-3 py-2" [ngClass]="{
+  <!-- <span class="badge fs-6 px-3 py-2" [ngClass]="{
       'bg-warning text-dark': connectionStatus === 'connecting',
       'bg-success':           connectionStatus === 'connected',
       'bg-secondary':         connectionStatus === 'disconnected',
@@ -19,7 +19,7 @@
     <span *ngIf="connectionStatus === 'connected'">Live</span>
     <span *ngIf="connectionStatus === 'disconnected'">Disconnected</span>
     <span *ngIf="connectionStatus === 'error'">Connection Error</span>
-  </span>
+  </span> -->
 
   <!-- Active alert counter -->
   <span class="badge bg-danger-subtle text-danger border border-danger fs-6 px-3 py-2">

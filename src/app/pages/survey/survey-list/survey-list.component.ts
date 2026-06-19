@@ -132,14 +132,11 @@ export class SurveyListComponent implements OnInit, OnDestroy {
   private buildForm(data?: any): FormGroup {
     return this.fb.group({
       text: [data?.text ?? '', Validators.required],
-      order: [data?.order ?? 1],
-      is_active: [data?.is_active ?? true],
       options: this.fb.array(
         (data?.options ?? []).map((o: any) =>
           this.fb.group({
             id: [o.id ?? null],
             text: [o.text ?? '', Validators.required],
-            order: [o.order ?? 1],
           })
         )
       ),
@@ -171,7 +168,7 @@ export class SurveyListComponent implements OnInit, OnDestroy {
 
   addOption(): void {
     this.options.push(
-      this.fb.group({ id: [null], text: ['', Validators.required], order: [this.options.length + 1] })
+      this.fb.group({ id: [null], text: ['', Validators.required] })
     );
   }
 
@@ -193,12 +190,9 @@ export class SurveyListComponent implements OnInit, OnDestroy {
       const payload = {
         id: this.editId,
         text: raw.text,
-        order: raw.order,
-        is_active: raw.is_active,
         options: raw.options.map((o: any) => ({
           id: o.id ?? null,
           text: o.text,
-          order: o.order,
         })),
       };
       this.store.dispatch(updateSurvey({ id: this.editId, payload }));
@@ -207,10 +201,8 @@ export class SurveyListComponent implements OnInit, OnDestroy {
       // POST: no id fields at any level
       const payload = {
         text: raw.text,
-        order: raw.order,
         options: raw.options.map((o: any) => ({
           text: o.text,
-          order: o.order,
         })),
       };
       this.store.dispatch(createSurvey({ payload }));

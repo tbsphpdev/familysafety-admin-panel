@@ -52,9 +52,9 @@
                   <th class="cursor-pointer" (click)="onSort('full_name')">
                     User <i [ngClass]="getSortIcon('full_name')"></i>
                   </th>
-                  <th class="cursor-pointer" (click)="onSort('email')">
+                  <!-- <th class="cursor-pointer" (click)="onSort('email')">
                     Email <i [ngClass]="getSortIcon('email')"></i>
-                  </th>
+                  </th> -->
                   <th>Plan</th>
                   <th>Amount</th>
                   <th>In App</th>
@@ -74,7 +74,7 @@
                   <td>{{ getRowNumber(i) }}</td>
                   <td (click)="item.user?.id && openUserInNewTab(item.user.id)" [class.cursor-pointer]="item.user?.id">
                     {{ item.user?.full_name || '-' }}</td>
-                  <td>{{ item.user?.email || '-' }}</td>
+                  <!-- <td>{{ item.user?.email || '-' }}</td> -->
                   <td>
                     <div>{{ item.plan?.name || '-' }}</div>
                     <small class="text-muted" *ngIf="item.plan">{{ formatAmount(item.plan.price) }} / {{

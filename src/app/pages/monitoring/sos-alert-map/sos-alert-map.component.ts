@@ -33,12 +33,14 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
   activeAlertCount = 0;
 
   private map: L.Map | null = null;
-  private clusterGroup!: L.MarkerClusterGroup;
+  private clusterGroup!: any;
   private socket: WebSocket | null = null;
   private token = localStorage.getItem('token') ?? '';
 
   private activeAlerts = new Map<number, SosTrackerEntry>();
   private userToAlertId = new Map<number, number>();
+  private selectedAlertId: number | null = null;
+  private mapAnimating = false; // true while flyTo is running — suppresses panTo
 
   private readonly WS_URL = GlobalComponent.WS_SOS_LOCATION;
   private readonly DEFAULT_CENTER: L.LatLngExpression = [23.0225, 72.5714];
@@ -68,12 +70,16 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
       }
     ).addTo(this.map);
 
-    this.clusterGroup = L.markerClusterGroup({
-      spiderfyOnMaxZoom: true,
+    this.clusterGroup = (L as any).markerClusterGroup({
+      // Both disabled: we fully own click behaviour below.
+      // With spiderfyOnMaxZoom:true the library still calls spiderfy() immediately
+      // at whatever zoom the user is on (same-location markers are always at maxZoom
+      // in the cluster tree), which fights our flyTo animation.
+      spiderfyOnMaxZoom: false,
       showCoverageOnHover: false,
-      zoomToBoundsOnClick: true,
+      zoomToBoundsOnClick: false,
       maxClusterRadius: 40,
-      iconCreateFunction: (cluster) => {
+      iconCreateFunction: (cluster: any) => {
         const count = cluster.getChildCount();
         return L.divIcon({
           html: `<div class="sos-cluster"><span>${count}</span></div>`,
@@ -85,6 +91,33 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
     });
 
     this.clusterGroup.addTo(this.map);
+
+    this.clusterGroup.on('clusterclick', (a: any) => {
+      const cluster = a.layer;
+      if (!this.map) return;
+
+      // Use a child marker as a stable reference to re-resolve the cluster
+      // after flyTo rebuilds the cluster tree (the `cluster` ref becomes stale).
+      const anchor = cluster.getAllChildMarkers()[0] as L.Marker;
+      if (!anchor) return;
+
+      if (this.map.getZoom() >= 19) {
+        cluster.spiderfy();
+      } else {
+        this.mapAnimating = true;
+        this.map.flyTo(cluster.getLatLng(), 19, { animate: true, duration: 0.8 });
+        this.map.once('moveend', () => {
+          this.mapAnimating = false;
+          // getVisibleParent returns the cluster if still grouped (→ spiderfy),
+          // or the marker itself if unclustered at zoom 19 (→ already visible, skip).
+          const fresh = this.clusterGroup.getVisibleParent(anchor) as any;
+          if (fresh && fresh !== anchor && typeof fresh.spiderfy === 'function') {
+            fresh.spiderfy();
+          }
+        });
+      }
+    });
+
     setTimeout(() => this.map?.invalidateSize(), 100);
   }
 
@@ -193,6 +226,10 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
     this.animateLatLng(entry.marker, lat, lng);
     entry.lat = lat;
     entry.lng = lng;
+
+    if (sosAlertId === this.selectedAlertId && this.map && !this.mapAnimating) {
+      this.map.panTo([lat, lng], { animate: true, duration: 0.5 });
+    }
   }
 
   private onSosResolved(payload: any): void {
@@ -220,6 +257,7 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
     marker.bindPopup(this.buildPopupHtml(user, batteryLevel, triggeredAt), { autoPan: false });
     marker.on('click', () => {
       if (!this.map) return;
+      this.selectedAlertId = sosAlertId;
 
       // bindPopup's internal handler already opened the popup in this same
       // synchronous tick — close it before the browser paints so there is no flash.
@@ -229,9 +267,9 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
       const targetZoom = Math.max(this.map.getZoom(), 17);
 
       const openWithSpiderfy = () => {
+        this.mapAnimating = false;
         const parent = this.clusterGroup.getVisibleParent(marker);
         if (parent && parent !== (marker as any)) {
-          // Marker is still inside a cluster — spiderfy first, then show popup
           (parent as any).spiderfy();
           setTimeout(() => marker.openPopup(), 300);
         } else {
@@ -239,6 +277,7 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
         }
       };
 
+      this.mapAnimating = true;
       this.map.flyTo(latlng, targetZoom, { animate: true, duration: 0.8 });
       this.map.once('moveend', openWithSpiderfy);
     });
@@ -257,6 +296,9 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
     this.userToAlertId.delete(entry.userId);
     this.activeAlerts.delete(sosAlertId);
     this.activeAlertCount = this.activeAlerts.size;
+    if (sosAlertId === this.selectedAlertId) {
+      this.selectedAlertId = null;
+    }
   }
 
   private fitBoundsToAlerts(): void {
@@ -307,7 +349,7 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
 
   private createSosIcon(user: any): L.DivIcon {
     const initials = this.getInitials(user?.full_name);
-    const bg = user?.profile_picture ? 'transparent' : this.getAvatarColor(user?.full_name ?? '');
+    const bg = user?.profile_picture ? 'transparent' : 'var(--bs-primary, #405189)';
     const inner = user?.profile_picture
       ? `<img src="${user.profile_picture}"
              style="width:100%;height:100%;object-fit:cover;border-radius:50%;"
@@ -329,13 +371,6 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
     return parts.length === 1
       ? parts[0].substring(0, 2).toUpperCase()
       : (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  }
-
-  private getAvatarColor(name: string): string {
-    const palette = ['#405189', '#0ab39c', '#f06548', '#299cdb', '#f7b84b', '#6c757d'];
-    let hash = 0;
-    for (const ch of name) hash = (hash * 31 + ch.charCodeAt(0)) & 0xfffff;
-    return palette[hash % palette.length];
   }
 
   private buildPopupHtml(user: any, batteryLevel: number | null, triggeredAt: string | null): string {

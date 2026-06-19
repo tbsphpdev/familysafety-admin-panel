@@ -14,3 +14,16 @@
 .avatar-group  { width: 36px; height: 36px; line-height: 36px; font-size: 0.85rem; }
 .avatar-modal  { width: 52px; height: 52px; line-height: 52px; font-size: 1.1rem; }
 .avatar-member { width: 40px; height: 40px; line-height: 40px; font-size: 0.85rem; }
+
+.group-modal {
+  height: 80vh;
+
+  .modal-content {
+    height: auto;
+  }
+}
+
+.member-scroll {
+  max-height: 248px;
+  overflow-y: auto;
+}
