@@ -2,6 +2,8 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, OnDestroy } from '@angular/c
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { SurveyService } from '../survey.service';
 import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -37,7 +39,7 @@ import {
   selector: 'app-survey-list',
   templateUrl: './survey-list.component.html',
   styleUrls: ['./survey-list.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, SharedModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, SharedModule, DragDropModule],
 })
 export class SurveyListComponent implements OnInit, OnDestroy {
   breadCrumbItems: Array<{}> = [];
@@ -65,7 +67,8 @@ export class SurveyListComponent implements OnInit, OnDestroy {
   constructor(
     private store: Store,
     private actions$: Actions,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private surveyService: SurveyService
   ) { }
 
   ngOnInit(): void {
@@ -74,7 +77,7 @@ export class SurveyListComponent implements OnInit, OnDestroy {
       { label: 'Survey Questions', active: true },
     ];
 
-    this.store.select(selectSurveyItems).pipe(takeUntil(this.destroy$)).subscribe(items => this.surveyList = items);
+    this.store.select(selectSurveyItems).pipe(takeUntil(this.destroy$)).subscribe(items => this.surveyList = [...items]);
     this.store.select(selectSurveyLoading).pipe(takeUntil(this.destroy$)).subscribe(loading => this.isLoading = loading);
 
     // listen for effect outcomes to control modal loading/visibility
@@ -177,6 +180,21 @@ export class SurveyListComponent implements OnInit, OnDestroy {
     this.options.removeAt(index);
   }
 
+  dropOption(event: CdkDragDrop<any[]>): void {
+    const ctrl = this.options.at(event.previousIndex);
+    this.options.removeAt(event.previousIndex);
+    this.options.insert(event.currentIndex, ctrl);
+  }
+
+  dropQuestion(event: CdkDragDrop<any[]>): void {
+    if (event.previousIndex === event.currentIndex) return;
+    moveItemInArray(this.surveyList, event.previousIndex, event.currentIndex);
+    const payload = this.surveyList.map((item, i) => ({ id: item.id, order: i + 1 }));
+    this.surveyService.reorderQuestions(payload).subscribe({
+      error: (err) => console.error('[Survey] Reorder failed:', err)
+    });
+  }
+
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -186,23 +204,23 @@ export class SurveyListComponent implements OnInit, OnDestroy {
     const raw = this.form.value;
 
     if (this.isEditing && this.editId) {
-      // PATCH: include top-level id; options keep their id (null for new ones)
       const payload = {
         id: this.editId,
         text: raw.text,
-        options: raw.options.map((o: any) => ({
+        options: raw.options.map((o: any, i: number) => ({
           id: o.id ?? null,
           text: o.text,
+          order: i + 1,
         })),
       };
       this.store.dispatch(updateSurvey({ id: this.editId, payload }));
       return;
     } else {
-      // POST: no id fields at any level
       const payload = {
         text: raw.text,
-        options: raw.options.map((o: any) => ({
+        options: raw.options.map((o: any, i: number) => ({
           text: o.text,
+          order: i + 1,
         })),
       };
       this.store.dispatch(createSurvey({ payload }));

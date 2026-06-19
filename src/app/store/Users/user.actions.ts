@@ -4,15 +4,19 @@ import { Update } from '@ngrx/entity';
 import { User } from './user.model';
 
 // API actions for loading users
-export const loadUsers = createAction('[Users] Load Users', props<{ page?: number, per_page?: number, search?: string, ordering?: string }>());
+export const loadUsers = createAction('[Users] Load Users', props<{ page?: number, per_page?: number, search?: string, ordering?: string, is_minor?: string, status?: string }>());
 export const loadUsersSuccess = createAction('[Users] Load Users Success', props<{ users: User[], meta?: { current_page?: number, total_pages?: number, total_users?: number } }>());
 export const loadUsersFailure = createAction('[Users] Load Users Failure', props<{ error: any }>());
-export const userSuspend = createAction('[Users] User Suspend', props<{ id: string, page: number, per_page?: number, search?: string, ordering?: string }>());
+export const userSuspend = createAction('[Users] User Suspend', props<{ id: string, page: number, per_page?: number, search?: string, ordering?: string, is_minor?: string, status?: string }>());
 export const userSuspendSuccess = createAction('[Users] User Suspend Success', props<{ id: any, response: any }>());
 export const userSuspendFailure = createAction('[Users] User Suspend Failure', props<{ error: any }>());
-export const userUnsuspend = createAction('[Users] User Unsuspend', props<{ id: string, page: number, per_page?: number, search?: string, ordering?: string }>());
+export const userUnsuspend = createAction('[Users] User Unsuspend', props<{ id: string, page: number, per_page?: number, search?: string, ordering?: string, is_minor?: string, status?: string }>());
 export const userUnsuspendSuccess = createAction('[Users] User Unsuspend Success', props<{ id: any, response: any }>());
 export const userUnsuspendFailure = createAction('[Users] User Unsuspend Failure', props<{ error: any }>());
+
+export const deleteUser = createAction('[Users] Delete User', props<{ id: any, page: number, per_page?: number, search?: string, ordering?: string, is_minor?: string, status?: string }>());
+export const deleteUserSuccess = createAction('[Users] Delete User Success', props<{ id: any }>());
+export const deleteUserFailure = createAction('[Users] Delete User Failure', props<{ error: any }>());
 
 // Single user load/update actions
 export const loadUser = createAction('[Users] Load User', props<{ id: number }>());

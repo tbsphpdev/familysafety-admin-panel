@@ -8,13 +8,13 @@
 
           <!-- Toolbar -->
           <div class="row g-4 mb-3">
-            <div class="col-sm-auto d-flex align-items-center gap-2">
+            <!-- <div class="col-sm-auto d-flex align-items-center gap-2">
               <label class="mb-0">Show</label>
               <select title="Page Size" class="form-select form-select-sm" [(ngModel)]="pageSize"
                 (change)="onPageSizeChange(pageSize)">
                 <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
               </select>
-            </div>
+            </div> -->
             <div class="col-sm">
               <div class="d-flex justify-content-sm-end align-items-center gap-3">
                 <!-- <div class="search-box d-flex align-items-center">
@@ -45,6 +45,7 @@
               @if (surveyList.length > 0) {
               <thead class="table-light">
                 <tr>
+                  <th class="col-drag"><span class="visually-hidden">Reorder</span></th>
                   <th class="col-id">#</th>
                   <th>Question</th>
                   <th class="col-status">Status</th>
@@ -52,10 +53,20 @@
                 </tr>
               </thead>
               }
-              <tbody class="list">
-                @for (item of surveyList; track item.id) {
-                <tr class="cursor-pointer" (click)="openEditModal(item.id)">
-                  <td>{{ getRowNumber($index) }}</td>
+              <tbody class="list" cdkDropList [cdkDropListData]="surveyList" (cdkDropListDropped)="dropQuestion($event)">
+                @for (item of surveyList; track item.id; let i = $index) {
+                <tr class="cursor-pointer survey-row"
+                  (click)="openEditModal(item.id)"
+                  cdkDrag
+                  [cdkDragData]="item"
+                  cdkDragLockAxis="y"
+                  cdkDragPreviewContainer="parent">
+                  <td class="col-drag" (click)="$event.stopPropagation()">
+                    <span class="drag-handle text-muted" cdkDragHandle title="Drag to reorder">
+                      <i class="ri-drag-move-2-line fs-5"></i>
+                    </span>
+                  </td>
+                  <td>{{ getRowNumber(i) }}</td>
                   <td>{{ item.text ?? '-' }}</td>
                   <td>
                     <span class="badge text-capitalize"
@@ -158,18 +169,22 @@
           <!-- Options -->
           <div class="mb-2">
             <label class="form-label fw-semibold">Options</label>
-            <div formArrayName="options">
-              <div *ngFor="let opt of options.controls; let i = index"
-                [formGroupName]="i" class="d-flex gap-2 mb-2 align-items-center">
+            <div formArrayName="options" cdkDropList (cdkDropListDropped)="dropOption($event)">
+              <div *ngFor="let opt of options.controls; let i = index" [formGroupName]="i"
+                class="d-flex gap-2 mb-2 align-items-center option-drag-row" cdkDrag>
+                <span class="drag-handle flex-shrink-0 text-muted" cdkDragHandle title="Drag to reorder">
+                  <i class="ri-drag-move-2-line fs-5"></i>
+                </span>
                 <span class="text-muted small flex-shrink-0 option-num">{{ i + 1 }}.</span>
                 <input type="text" class="form-control" formControlName="text" placeholder="Option text">
                 <button type="button" class="btn btn-sm btn-outline-danger flex-shrink-0"
                   (click)="removeOption(i, $event)" title="Remove option">
                   <i class="ri-delete-bin-line"></i>
                 </button>
+                <div *cdkDragPlaceholder class="option-drag-placeholder"></div>
               </div>
             </div>
-            <button type="button" class="btn btn-sm btn-outline-primary mt-1" (click)="addOption()">
+            <button type="button" class="btn btn-sm btn-primary mt-1" (click)="addOption()">
               <i class="ri-add-line me-1"></i> Add Option
             </button>
           </div>

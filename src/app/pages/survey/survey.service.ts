@@ -88,4 +88,10 @@ export class SurveyService {
       .delete<any>(`${this.apiUrl}onboarding_questions/${id}/`, { headers: this.headers })
       .pipe(catchError((error: any) => throwError(() => this.parseError(error))));
   }
+
+  reorderQuestions(items: { id: number; order: number }[]): Observable<any> {
+    return this.http
+      .patch<any>(`${this.apiUrl}onboarding_questions/reorder/`, items, { headers: this.headers })
+      .pipe(catchError((error: any) => throwError(() => this.parseError(error))));
+  }
 }

@@ -22,7 +22,25 @@
                   </select>
                 </div>
               </div>
-              <div class="d-flex justify-content-sm-end align-items-center gap-2">
+              <div class="d-flex justify-content-sm-end align-items-center gap-2 flex-wrap">
+                <div class="d-flex align-items-center gap-1">
+                  <label class="mb-0 text-nowrap">Minor</label>
+                  <select title="Filter by Minor" class="form-select form-select-sm" [(ngModel)]="isMinor"
+                    (change)="onFilterChange()">
+                    <option value="">All</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </div>
+                <div class="d-flex align-items-center gap-1">
+                  <label class="mb-0 text-nowrap">Status</label>
+                  <select title="Filter by Status" class="form-select form-select-sm" [(ngModel)]="statusFilter"
+                    (change)="onFilterChange()">
+                    <option value="">All</option>
+                    <option value="active">Active</option>
+                    <option value="suspended">Suspended</option>
+                  </select>
+                </div>
                 <div class="search-box d-flex align-items-center">
                   <input type="text" class="form-control search" placeholder="Search..." [(ngModel)]="term"
                     (input)="onSearchInput()">
@@ -48,7 +66,9 @@
                   <th>Minor</th>
                   <th>Status</th>
                   <th>Suspended By</th>
-                  <th>Last Active</th>
+                  <th class="cursor-pointer" (click)="onSort('last_active')">
+                    Last Active <i class="ms-1" [ngClass]="getSortIcon('last_active')"></i>
+                  </th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -101,6 +121,11 @@
                         <button class="btn btn-sm btn-success remove-item-btn"
                           (click)="userUnsuspend(user.id)">Unsuspend</button>
                       </div>
+                      <div class="delete">
+                        <button class="btn btn-sm btn-danger" title="Delete User" (click)="onDeleteUser(user.id)">
+                          <i class="ri-delete-bin-line"></i>
+                        </button>
+                      </div>
                       <div class="suspend" *ngIf="!user.is_suspended">
                         <button class="btn btn-sm btn-danger remove-item-btn"
                           (click)="userSuspend(user.id)">Suspend</button>
@@ -110,11 +135,10 @@
                 </tr>
               </tbody>
             </table>
-            <div class="noresult" [ngClass]="(allusers?.length != 0)?'d-none':''">
+            <div class="noresult" [ngClass]="(allusers?.length != 0) || loading ? 'd-none' : ''">
               <div class="text-center">
-                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                  colors="primary:#121331,secondary:#08a88a" class="empty-state-icon"></lord-icon>
-                <h5 class="mt-2">Sorry! No Result Found</h5>
+                <i class="ri-search-line fs-1 text-muted d-block mb-2"></i>
+                <h5 class="mt-2">No Data Found</h5>
               </div>
             </div>
           </div>

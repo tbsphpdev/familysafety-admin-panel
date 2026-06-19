@@ -29,6 +29,11 @@ export class SosAlertsListComponent implements OnInit {
   totalItems = 0;
   itemsPerPage = 10;
   isLoading = false;
+  sortField: 'triggered_by_name' | 'resolved_by_name' | '' = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
+  ordering: string = '';
+  sosStatus: string = '';
+  private searchTimeout: any;
   dateRange?: (Date | undefined)[];
   createdAfter: string | null = null;
   createdBefore: string | null = null;
@@ -48,14 +53,36 @@ export class SosAlertsListComponent implements OnInit {
     this.loadMonitoringPage(1);
   }
 
+  onSort(field: 'triggered_by_name' | 'resolved_by_name'): void {
+    if (this.sortField === field) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = field;
+      this.sortDirection = 'asc';
+    }
+    this.ordering = this.sortDirection === 'asc' ? field : `-${field}`;
+    this.loadMonitoringPage(1);
+  }
+
+  getSortIcon(field: 'triggered_by_name' | 'resolved_by_name'): string {
+    if (this.sortField !== field) return 'ri-arrow-up-down-line';
+    return this.sortDirection === 'asc' ? 'ri-arrow-up-line' : 'ri-arrow-down-line';
+  }
+
+  onFilterChange(): void {
+    this.loadMonitoringPage(1);
+  }
+
   loadMonitoringPage(page = 1): void {
     this.isLoading = true;
     this.monitoringService.getMonitoringList(this.slug, page, this.term, {
       per_page: String(this.pageSize),
       created_after: this.createdAfter ?? '',
-      created_before: this.createdBefore ?? ''
-    }).subscribe(
-      (response) => {
+      created_before: this.createdBefore ?? '',
+      status: this.sosStatus,
+      ordering: this.ordering
+    }).subscribe({
+      next: (response) => {
         this.isLoading = false;
         this.currentPage = response.current_page;
         this.totalPages = response.total_pages;
@@ -64,11 +91,11 @@ export class SosAlertsListComponent implements OnInit {
         this.itemsPerPage = this.pageSize;
         this.tableColumns = this.monitoringList.length ? Object.keys(this.monitoringList[0]) : [];
       },
-      (error) => {
+      error: (error) => {
         this.isLoading = false;
         this.toastr.error(error || 'Failed to load monitoring data', 'Error');
       }
-    );
+    });
   }
 
   onSearchClick(): void {
@@ -76,8 +103,13 @@ export class SosAlertsListComponent implements OnInit {
   }
 
   onSearchInput(): void {
-    if (this.term.length >= 3 || this.term.length === 0) {
+    clearTimeout(this.searchTimeout);
+    if (this.term.length === 0) {
       this.loadMonitoringPage(1);
+      return;
+    }
+    if (this.term.length >= 3) {
+      this.searchTimeout = setTimeout(() => this.loadMonitoringPage(1), 400);
     }
   }
 

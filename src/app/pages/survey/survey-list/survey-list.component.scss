@@ -1,3 +1,4 @@
+.col-drag           { width: 36px; }
 .col-id             { width: 60px; }
 .col-status         { width: 120px; }
 .col-action         { width: 180px; }
@@ -5,3 +6,51 @@
 .option-order-input { width: 80px; }
 .col-opt-num        { width: 50px; }
 .col-opt-responses  { width: 130px; }
+
+.drag-handle {
+  cursor: grab;
+  &:active { cursor: grabbing; }
+}
+
+:host ::ng-deep {
+  .survey-row.cdk-drag-preview {
+    background: var(--bs-primary-bg-subtle);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    td { border-bottom: none; }
+  }
+  .survey-row.cdk-drag-placeholder {
+    opacity: 0;
+  }
+  .survey-row.cdk-drag-animating {
+    transition: transform 200ms ease;
+  }
+  .cdk-drop-list-dragging .survey-row:not(.cdk-drag-placeholder) {
+    transition: transform 200ms ease;
+  }
+}
+
+.option-drag-row {
+  background: var(--bs-body-bg);
+  &.cdk-drag-preview {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+    padding: 4px 8px;
+    background: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+  }
+  &.cdk-drag-animating {
+    transition: transform 200ms ease;
+  }
+}
+
+.option-drag-placeholder {
+  height: 38px;
+  border: 2px dashed var(--bs-border-color);
+  border-radius: 6px;
+  background: var(--bs-tertiary-bg);
+  width: 100%;
+}
+
+.cdk-drop-list-dragging .option-drag-row:not(.cdk-drag-placeholder) {
+  transition: transform 200ms ease;
+}

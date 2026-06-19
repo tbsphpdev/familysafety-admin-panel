@@ -52,10 +52,11 @@ export class PaymentHistoryComponent implements OnInit, OnDestroy {
 
   // Sorting properties
   ordering = '';
-  sortField: 'full_name' | 'email' | 'event_type' | '' = '';
+  sortField: 'full_name' | 'email' | 'event_type' | 'payment_source' | '' = '';
   sortDirection: 'asc' | 'desc' = 'asc';
 
   private destroy$ = new Subject<void>();
+  private searchTimeout: any;
 
   constructor(private toastr: ToastrService, private store: Store) { }
 
@@ -129,8 +130,13 @@ export class PaymentHistoryComponent implements OnInit, OnDestroy {
   }
 
   onSearchInput(): void {
-    if (this.term.length >= 3 || this.term.length === 0) {
+    clearTimeout(this.searchTimeout);
+    if (this.term.length === 0) {
       this.loadPaymentHistory(1);
+      return;
+    }
+    if (this.term.length >= 3) {
+      this.searchTimeout = setTimeout(() => this.loadPaymentHistory(1), 400);
     }
   }
 
@@ -171,7 +177,7 @@ export class PaymentHistoryComponent implements OnInit, OnDestroy {
     return `${year}-${month}-${day}`;
   }
 
-  onSort(field: 'full_name' | 'email' | 'event_type'): void {
+  onSort(field: 'full_name' | 'email' | 'event_type' | 'payment_source'): void {
     if (this.sortField === field) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
@@ -182,7 +188,7 @@ export class PaymentHistoryComponent implements OnInit, OnDestroy {
     this.loadPaymentHistory(1);
   }
 
-  getSortIcon(field: 'full_name' | 'email' | 'event_type'): string {
+  getSortIcon(field: 'full_name' | 'email' | 'event_type' | 'payment_source'): string {
     if (this.sortField !== field) {
       return 'ri-arrow-up-down-line';
     }

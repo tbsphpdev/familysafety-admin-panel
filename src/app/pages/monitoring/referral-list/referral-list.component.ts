@@ -28,6 +28,10 @@ export class ReferralListComponent implements OnInit {
   totalItems = 0;
   itemsPerPage = 10;
   isLoading = false;
+  sortField: 'name' | '' = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
+  ordering: string = '';
+  private searchTimeout: any;
 
   constructor(private monitoringService: MonitoringService, private toastr: ToastrService) { }
 
@@ -39,10 +43,27 @@ export class ReferralListComponent implements OnInit {
     this.loadMonitoringPage(1);
   }
 
+  onSort(field: 'name'): void {
+    if (this.sortField === field) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = field;
+      this.sortDirection = 'asc';
+    }
+    this.ordering = this.sortDirection === 'asc' ? field : `-${field}`;
+    this.loadMonitoringPage(1);
+  }
+
+  getSortIcon(field: 'name'): string {
+    if (this.sortField !== field) return 'ri-arrow-up-down-line';
+    return this.sortDirection === 'asc' ? 'ri-arrow-up-line' : 'ri-arrow-down-line';
+  }
+
   loadMonitoringPage(page = 1): void {
     this.isLoading = true;
     this.monitoringService.getMonitoringList(this.slug, page, this.term, {
-      per_page: String(this.pageSize)
+      per_page: String(this.pageSize),
+      ordering: this.ordering
     }).subscribe(
       (response) => {
         this.isLoading = false;
@@ -65,8 +86,13 @@ export class ReferralListComponent implements OnInit {
   }
 
   onSearchInput(): void {
-    if (this.term.length >= 3 || this.term.length === 0) {
+    clearTimeout(this.searchTimeout);
+    if (this.term.length === 0) {
       this.loadMonitoringPage(1);
+      return;
+    }
+    if (this.term.length >= 3) {
+      this.searchTimeout = setTimeout(() => this.loadMonitoringPage(1), 400);
     }
   }
 

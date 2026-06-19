@@ -6,8 +6,8 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 import { Store } from '@ngrx/store';
-import { loadUsers, userSuspend, userUnsuspend } from '../../../store/Users/user.actions';
-import { selectAll as selectAllUsers, selectCurrentPage, selectTotalPages, selectTotalUsers } from '../../../store/Users/user.reducer';
+import { loadUsers, userSuspend, userUnsuspend, deleteUser } from '../../../store/Users/user.actions';
+import { selectAll as selectAllUsers, selectCurrentPage, selectTotalPages, selectTotalUsers, selectUsersLoading } from '../../../store/Users/user.reducer';
 import { Router } from '@angular/router';
 import { takeUntil } from 'rxjs/operators';
 import Swal from 'sweetalert2';
@@ -38,6 +38,7 @@ export class UserListComponent implements OnDestroy {
   assignto: any = [];
   editData: any;
   allusers: any;
+  loading = false;
   currentPage: number = 1;
   totalPages: number = 1;
   totalUsers: number = 0;
@@ -45,9 +46,12 @@ export class UserListComponent implements OnDestroy {
   pageSizeOptions = [10, 50, 100];
   itemsPerPage: number = 10;
   ordering: string = '';
-  sortField: 'full_name' | 'email' | '' = '';
+  sortField: 'full_name' | 'email' | 'last_active' | '' = '';
   sortDirection: 'asc' | 'desc' = 'asc';
+  isMinor: string = '';
+  statusFilter: string = '';
   private destroy$ = new Subject<void>();
+  private searchTimeout: any;
 
   constructor(private formBuilder: UntypedFormBuilder, public store: Store, public datepipe: DatePipe, private router: Router, private listState: ListStateService) {
   }
@@ -80,6 +84,10 @@ export class UserListComponent implements OnDestroy {
     this.setOrderingState(savedState.ordering || '');
     this.loadUsers();
     console.log("User Current Page:- ", this.currentPage, "Page Size:- ", this.pageSize, "Search Term:- ", this.term, "Ordering:- ", this.ordering);
+
+    this.store.select(selectUsersLoading).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((l) => { this.loading = l; });
 
     this.store.select(selectAllUsers).pipe(
       takeUntil(this.destroy$)
@@ -138,9 +146,17 @@ export class UserListComponent implements OnDestroy {
   }
 
   onSearchInput(): void {
-    if (this.term.length >= 3 || this.term.length === 0) {
+    clearTimeout(this.searchTimeout);
+    if (this.term.length === 0) {
       this.currentPage = 1;
       this.loadUsers();
+      return;
+    }
+    if (this.term.length >= 3) {
+      this.searchTimeout = setTimeout(() => {
+        this.currentPage = 1;
+        this.loadUsers();
+      }, 400);
     }
   }
 
@@ -156,7 +172,7 @@ export class UserListComponent implements OnDestroy {
     this.loadUsers();
   }
 
-  onSort(field: 'full_name' | 'email') {
+  onSort(field: 'full_name' | 'email' | 'last_active') {
     if (this.sortField === field) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
@@ -168,18 +184,23 @@ export class UserListComponent implements OnDestroy {
     this.loadUsers();
   }
 
-  getSortIcon(field: 'full_name' | 'email'): string {
+  getSortIcon(field: 'full_name' | 'email' | 'last_active'): string {
     if (this.sortField !== field) {
       return 'ri-arrow-up-down-line';
     }
     return this.sortDirection === 'asc' ? 'ri-arrow-up-line' : 'ri-arrow-down-line';
   }
 
+  onFilterChange(): void {
+    this.currentPage = 1;
+    this.loadUsers();
+  }
+
   private setOrderingState(ordering: string) {
     this.ordering = ordering;
     const field = ordering.replace('-', '');
-    if (field === 'full_name' || field === 'email') {
-      this.sortField = field;
+    if (field === 'full_name' || field === 'email' || field === 'last_active') {
+      this.sortField = field as 'full_name' | 'email' | 'last_active';
       this.sortDirection = ordering.startsWith('-') ? 'desc' : 'asc';
     } else {
       this.sortField = '';
@@ -198,7 +219,9 @@ export class UserListComponent implements OnDestroy {
       page: this.currentPage,
       per_page: this.pageSize,
       search: this.term,
-      ordering: this.ordering || undefined
+      ordering: this.ordering || undefined,
+      is_minor: this.isMinor || undefined,
+      status: this.statusFilter || undefined
     }));
   }
 
@@ -214,7 +237,7 @@ export class UserListComponent implements OnDestroy {
       cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.store.dispatch(userSuspend({ id, page: this.currentPage, per_page: this.pageSize, search: this.term, ordering: this.ordering || undefined }));
+        this.store.dispatch(userSuspend({ id, page: this.currentPage, per_page: this.pageSize, search: this.term, ordering: this.ordering || undefined, is_minor: this.isMinor || undefined, status: this.statusFilter || undefined }));
       }
     });
   }
@@ -231,7 +254,25 @@ export class UserListComponent implements OnDestroy {
       cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.store.dispatch(userUnsuspend({ id, page: this.currentPage, per_page: this.pageSize, search: this.term, ordering: this.ordering || undefined }));
+        this.store.dispatch(userUnsuspend({ id, page: this.currentPage, per_page: this.pageSize, search: this.term, ordering: this.ordering || undefined, is_minor: this.isMinor || undefined, status: this.statusFilter || undefined }));
+      }
+    });
+  }
+
+  onDeleteUser(id: any): void {
+    Swal.fire({
+      title: 'Delete User',
+      text: 'Are you sure you want to delete this user? This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, delete',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const is_suspended = this.statusFilter === 'suspended' ? 'true' : this.statusFilter === 'active' ? 'false' : undefined;
+        this.store.dispatch(deleteUser({ id, page: this.currentPage, per_page: this.pageSize, search: this.term, ordering: this.ordering || undefined, is_minor: this.isMinor || undefined, status: this.statusFilter || undefined }));
       }
     });
   }

@@ -31,7 +31,38 @@
 
 <!-- Map card -->
 <div class="card">
-  <div class="card-body p-0">
+  <div class="card-body p-0 position-relative">
+
+    <!-- Floating location search -->
+    <div class="map-search-box">
+      <div class="input-group shadow-sm">
+        <span class="input-group-text bg-white border-end-0 pe-1">
+          <i class="ri-search-line text-muted"></i>
+        </span>
+        <input type="text" class="form-control border-start-0 border-end-0"
+          placeholder="Search location…"
+          [(ngModel)]="locationSearch"
+          (input)="onLocationSearchInput()"
+          (keydown.enter)="doLocationSearch()"
+          autocomplete="off">
+        @if (locationSearch) {
+        <button type="button" class="btn btn-white border border-start-0" (click)="clearLocationSearch()" title="Clear">
+          <i class="ri-close-line text-muted"></i>
+        </button>
+        }
+      </div>
+      @if (showSearchResults && searchResults.length > 0) {
+      <div class="search-dropdown">
+        @for (r of searchResults; track r.place_id) {
+        <div class="search-item" (click)="selectLocation(r)">
+          <i class="ri-map-pin-line me-2 text-danger flex-shrink-0"></i>
+          <span class="text-truncate">{{ r.display_name }}</span>
+        </div>
+        }
+      </div>
+      }
+    </div>
+
     <div id="sos-map" style="height: 640px; width: 100%;"></div>
   </div>
 </div>

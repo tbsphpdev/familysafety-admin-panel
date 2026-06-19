@@ -1,5 +1,6 @@
-import { Component, AfterViewInit, OnDestroy, NgZone } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, NgZone, HostListener } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { environment } from 'src/environments/environment';
 import { GlobalComponent } from 'src/app/global-component';
@@ -20,7 +21,7 @@ const datePipe = new DatePipe('en-US');
 @Component({
   selector: 'app-sos-alert-map',
   standalone: true,
-  imports: [CommonModule, SharedModule],
+  imports: [CommonModule, FormsModule, SharedModule],
   templateUrl: './sos-alert-map.component.html',
   styleUrl: './sos-alert-map.component.scss',
 })
@@ -50,6 +51,20 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
   private readonly WS_URL = GlobalComponent.WS_SOS_LOCATION;
   private readonly DEFAULT_CENTER: L.LatLngExpression = [23.0225, 72.5714];
   private readonly DEFAULT_ZOOM = 12;
+
+  // ── Location search ──────────────────────────────────────────────────────────
+  locationSearch = '';
+  searchResults: any[] = [];
+  showSearchResults = false;
+  private searchTimeout: any;
+  private searchMarker: L.Marker | null = null;
+
+  @HostListener('document:click', ['$event'])
+  onDocClick(event: MouseEvent): void {
+    if (!(event.target as HTMLElement)?.closest?.('.map-search-box')) {
+      this.showSearchResults = false;
+    }
+  }
 
   constructor(private zone: NgZone) { }
 
@@ -182,9 +197,6 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
     this.activeAlertCount = this.alertData.size;
     this.rebuildIndex();
     this.renderClusters();
-
-    const d = this.alertData.get(sosAlertId)!;
-    this.map.flyTo([d.lat, d.lng], 15, { animate: true, duration: 1.2 });
   }
 
   private onLocationUpdate(payload: any): void {
@@ -215,14 +227,10 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
 
   private onSosResolved(payload: any): void {
     const sosAlertId = Number(payload.sos_alert_id);
-    const d = this.alertData.get(sosAlertId);
-    if (!d) return;
-
-    const { lat, lng } = d;
+    if (!this.alertData.has(sosAlertId)) return;
     this.removeAlert(sosAlertId);
     this.rebuildIndex();
     this.renderClusters();
-    this.flyToNearest(lat, lng);
   }
 
   // ── Data management ──────────────────────────────────────────────────────────
@@ -388,6 +396,53 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
     });
   }
 
+  // ── Location search methods ──────────────────────────────────────────────────
+
+  onLocationSearchInput(): void {
+    clearTimeout(this.searchTimeout);
+    if (this.locationSearch.length < 3) {
+      this.searchResults = [];
+      return;
+    }
+    this.searchTimeout = setTimeout(() => this.doLocationSearch(), 400);
+  }
+
+  async doLocationSearch(): Promise<void> {
+    if (!this.locationSearch.trim()) return;
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(this.locationSearch)}&format=json&limit=5`;
+      const res = await fetch(url);
+      this.searchResults = await res.json();
+      this.showSearchResults = true;
+    } catch (e) {
+      console.error('[SOS Map] Geocoding failed:', e);
+    }
+  }
+
+  selectLocation(result: any): void {
+    const lat = parseFloat(result.lat);
+    const lng = parseFloat(result.lon);
+    this.locationSearch = result.display_name;
+    this.searchResults = [];
+    this.showSearchResults = false;
+    if (!this.map) return;
+    if (this.searchMarker) { this.searchMarker.remove(); this.searchMarker = null; }
+    this.map.flyTo([lat, lng], 14, { animate: true, duration: 1.0 });
+    this.searchMarker = L.marker([lat, lng], {
+      icon: L.divIcon({
+        html: `<div style="width:14px;height:14px;background:var(--bs-primary,#405189);border:2px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.35)"></div>`,
+        className: '', iconSize: [14, 14], iconAnchor: [7, 7],
+      })
+    }).addTo(this.map);
+  }
+
+  clearLocationSearch(): void {
+    this.locationSearch = '';
+    this.searchResults = [];
+    this.showSearchResults = false;
+    if (this.searchMarker) { this.searchMarker.remove(); this.searchMarker = null; }
+  }
+
   // ── Helpers ──────────────────────────────────────────────────────────────────
 
   private fitBoundsToAlerts(): void {
@@ -404,21 +459,6 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
     this.map.fitBounds(L.latLngBounds(latLngs).pad(0.25), { animate: true, maxZoom: 15 });
   }
 
-  private flyToNearest(fromLat: number, fromLng: number): void {
-    if (!this.map || this.alertData.size === 0) return;
-
-    let nearestData: AlertData | null = null;
-    let minDist = Infinity;
-    this.alertData.forEach(d => {
-      const dist = Math.hypot(d.lat - fromLat, d.lng - fromLng);
-      if (dist < minDist) { minDist = dist; nearestData = d; }
-    });
-
-    if (nearestData) {
-      const d = nearestData as AlertData;
-      this.map.flyTo([d.lat, d.lng], this.map.getZoom(), { animate: true, duration: 1.0 });
-    }
-  }
 
   private animateLatLng(marker: L.Marker, toLat: number, toLng: number, durationMs = 700): void {
     const from    = marker.getLatLng();
@@ -505,8 +545,10 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    clearTimeout(this.searchTimeout);
     this.socket?.close();
     this.socket = null;
+    this.searchMarker?.remove();
     this.markersLayer?.clearLayers();
     this.alertData.clear();
     this.userToAlertId.clear();

@@ -57,7 +57,9 @@
                   </th> -->
                   <th>Plan</th>
                   <th>Amount</th>
-                  <th>In App</th>
+                  <th class="cursor-pointer" (click)="onSort('payment_source')">
+                    In App <i class="ms-1" [ngClass]="getSortIcon('payment_source')"></i>
+                  </th>
                   <th>Period Start</th>
                   <th>Period End</th>
                   <th>Purchase Date</th>
@@ -95,9 +97,8 @@
 
             <div class="noresult" [ngClass]="paymentHistory.length ? 'd-none' : ''">
               <div class="text-center">
-                <lord-icon class="lord-icon-small" src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                  colors="primary:#121331,secondary:#08a88a"></lord-icon>
-                <h5 class="mt-2">Sorry! No Result Found</h5>
+                <i class="ri-search-line fs-1 text-muted d-block mb-2"></i>
+                <h5 class="mt-2">No Data Found</h5>
               </div>
             </div>
           </div>

@@ -14,7 +14,7 @@ export class GroupEffects {
     return this.actions$.pipe(
       ofType(fetchGroups),
       concatMap((action: any) =>
-        this.groupService.getGroups(action.page ?? 1, action.search ?? '', action.per_page ?? 10).pipe(
+        this.groupService.getGroups(action.page ?? 1, action.search ?? '', action.per_page ?? 10, action.ordering ?? '').pipe(
           switchMap((res: any) => [
             GroupActions.loadGroups({ groups: res.groups }),
             fetchGroupsSuccess({ groups: res.groups, currentPage: res.currentPage, totalPages: res.totalPages, totalGroups: res.totalGroups })

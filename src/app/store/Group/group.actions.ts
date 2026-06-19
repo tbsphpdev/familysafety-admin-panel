@@ -22,7 +22,7 @@ export const GroupActions = createActionGroup({
 // API actions for fetching groups list and single group
 export const fetchGroups = createAction(
   '[Group] Fetch Groups',
-  props<{ page?: number; per_page?: number; search?: string }>()
+  props<{ page?: number; per_page?: number; search?: string; ordering?: string }>()
 );
 
 export const fetchGroupsSuccess = createAction(

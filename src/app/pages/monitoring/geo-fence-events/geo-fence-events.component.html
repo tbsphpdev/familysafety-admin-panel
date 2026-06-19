@@ -56,10 +56,14 @@
               <thead class="table-light" *ngIf="tableColumns.length > 0">
                 <tr>
                   <th>Id</th>
-                  <th>Name</th>
+                  <th class="cursor-pointer" (click)="onSort('name')">
+                    Name <i class="ms-1" [ngClass]="getSortIcon('name')"></i>
+                  </th>
                   <!-- <th>Email</th>
                   <th>Phone Number</th> -->
-                  <th>Safe Zone</th>
+                  <th class="cursor-pointer" (click)="onSort('safe_zone_name')">
+                    Safe Zone <i class="ms-1" [ngClass]="getSortIcon('safe_zone_name')"></i>
+                  </th>
                   <!-- <th>Lat</th>
                   <th>Long</th> -->
                   <th>Radius</th>
@@ -86,9 +90,8 @@
 
             <div class="noresult" [ngClass]="monitoringList.length ? 'd-none' : ''">
               <div class="text-center">
-                <lord-icon class="lord-icon-small" src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                  colors="primary:#121331,secondary:#08a88a"></lord-icon>
-                <h5 class="mt-2">Sorry! No Result Found</h5>
+                <i class="ri-search-line fs-1 text-muted d-block mb-2"></i>
+                <h5 class="mt-2">No Data Found</h5>
               </div>
             </div>
           </div>

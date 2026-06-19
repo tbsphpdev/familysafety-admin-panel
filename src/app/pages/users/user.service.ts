@@ -58,7 +58,7 @@ export class UserService {
     return throwError(() => this.parseApiError(error));
   }
 
-  getUsers(token: string, page?: number, search?: string, per_page?: number, ordering?: string): Observable<any> {
+  getUsers(token: string, page?: number, search?: string, per_page?: number, ordering?: string, is_minor?: string, status?: string): Observable<any> {
     let url = API_URL + 'user_list';
     const params: string[] = [];
     if (page) {
@@ -72,6 +72,12 @@ export class UserService {
     }
     if (ordering) {
       params.push(`ordering=${encodeURIComponent(ordering)}`);
+    }
+    if (is_minor !== undefined && is_minor !== '') {
+      params.push(`is_minor=${is_minor}`);
+    }
+    if (status !== undefined && status !== '') {
+      params.push(`status=${status}`);
     }
     if (params.length) {
       url += '?' + params.join('&');
@@ -113,6 +119,13 @@ export class UserService {
 
     return this.http.post<any>(url, null, this.createHeaders(token)).pipe(
       map((response: any) => this.handleApiResponse(response, 200)),
+      catchError((error: any) => this.handleError(error))
+    );
+  }
+
+  deleteUser(token: string, id: any): Observable<any> {
+    const url = API_URL + 'delete_user/' + id + '/';
+    return this.http.delete<any>(url, this.createHeaders(token)).pipe(
       catchError((error: any) => this.handleError(error))
     );
   }

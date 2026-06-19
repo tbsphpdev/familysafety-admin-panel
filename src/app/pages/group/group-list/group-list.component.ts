@@ -34,7 +34,12 @@ export class GroupListComponent implements OnInit, OnDestroy {
   searchTerm = '';
   selectedItem: any = null;
 
+  sortField: 'name' | 'admin_name' | 'member_count' | '' = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
+  ordering: string = '';
+
   private destroy$ = new Subject<void>();
+  private searchTimeout: any;
 
   constructor(private store: Store, private listState: ListStateService) {}
 
@@ -48,6 +53,7 @@ export class GroupListComponent implements OnInit, OnDestroy {
     this.currentPage = saved.page;
     this.pageSize = saved.per_page;
     this.searchTerm = saved.search || '';
+    this.setOrderingState(saved.ordering || '');
 
     this.store.select(selectAllGroups).pipe(takeUntil(this.destroy$)).subscribe((g: any[]) => (this.groups = g || []));
     this.store.select(selectGroupsLoading).pipe(takeUntil(this.destroy$)).subscribe((l: boolean) => (this.loading = !!l));
@@ -66,11 +72,48 @@ export class GroupListComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  onSort(field: 'name' | 'admin_name' | 'member_count'): void {
+    if (this.sortField === field) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = field;
+      this.sortDirection = 'asc';
+    }
+    this.ordering = this.sortDirection === 'asc' ? field : `-${field}`;
+    this.currentPage = 1;
+    this.loadGroups();
+  }
+
+  getSortIcon(field: 'name' | 'admin_name' | 'member_count'): string {
+    if (this.sortField !== field) return 'ri-arrow-up-down-line';
+    return this.sortDirection === 'asc' ? 'ri-arrow-up-line' : 'ri-arrow-down-line';
+  }
+
+  private setOrderingState(ordering: string): void {
+    this.ordering = ordering;
+    const field = ordering.replace('-', '');
+    if (field === 'name' || field === 'admin_name' || field === 'member_count') {
+      this.sortField = field as 'name' | 'admin_name' | 'member_count';
+      this.sortDirection = ordering.startsWith('-') ? 'desc' : 'asc';
+    } else {
+      this.sortField = '';
+      this.sortDirection = 'asc';
+    }
+  }
+
   onSearch(value: string): void {
     this.searchTerm = value;
-    if (value.length >= 3 || value.length === 0) {
+    clearTimeout(this.searchTimeout);
+    if (value.length === 0) {
       this.currentPage = 1;
       this.loadGroups();
+      return;
+    }
+    if (value.length >= 3) {
+      this.searchTimeout = setTimeout(() => {
+        this.currentPage = 1;
+        this.loadGroups();
+      }, 400);
     }
   }
 
@@ -102,8 +145,9 @@ export class GroupListComponent implements OnInit, OnDestroy {
       page: this.currentPage,
       per_page: this.pageSize,
       search: this.searchTerm || '',
+      ordering: this.ordering || '',
     });
-    this.store.dispatch(fetchGroups({ page: this.currentPage, per_page: this.pageSize, search: this.searchTerm }));
+    this.store.dispatch(fetchGroups({ page: this.currentPage, per_page: this.pageSize, search: this.searchTerm, ordering: this.ordering || undefined }));
   }
 
   get paginationPages(): Array<number | string> {

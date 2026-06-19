@@ -8,7 +8,7 @@ export const GlobalComponent = {
     // Auth Api
     // AUTH_API: "http://192.168.1.146:8000/api/admin/", // Local URL
     AUTH_API: "http://45.55.177.195:8000/api/admin/", // Live URL
-    // AUTH_API:"http://127.0.0.1:3000/auth/",
+    // AUTH_API: "http://127.0.0.1:3000/auth/",
 
     // WebSocket
     // WS_SOS_LOCATION: 'ws://192.168.1.146:8000/ws/admin/location/', // Local URL

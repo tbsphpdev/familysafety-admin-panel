@@ -145,7 +145,7 @@
               <p class="mb-0 fw-medium text-capitalize">{{ subscriptionDetails.payment_source }}</p>
             </div>
             }
-            @if (subscriptionDetails.trial_start_at) {
+            <!-- @if (subscriptionDetails.trial_start_at) {
             <div class="col-md-4">
               <label class="form-label fw-semibold text-muted">Trial Start</label>
               <p class="mb-0 fw-medium">{{ subscriptionDetails.trial_start_at | date:'yyyy-MM-dd' }}</p>
@@ -156,7 +156,7 @@
               <label class="form-label fw-semibold text-muted">Trial End</label>
               <p class="mb-0 fw-medium">{{ subscriptionDetails.trial_end_at | date:'yyyy-MM-dd' }}</p>
             </div>
-            }
+            } -->
             @if (subscriptionDetails.current_period_start) {
             <div class="col-md-4">
               <label class="form-label fw-semibold text-muted">Period Start</label>

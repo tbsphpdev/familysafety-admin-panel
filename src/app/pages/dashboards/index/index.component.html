@@ -216,11 +216,10 @@
                             }
                         </tbody><!-- end tbody -->
                     </table><!-- end table -->
-                    <div class="noresult" *ngIf="recentTransactions.length === 0">
+                    <div class="noresult" *ngIf="dashboardData && recentTransactions.length === 0">
                         <div class="text-center">
-                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                                colors="primary:#405189,secondary:#0ab39c" style="width:75px;height:75px"></lord-icon>
-                            <h5 class="mt-2">Sorry! No Result Found</h5>
+                            <i class="ri-search-line fs-1 text-muted d-block mb-2"></i>
+                            <h5 class="mt-2">No Data Found</h5>
                         </div>
                     </div>
                 </div>
@@ -237,7 +236,7 @@
             </div>
             <div class="card-body px-0">
                 <ngx-simplebar class="px-3" style="max-height: 285px;">
-                    <table class="table table-sm mb-0">
+                    <table class="table table-sm align-middle mb-0">
                         <tbody>
                             @for (data of recentUsers; track data.id) {
                             <tr>
@@ -260,8 +259,8 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="text-end">
-                                    <h6 class="fs-sm mb-0">{{ data.created_at | date:'yyyy-MM-dd' }}</h6>
+                                <td class="text-center text-nowrap">
+                                    <span class="fs-sm text-muted">{{ data.created_at | date:'yyyy-MM-dd' }}</span>
                                 </td>
                             </tr>
                             }

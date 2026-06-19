@@ -51,6 +51,21 @@
           <textarea class="form-control" formControlName="description" placeholder="Description" cols="30"
             rows="3"></textarea>
         </div>
+
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Plan SKU</label>
+          <input class="form-control" formControlName="plan_sku" placeholder="Plan SKU">
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Apple Product ID</label>
+          <input class="form-control" formControlName="apple_product_id" placeholder="Apple Product ID">
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Google Product ID</label>
+          <input class="form-control" formControlName="google_product_id" placeholder="Google Product ID">
+        </div>
       </div>
       <hr>
       <h4 class="card-title mb-3">Limitations</h4>
@@ -128,7 +143,8 @@
 
               <input type="text" formControlName="feature_name" class="form-control" placeholder="Enter Feature">
 
-              <button *ngIf="features.length > 1 && selectedLanguage === 'en'" class="btn btn-danger" type="button" (click)="removeFeature(i)">
+              <button *ngIf="features.length > 1 && selectedLanguage === 'en'" class="btn btn-danger" type="button"
+                (click)="removeFeature(i)">
                 <i class="ri-delete-bin-line"></i>
               </button>
 
@@ -148,16 +164,13 @@
           <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
           Update Subscription
         </button>
-        <button class="btn btn-primary" type="button" *ngIf="selectedLanguage == `en`"
+        <!-- <button class="btn btn-primary" type="button" *ngIf="selectedLanguage == `en`"
           (click)="translateToAllLanguages()" [disabled]="loading">
           <span *ngIf=" loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
           Translate to all languages
-        </button>
+        </button> -->
       </div>
 
-      <div *ngIf="editForm.invalid && (editForm.dirty || editForm.touched)" class="mt-2 text-danger fs-xs">
-        Please fix form errors before submitting.
-      </div>
     </form>
   </div>
 </div>

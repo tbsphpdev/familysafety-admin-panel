@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, map, concatMap, switchMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { loadUsers, loadUsersSuccess, loadUsersFailure, userSuspend, userSuspendSuccess, userSuspendFailure, userUnsuspend, userUnsuspendSuccess, userUnsuspendFailure } from './user.actions';
+import { loadUsers, loadUsersSuccess, loadUsersFailure, userSuspend, userSuspendSuccess, userSuspendFailure, userUnsuspend, userUnsuspendSuccess, userUnsuspendFailure, deleteUser, deleteUserSuccess, deleteUserFailure } from './user.actions';
 import { loadUser, loadUserSuccess, loadUserFailure, updateUser, updateUserSuccess, updateUserFailure } from './user.actions';
 import { UserService } from '../../pages/users/user.service';
 
@@ -46,7 +46,9 @@ export class UserEffects {
         const perPage = action && action.per_page ? action.per_page : undefined;
         const search = action && action.search ? action.search : undefined;
         const ordering = action && action.ordering ? action.ordering : undefined;
-        return this.userService.getUsers(token, page, search, perPage, ordering).pipe(
+        const is_minor = action?.is_minor;
+        const status = action?.status;
+        return this.userService.getUsers(token, page, search, perPage, ordering, is_minor, status).pipe(
           tap((data: any) => console.debug('[UserEffects] getUsers response:', data)),
           map((data: any) => loadUsersSuccess({
             users: (data && data.users) ? data.users : [],
@@ -77,7 +79,7 @@ export class UserEffects {
         return this.userService.suspendUser(token, id).pipe(
           switchMap((res: any) => [
             userSuspendSuccess({ id, response: res }),
-            loadUsers({ page: currentPage, per_page: currentPerPage, search: currentSearch, ordering: currentOrdering })
+            loadUsers({ page: currentPage, per_page: currentPerPage, search: currentSearch, ordering: currentOrdering, is_minor: action?.is_minor, status: action?.status })
           ]),
           catchError((error) => of(userSuspendFailure({ error: this.getEffectErrorMessage(error) })))
         );
@@ -100,13 +102,29 @@ export class UserEffects {
         return this.userService.unsuspendUser(token, id).pipe(
           switchMap((res: any) => [
             userUnsuspendSuccess({ id, response: res }),
-            loadUsers({ page: currentPage, per_page: currentPerPage, search: currentSearch, ordering: currentOrdering })
+            loadUsers({ page: currentPage, per_page: currentPerPage, search: currentSearch, ordering: currentOrdering, is_minor: action?.is_minor, status: action?.status })
           ]),
           catchError((error) => of(userUnsuspendFailure({ error: this.getEffectErrorMessage(error) })))
         );
       })
     )
   })
+
+  deleteUser$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(deleteUser),
+      concatMap((action: any) => {
+        const token = localStorage.getItem('token') || '';
+        return this.userService.deleteUser(token, action.id).pipe(
+          switchMap(() => [
+            deleteUserSuccess({ id: action.id }),
+            loadUsers({ page: action.page, per_page: action.per_page, search: action.search, ordering: action.ordering, is_minor: action.is_minor, status: action.status })
+          ]),
+          catchError((error) => of(deleteUserFailure({ error: this.getEffectErrorMessage(error) })))
+        );
+      })
+    );
+  });
 
   loadUser$ = createEffect(() => {
     return this.actions$.pipe(
@@ -155,7 +173,7 @@ export class UserEffects {
 
   logLoadUsersFailure$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(loadUsersFailure, userSuspendFailure, userUnsuspendFailure, loadUserFailure, updateUserFailure),
+      ofType(loadUsersFailure, userSuspendFailure, userUnsuspendFailure, deleteUserFailure, loadUserFailure, updateUserFailure),
       tap((action: any) => {
         console.error('[UserEffects] API failure', action.error);
         try {

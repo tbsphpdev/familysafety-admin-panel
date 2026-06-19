@@ -27,9 +27,10 @@ export class GroupService {
     return payload?.detail ?? payload?.message ?? payload?.error ?? 'Something went wrong';
   }
 
-  getGroups(page = 1, search = '', perPage = 10): Observable<GroupListResponse> {
+  getGroups(page = 1, search = '', perPage = 10, ordering = ''): Observable<GroupListResponse> {
     let params = new HttpParams().set('page', page.toString()).set('per_page', perPage.toString());
     if (search) params = params.set('search', search);
+    if (ordering) params = params.set('ordering', ordering);
 
     return this.http.get<any>(`${this.apiUrl}groups/`, { headers: this.headers, params }).pipe(
       map((response: any) => {
