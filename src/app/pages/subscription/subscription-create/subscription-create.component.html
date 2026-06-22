@@ -1,6 +1,6 @@
 <div class="card">
   <div class="card-header">
-    <h4 class="card-title mb-0">Create Subscription</h4>
+    <h4 class="card-title mb-0">Create New Subscription</h4>
   </div>
   <div class="card-body">
     <form [formGroup]="createForm" (ngSubmit)="onSubmit()">
@@ -144,7 +144,7 @@
       <div class="d-flex align-items-center gap-2">
         <button class="btn btn-primary" type="submit" [disabled]="createForm.invalid || loading">
           <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-          Create Subscription
+          Create
         </button>
       </div>
 

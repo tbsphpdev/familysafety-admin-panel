@@ -26,7 +26,8 @@
               <div class="d-flex justify-content-sm-end flex-wrap gap-3 align-items-center">
                 <div class="d-flex align-items-center gap-1">
                   <label class="mb-0 text-nowrap">Status</label>
-                  <select title="Filter by SOS Status" class="form-select form-select-sm" [(ngModel)]="sosStatus" (change)="onFilterChange()">
+                  <select title="Filter by SOS Status" class="form-select form-select-sm" [(ngModel)]="sosStatus"
+                    (change)="onFilterChange()">
                     <option value="">All</option>
                     <option value="active">Active</option>
                     <option value="resolved">Resolved</option>
@@ -73,8 +74,8 @@
                     Resolved By <i class="ms-1" [ngClass]="getSortIcon('resolved_by_name')"></i>
                   </th>
                   <th>SOS Status</th>
-                  <th>Trigger AT</th>
-                  <th>Aknowledged AT</th>
+                  <th>Triggered At</th>
+                  <th>Acknowledged At</th>
                 </tr>
               </thead>
               <tbody class="list form-check-all">
@@ -87,8 +88,8 @@
                   <td (click)="item.resolved_by_id && openUserInNewTab(item.resolved_by_id)"
                     [class.cursor-pointer]="item.resolved_by_id">{{ item.resolved_by_name ?? '-' }}</td>
                   <td class="text-capitalize">{{ item.sos_status }}</td>
-                  <td>{{ item.triggered_at | date:'dd-MM-yyyy HH:mm' }}</td>
-                  <td>{{ item.resolved_at | date:'dd-MM-yyyy HH:mm' }}</td>
+                  <td>{{ item.triggered_at | date:'MM/dd/yyyy HH:mm' }}</td>
+                  <td>{{ item.resolved_at | date:'MM/dd/yyyy HH:mm' }}</td>
                 </tr>
               </tbody>
             </table>

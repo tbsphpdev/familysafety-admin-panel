@@ -48,7 +48,8 @@
                                     </span>
                                 </div>
                                 <div class="mt-4">
-                                    <p class="text-uppercase fw-medium text-muted text-truncate fs-sm">Active Trials</p>
+                                    <p class="text-uppercase fw-medium text-muted text-truncate fs-sm">Active Trial
+                                        Users</p>
                                     <h4 class="fw-semibold mb-3"><span class="counter-value"
                                             [countUp]="dashboardData?.trials?.trial_active ?? 0">0</span>
                                     </h4>
@@ -156,9 +157,10 @@
     <div class="col-lg-8">
         <div class="card" id="contactList">
             <div class="card-header align-items-center d-flex">
-                <h4 class="card-title mb-0 flex-grow-1">Latest Transactions</h4>
+                <h4 class="card-title mb-0 flex-grow-1">Recent Transactions</h4>
                 <div class="flex-shrink-0">
-                    <a routerLink="/monitoring/payment-history" class="btn btn-sm btn-soft-secondary">View All</a>
+                    <a routerLink="/monitoring/payment-history" class="btn btn-sm btn-soft-secondary">View All
+                        Transactions</a>
                 </div>
             </div>
             <div class="card-body">
@@ -180,7 +182,7 @@
                             @for (data of recentTransactions; track data.id) {
                             <tr>
                                 <td class="order_date">
-                                    {{ data.created_at | date:'yyyy-MM-dd' }}
+                                    {{ data.created_at | date:'MM/dd/yyyy' }}
                                 </td>
                                 <td class="order_id">
                                     <span class="fw-medium link-primary">#{{ data.id }}</span>
@@ -211,7 +213,7 @@
                                         {{ data.event_type }}
                                     </span>
                                 </td>
-                                <td>{{ data.payment_source }}</td>
+                                <td class="text-capitalize">{{ data.payment_source }}</td>
                             </tr><!-- end tr -->
                             }
                         </tbody><!-- end tbody -->
@@ -231,7 +233,7 @@
             <div class="card-header d-flex">
                 <h4 class="card-title mb-0 flex-grow-1">Recent Registered Users</h4>
                 <div class="flex-shrink-0">
-                    <a routerLink="/users" class="btn btn-sm btn-soft-secondary">View All</a>
+                    <a routerLink="/users" class="btn btn-sm btn-soft-secondary">View All Users</a>
                 </div>
             </div>
             <div class="card-body px-0">
@@ -260,7 +262,7 @@
                                     </div>
                                 </td>
                                 <td class="text-center text-nowrap">
-                                    <span class="fs-sm text-muted">{{ data.created_at | date:'yyyy-MM-dd' }}</span>
+                                    <span class="fs-sm text-muted">{{ data.created_at | date:'MM/dd/yyyy' }}</span>
                                 </td>
                             </tr>
                             }

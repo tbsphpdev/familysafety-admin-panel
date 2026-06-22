@@ -1,5 +1,5 @@
 <!-- Start Breadcrumbs -->
-<app-breadcrumbs title="Subscription List" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+<app-breadcrumbs title="Subscription" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
 <!-- End Breadcrumbs -->
 
 <div class="row">
@@ -8,22 +8,11 @@
       <div class="card-body">
         <div id="customerList">
           <div class="row g-4 mb-3 align-items-center">
-            <div class="col-sm-auto">
-              <div class="d-flex align-items-center gap-2">
-                <label class="mb-0 item-per-page-label" for="pageSizeSelect">Show</label>
-                <select id="pageSizeSelect" #pageSizeSelect class="form-select form-select-sm" [value]="pageSize"
-                  (change)="onPageSizeChange(pageSizeSelect.value)">
-                  <option *ngFor="let size of pageSizeOptions" [value]="size" [selected]="size === pageSize">
-                    {{ size }}
-                  </option>
-                </select>
-              </div>
-            </div>
             <div class="col-sm">
               <div class="d-flex justify-content-sm-end">
                 <div class="search-box ms-2 d-flex align-items-center">
                   <button class="btn btn-md btn-primary edit-item-btn" [routerLink]="['/subscription/create']">Create
-                    Subscription</button>
+                    New Subscription</button>
                 </div>
               </div>
             </div>

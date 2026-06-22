@@ -97,7 +97,7 @@
                   </td>
                   <td class="email">{{ user.email }}</td>
                   <td class="phone">{{ user.phone_number }}</td>
-                  <td>{{ user.date_of_birth | date:'yyyy-MM-dd' }}</td>
+                  <td>{{ user.date_of_birth | date:'MM/dd/yyyy' }}</td>
                   <td>
                     <span class="badge text-uppercase"
                       [ngClass]="{ 'bg-warning-subtle text-warning': user.is_minor, 'bg-secondary-subtle text-secondary': !user.is_minor }">
@@ -109,7 +109,7 @@
                       {{ user.is_suspended ? 'Suspended' : 'Active' }}</span>
                   </td>
                   <td>{{ user.suspended_by ?? '-' }}</td>
-                  <td>{{ user.last_active ? (user.last_active | date:'yyyy-MM-dd HH:mm:ss') : '-' }}</td>
+                  <td>{{ user.last_active ? (user.last_active | date:'MM/dd/yyyy HH:mm:ss') : '-' }}</td>
                   <td (click)="$event.stopPropagation()" class="actions-cell">
                     <div class="d-flex gap-2">
                       <div class="view">
@@ -117,14 +117,14 @@
                           <i class="ri-eye-line"></i>
                         </button>
                       </div>
-                      <div class="unsuspend" *ngIf="user.is_suspended">
-                        <button class="btn btn-sm btn-success remove-item-btn"
-                          (click)="userUnsuspend(user.id)">Unsuspend</button>
-                      </div>
                       <div class="delete">
                         <button class="btn btn-sm btn-danger" title="Delete User" (click)="onDeleteUser(user.id)">
                           <i class="ri-delete-bin-line"></i>
                         </button>
+                      </div>
+                      <div class="unsuspend" *ngIf="user.is_suspended">
+                        <button class="btn btn-sm btn-success remove-item-btn"
+                          (click)="userUnsuspend(user.id)">Unsuspend</button>
                       </div>
                       <div class="suspend" *ngIf="!user.is_suspended">
                         <button class="btn btn-sm btn-danger remove-item-btn"
