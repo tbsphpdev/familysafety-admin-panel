@@ -29,7 +29,7 @@ export class SosAlertsListComponent implements OnInit {
   totalItems = 0;
   itemsPerPage = 10;
   isLoading = false;
-  sortField: 'triggered_by_name' | 'resolved_by_name' | '' = '';
+  sortField: 'triggered_by_name' | 'resolved_by_name' | 'triggered_at' | 'resolved_at' | '' = '';
   sortDirection: 'asc' | 'desc' = 'asc';
   ordering: string = '';
   sosStatus: string = '';
@@ -40,7 +40,7 @@ export class SosAlertsListComponent implements OnInit {
   datePickerConfig = {
     containerClass: 'theme-blue',
     showWeekNumbers: false,
-    dateInputFormat: 'DD-MM-YYYY'
+    rangeInputFormat: 'DD/MM/YYYY'
   };
 
   constructor(private monitoringService: MonitoringService, private toastr: ToastrService) { }
@@ -53,7 +53,7 @@ export class SosAlertsListComponent implements OnInit {
     this.loadMonitoringPage(1);
   }
 
-  onSort(field: 'triggered_by_name' | 'resolved_by_name'): void {
+  onSort(field: 'triggered_by_name' | 'resolved_by_name' | 'triggered_at' | 'resolved_at'): void {
     if (this.sortField === field) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
@@ -64,7 +64,7 @@ export class SosAlertsListComponent implements OnInit {
     this.loadMonitoringPage(1);
   }
 
-  getSortIcon(field: 'triggered_by_name' | 'resolved_by_name'): string {
+  getSortIcon(field: 'triggered_by_name' | 'resolved_by_name' | 'triggered_at' | 'resolved_at'): string {
     if (this.sortField !== field) return 'ri-arrow-up-down-line';
     return this.sortDirection === 'asc' ? 'ri-arrow-up-line' : 'ri-arrow-down-line';
   }

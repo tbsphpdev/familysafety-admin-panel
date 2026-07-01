@@ -8,6 +8,18 @@ export interface Dashboard {
   summary: Summary;
   recent_transactions?: RecentTransaction[];
   recent_users?: RecentUser[];
+  revenue_by_year?: RevenueByYear[];
+  users_by_country?: UsersByCountry[];
+  revenue_by_country?: RevenueByCountry[];
+  downloads_by_month?: DownloadsByMonth;
+  downloads_by_country?: DownloadsByCountry[];
+  users_by_device?: UsersByDevice[];
+}
+
+export interface UsersByDevice {
+  device_type: number;
+  device_name: string;
+  count: number;
 }
 
 export interface Renewals {
@@ -96,6 +108,8 @@ export interface RecentTransaction {
   profile_picture: string | null;
   plan_name: string;
   amount: number;
+  amount_usd: number;
+  currency: string;
   event_type: string;
   payment_source: string;
   created_at: string;
@@ -108,4 +122,37 @@ export interface RecentUser {
   phone_number: string;
   profile_picture: string | null;
   created_at: string;
+}
+
+export interface DownloadsByMonth {
+  year: number;
+  months: DownloadsByMonthItem[];
+}
+
+export interface DownloadsByMonthItem {
+  month: string;
+  month_number: number;
+  downloads: number;
+}
+
+export interface DownloadsByCountry {
+  country: string;
+  downloads: number;
+}
+
+export interface RevenueByYear {
+  year: number;
+  revenue_usd: number;
+}
+
+export interface UsersByCountry {
+  country_code: string;
+  country_name: string;
+  count: number;
+}
+
+export interface RevenueByCountry {
+  country_code: string;
+  country_name: string;
+  revenue_usd: number;
 }

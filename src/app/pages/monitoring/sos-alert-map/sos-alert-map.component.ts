@@ -56,8 +56,10 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
   locationSearch = '';
   searchResults: any[] = [];
   showSearchResults = false;
+  highlightedIndex = -1;
   private searchTimeout: any;
   private searchMarker: L.Marker | null = null;
+  private userLocation: { lat: number; lng: number } | null = null;
 
   @HostListener('document:click', ['$event'])
   onDocClick(event: MouseEvent): void {
@@ -71,6 +73,15 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.initMap();
     this.connectWebSocket();
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          this.userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          this.map?.setView([this.userLocation.lat, this.userLocation.lng], this.DEFAULT_ZOOM);
+        },
+        () => { /* denied — static DEFAULT_CENTER stays */ }
+      );
+    }
   }
 
   private initMap(): void {
@@ -95,8 +106,8 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
     // Re-render on pan/zoom — spider state is preserved across pans, cleared on zoom or map click
     this.map.on('moveend zoomend', () => this.renderClusters());
     // Only clear spider on user-initiated zoom — mapAnimating guards against programmatic flyTo
-    this.map.on('zoomstart',       () => { if (!this.mapAnimating) this.spiderState = null; });
-    this.map.on('click',           () => { if (this.spiderState) { this.spiderState = null; this.renderClusters(); } });
+    this.map.on('zoomstart', () => { if (!this.mapAnimating) this.spiderState = null; });
+    this.map.on('click', () => { if (this.spiderState) { this.spiderState = null; this.renderClusters(); } });
 
     setTimeout(() => this.map?.invalidateSize(), 100);
   }
@@ -142,10 +153,10 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
 
   private handleEvent(payload: any): void {
     switch (payload.type) {
-      case 'sos_active_list':    this.onActiveList(payload);      break;
-      case 'sos.triggered':      this.handleIncomingAlert(payload); break;
+      case 'sos_active_list': this.onActiveList(payload); break;
+      case 'sos.triggered': this.handleIncomingAlert(payload); break;
       case 'location.update.sos': this.onLocationUpdate(payload); break;
-      case 'sos.resolved.admin': this.onSosResolved(payload);     break;
+      case 'sos.resolved.admin': this.onSosResolved(payload); break;
       default: console.warn('[SOS Map] Unhandled event:', payload.type);
     }
   }
@@ -157,15 +168,15 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
       const sosAlertId: number = item.id;
       if (this.alertData.has(sosAlertId)) return;
 
-      const loc  = item.user_location;
+      const loc = item.user_location;
       const user = loc.user ?? {};
       this.addAlert(sosAlertId, {
-        userId:       Number(user.id),
-        lat:          Number(loc.latitude),
-        lng:          Number(loc.longitude),
+        userId: Number(user.id),
+        lat: Number(loc.latitude),
+        lng: Number(loc.longitude),
         user,
         batteryLevel: loc.battery_level ?? null,
-        triggeredAt:  item.triggered_at ?? null,
+        triggeredAt: item.triggered_at ?? null,
       });
     });
 
@@ -179,19 +190,19 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
     if (!this.map) return;
 
     const data = payload.data;
-    const loc  = data.user_location;
+    const loc = data.user_location;
     const user = loc.user ?? {};
     const sosAlertId = Number(data.id);
 
     if (this.alertData.has(sosAlertId)) this.removeAlert(sosAlertId);
 
     this.addAlert(sosAlertId, {
-      userId:       Number(user.id),
-      lat:          Number(loc.latitude),
-      lng:          Number(loc.longitude),
+      userId: Number(user.id),
+      lat: Number(loc.latitude),
+      lng: Number(loc.longitude),
       user,
       batteryLevel: data.battery_level ?? loc.battery_level ?? null,
-      triggeredAt:  data.triggered_at ?? null,
+      triggeredAt: data.triggered_at ?? null,
     });
 
     this.activeAlertCount = this.alertData.size;
@@ -200,10 +211,10 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
   }
 
   private onLocationUpdate(payload: any): void {
-    const data   = payload.data;
+    const data = payload.data;
     const userId = Number(data.user.id);
-    const lat    = Number(data.latitude);
-    const lng    = Number(data.longitude);
+    const lat = Number(data.latitude);
+    const lng = Number(data.longitude);
 
     const sosAlertId = this.userToAlertId.get(userId);
     if (sosAlertId === undefined) return;
@@ -272,7 +283,7 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
     if (this.alertData.size === 0) return;
 
     const bounds = this.map.getBounds();
-    const zoom   = Math.round(this.map.getZoom());
+    const zoom = Math.round(this.map.getZoom());
     const bbox: [number, number, number, number] = [
       bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth(),
     ];
@@ -291,7 +302,7 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
           continue;
         }
 
-        const count  = feature.properties['point_count'] as number;
+        const count = feature.properties['point_count'] as number;
         const marker = L.marker([lat, lng], { icon: this.createClusterIcon(count) });
         marker.on('click', () => this.onClusterClick(clusterId, lat, lng));
         this.markersLayer.addLayer(marker);
@@ -302,7 +313,7 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
   }
 
   private renderSpider(state: NonNullable<typeof this.spiderState>): void {
-    const n      = state.leaves.length;
+    const n = state.leaves.length;
     const radius = 0.00012;
 
     // Centre dot
@@ -314,7 +325,7 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
     );
 
     state.leaves.forEach((leaf: any, i: number) => {
-      const angle    = (2 * Math.PI * i) / n - Math.PI / 2;
+      const angle = (2 * Math.PI * i) / n - Math.PI / 2;
       const spreadLat = state.lat + radius * Math.sin(angle);
       const spreadLng = state.lng + radius * Math.cos(angle);
 
@@ -384,7 +395,7 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
     }
 
     marker.closePopup();
-    const latlng     = marker.getLatLng();
+    const latlng = marker.getLatLng();
     const targetZoom = Math.max(this.map.getZoom(), 17);
 
     this.mapAnimating = true;
@@ -400,20 +411,65 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
 
   onLocationSearchInput(): void {
     clearTimeout(this.searchTimeout);
+    this.highlightedIndex = -1;
     if (this.locationSearch.length < 3) {
       this.searchResults = [];
+      this.showSearchResults = false;
       return;
     }
     this.searchTimeout = setTimeout(() => this.doLocationSearch(), 400);
   }
 
+  onSearchKeydown(event: KeyboardEvent): void {
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      if (this.searchResults.length > 0) {
+        this.highlightedIndex = Math.min(this.highlightedIndex + 1, this.searchResults.length - 1);
+        this.scrollHighlightedIntoView();
+      }
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.highlightedIndex = Math.max(this.highlightedIndex - 1, -1);
+      this.scrollHighlightedIntoView();
+    } else if (event.key === 'Enter') {
+      if (this.highlightedIndex >= 0 && this.highlightedIndex < this.searchResults.length) {
+        event.preventDefault();
+        this.selectLocation(this.searchResults[this.highlightedIndex]);
+      } else {
+        this.doLocationSearch();
+      }
+    } else if (event.key === 'Escape') {
+      this.showSearchResults = false;
+      this.highlightedIndex = -1;
+    }
+  }
+
+  private scrollHighlightedIntoView(): void {
+    setTimeout(() => {
+      const dropdown = document.querySelector('.search-dropdown');
+      const item = dropdown?.querySelectorAll('.search-item')[this.highlightedIndex] as HTMLElement;
+      item?.scrollIntoView({ block: 'nearest' });
+    });
+  }
+
   async doLocationSearch(): Promise<void> {
     if (!this.locationSearch.trim()) return;
     try {
-      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(this.locationSearch)}&format=json&limit=5`;
+      const token = environment.mapbox.publicKey;
+      const proximity = this.userLocation
+        ? `&proximity=${this.userLocation.lng},${this.userLocation.lat}`
+        : '';
+      const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(this.locationSearch)}.json?access_token=${token}&autocomplete=true&limit=6&types=place,locality,neighborhood,address,poi${proximity}`;
       const res = await fetch(url);
-      this.searchResults = await res.json();
+      const data = await res.json();
+      this.searchResults = (data.features ?? []).map((f: any) => ({
+        place_id: f.id,
+        display_name: f.place_name,
+        lat: String(f.geometry.coordinates[1]),
+        lon: String(f.geometry.coordinates[0]),
+      }));
       this.showSearchResults = true;
+      this.highlightedIndex = -1;
     } catch (e) {
       console.error('[SOS Map] Geocoding failed:', e);
     }
@@ -425,6 +481,7 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
     this.locationSearch = result.display_name;
     this.searchResults = [];
     this.showSearchResults = false;
+    this.highlightedIndex = -1;
     if (!this.map) return;
     if (this.searchMarker) { this.searchMarker.remove(); this.searchMarker = null; }
     this.map.flyTo([lat, lng], 14, { animate: true, duration: 1.0 });
@@ -440,6 +497,7 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
     this.locationSearch = '';
     this.searchResults = [];
     this.showSearchResults = false;
+    this.highlightedIndex = -1;
     if (this.searchMarker) { this.searchMarker.remove(); this.searchMarker = null; }
   }
 
@@ -461,13 +519,13 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
 
 
   private animateLatLng(marker: L.Marker, toLat: number, toLng: number, durationMs = 700): void {
-    const from    = marker.getLatLng();
+    const from = marker.getLatLng();
     const fromLat = from.lat;
     const fromLng = from.lng;
-    const t0      = performance.now();
+    const t0 = performance.now();
 
     const tick = (now: number) => {
-      const p    = Math.min((now - t0) / durationMs, 1);
+      const p = Math.min((now - t0) / durationMs, 1);
       const ease = 1 - Math.pow(1 - p, 3);
       marker.setLatLng([fromLat + (toLat - fromLat) * ease, fromLng + (toLng - fromLng) * ease]);
       if (p < 1) requestAnimationFrame(tick);
@@ -478,27 +536,27 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
 
   private createClusterIcon(count: number): L.DivIcon {
     return L.divIcon({
-      html:      `<div class="sos-cluster"><span>${count}</span></div>`,
+      html: `<div class="sos-cluster"><span>${count}</span></div>`,
       className: '',
-      iconSize:  [44, 44],
+      iconSize: [44, 44],
       iconAnchor: [22, 22],
     });
   }
 
   private createSosIcon(user: any): L.DivIcon {
     const initials = this.getInitials(user?.full_name);
-    const bg       = user?.profile_picture ? 'transparent' : 'var(--bs-primary, #405189)';
-    const inner    = user?.profile_picture
+    const bg = user?.profile_picture ? 'transparent' : 'var(--bs-primary, #405189)';
+    const inner = user?.profile_picture
       ? `<img src="${user.profile_picture}"
              style="width:100%;height:100%;object-fit:cover;border-radius:50%;"
              onerror="this.parentElement.innerHTML='<span style=line-height:40px>${initials}</span>'" />`
       : `<span style="line-height:40px">${initials}</span>`;
 
     return L.divIcon({
-      html:        `<div class="sos-pin" style="background:${bg}">${inner}</div>`,
-      className:   '',
-      iconSize:    [40, 40],
-      iconAnchor:  [20, 20],
+      html: `<div class="sos-pin" style="background:${bg}">${inner}</div>`,
+      className: '',
+      iconSize: [40, 40],
+      iconAnchor: [20, 20],
       popupAnchor: [0, -24],
     });
   }
@@ -514,9 +572,9 @@ export class SosAlertMapComponent implements AfterViewInit, OnDestroy {
   private buildPopupHtml(user: any, batteryLevel: number | null, triggeredAt: string | null): string {
     const batteryColor =
       batteryLevel === null ? '#6c757d'
-        : batteryLevel > 30  ? '#28a745'
-        : batteryLevel > 15  ? '#fd7e14'
-        :                      '#dc3545';
+        : batteryLevel > 30 ? '#28a745'
+          : batteryLevel > 15 ? '#fd7e14'
+            : '#dc3545';
     const triggered = triggeredAt ? datePipe.transform(triggeredAt, 'dd-MM-yyyy H:mm:ss') : '-';
 
     return `

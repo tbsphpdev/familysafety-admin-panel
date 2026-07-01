@@ -5,7 +5,7 @@
     <div class="card">
       <div class="card-body">
         <div id="paymentHistoryList">
-          <div class="row g-4 mb-3">
+          <div class="row g-4 mb-3 monitoring-filter-bar">
             <div class="col-sm-auto">
               <div class="d-flex align-items-center">
                 <label class="me-2 mb-0">Show</label>
@@ -16,10 +16,10 @@
               </div>
             </div>
             <div class="col-sm">
-              <div class="d-flex justify-content-sm-end align-items-center flex-nowrap gap-3">
-                <div class="me-2 d-flex align-items-center">
+              <div class="d-flex justify-content-sm-end align-items-center flex-wrap gap-3">
+                <div class="me-2 d-flex align-items-center date-range-filter">
                   <label class="me-2 date-range-label mb-0">Date range</label>
-                  <div class="input-group">
+                  <div class="input-group date-range-input">
                     <input type="text" class="form-control" placeholder="Select date range" bsDaterangepicker
                       [bsConfig]="datePickerConfig" [(ngModel)]="dateRange" (bsValueChange)="onDateRangeChange($event)"
                       readonly>
@@ -45,29 +45,64 @@
           </div>
 
           <div class="table-responsive table-card mt-3 mb-1" *ngIf="!isLoading">
-            <table class="table align-middle table-nowrap" id="paymentHistoryTable">
-              <thead class="table-light" *ngIf="paymentHistory.length > 0">
+            <table class="table align-middle table-nowrap monitoring-table" id="paymentHistoryTable">
+              <thead class="table-light monitoring-table-head" *ngIf="paymentHistory.length > 0">
                 <tr>
-                  <th>Id</th>
-                  <th class="cursor-pointer" (click)="onSort('full_name')">
-                    User <i [ngClass]="getSortIcon('full_name')"></i>
+                  <th scope="col" class="col-id">Id</th>
+                  <th scope="col" class="cursor-pointer sortable-heading" (click)="onSort('full_name')">
+                    <span class="th-content">
+                      <span>User</span>
+                      <i class="sort-icon" [ngClass]="getSortIcon('full_name')"></i>
+                    </span>
                   </th>
                   <!-- <th class="cursor-pointer" (click)="onSort('email')">
                     Email <i [ngClass]="getSortIcon('email')"></i>
                   </th> -->
-                  <th>Plan</th>
-                  <th>Amount</th>
-                  <th class="cursor-pointer" (click)="onSort('payment_source')">
-                    In App <i class="ms-1" [ngClass]="getSortIcon('payment_source')"></i>
+                  <th scope="col">Plan</th>
+                  <th scope="col">Amount</th>
+                  <th scope="col">Currency</th>
+                  <th scope="col">USD Amount</th>
+                  <th scope="col" class="cursor-pointer sortable-heading" (click)="onSort('payment_source')">
+                    <span class="th-content">
+                      <span>In App</span>
+                      <i class="sort-icon" [ngClass]="getSortIcon('payment_source')"></i>
+                    </span>
                   </th>
-                  <th>Period Start</th>
-                  <th>Period End</th>
-                  <th>Purchase Date</th>
-                  <th class="cursor-pointer" (click)="onSort('event_type')">
-                    Event Type <i [ngClass]="getSortIcon('event_type')"></i>
+                  <th scope="col" class="cursor-pointer sortable-heading" (click)="onSort('period_start')">
+                    <span class="th-date">
+                      <span class="th-content">
+                        <span>Period Start</span>
+                        <i class="sort-icon" [ngClass]="getSortIcon('period_start')"></i>
+                      </span>
+                      <small>(DD/MM/YYYY)</small>
+                    </span>
                   </th>
-                  <th>Payment ID</th>
-                  <th>Purchase Token</th>
+                  <th scope="col" class="cursor-pointer sortable-heading" (click)="onSort('period_end')">
+                    <span class="th-date">
+                      <span class="th-content">
+                        <span>Period End</span>
+                        <i class="sort-icon" [ngClass]="getSortIcon('period_end')"></i>
+                      </span>
+                      <small>(DD/MM/YYYY)</small>
+                    </span>
+                  </th>
+                  <th scope="col" class="cursor-pointer sortable-heading" (click)="onSort('created_at')">
+                    <span class="th-date">
+                      <span class="th-content">
+                        <span>Purchase Date</span>
+                        <i class="sort-icon" [ngClass]="getSortIcon('created_at')"></i>
+                      </span>
+                      <small>(DD/MM/YYYY)</small>
+                    </span>
+                  </th>
+                  <th scope="col" class="cursor-pointer sortable-heading" (click)="onSort('event_type')">
+                    <span class="th-content">
+                      <span>Event Type</span>
+                      <i class="sort-icon" [ngClass]="getSortIcon('event_type')"></i>
+                    </span>
+                  </th>
+                  <th scope="col">Payment ID</th>
+                  <!-- <th>Purchase Token</th> -->
                   <!-- <th>Original Transaction Id</th> -->
                 </tr>
               </thead>
@@ -82,14 +117,16 @@
                     <small class="text-muted" *ngIf="item.plan">{{ formatAmount(item.plan.price) }} / {{
                       item.plan.interval }}</small>
                   </td>
-                  <td>{{ formatAmount(item.amount) }}</td>
+                  <td>{{ item.amount }}</td>
+                  <td>{{ item.currency || '-' }}</td>
+                  <td>{{ item.amount_usd ? formatAmount(item.amount_usd) : '-' }}</td>
                   <td>{{ item.payment_source_display || item.payment_source || '-' }}</td>
-                  <td>{{ item.period_start ? (item.period_start | date:'MM/dd/yyyy HH:mm') : '-' }}</td>
-                  <td>{{ item.period_end ? (item.period_end | date:'MM/dd/yyyy HH:mm') : '-' }}</td>
-                  <td>{{ item.created_at ? (item.created_at | date:'MM/dd/yyyy HH:mm') : '-' }}</td>
+                  <td>{{ item.period_start ? (item.period_start | date:'dd/MM/yyyy') : '-' }}</td>
+                  <td>{{ item.period_end ? (item.period_end | date:'dd/MM/yyyy') : '-' }}</td>
+                  <td>{{ item.created_at ? (item.created_at | date:'dd/MM/yyyy') : '-' }}</td>
                   <td class="text-capitalize">{{ item.event_type || '-' }}</td>
                   <td>{{ item.payment_id || '-' }}</td>
-                  <td>{{ item.purchase_token || '-' }}</td>
+                  <!-- <td>{{ item.purchase_token || '-' }}</td> -->
                   <!-- <td>{{ item.original_transaction_id || '-' }}</td> -->
                 </tr>
               </tbody>

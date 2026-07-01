@@ -6,3 +6,106 @@
 .event-label {
   min-width: fit-content !important;
 }
+
+.monitoring-filter-bar {
+
+  .form-control,
+  .form-select,
+  .btn {
+    min-height: 38px;
+  }
+
+  .form-select-sm {
+    padding-bottom: 0.45rem;
+    padding-top: 0.45rem;
+  }
+
+  .date-range-filter {
+    min-width: 360px;
+  }
+
+  .date-range-input {
+    width: 280px;
+  }
+
+  .search-box .form-control {
+    min-width: 220px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .monitoring-filter-bar {
+
+    .date-range-filter,
+    .date-range-input,
+    .search-box,
+    .search-box .form-control {
+      min-width: 100%;
+      width: 100%;
+    }
+  }
+}
+
+.monitoring-table {
+
+  th,
+  td {
+    padding: 0.85rem 1.25rem;
+  }
+}
+
+// .monitoring-table-head {
+//   th {
+//     color: var(--vz-body-color);
+//     font-size: 0.75rem;
+//     font-weight: 700;
+//     letter-spacing: 0;
+//     text-transform: uppercase;
+//     vertical-align: middle;
+//     white-space: nowrap;
+//   }
+
+//   .sortable-heading {
+//     user-select: none;
+//     transition: color 0.15s ease;
+
+//     &:hover {
+//       color: var(--vz-primary);
+
+//       .sort-icon {
+//         opacity: 1;
+//       }
+//     }
+//   }
+// }
+
+.col-id {
+  width: 60px;
+}
+
+.th-content {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.35rem;
+}
+
+.sort-icon {
+  color: var(--vz-primary);
+  font-size: 0.95rem;
+  line-height: 1;
+  opacity: 0.7;
+}
+
+.th-date {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  line-height: 1.15;
+
+  small {
+    color: var(--vz-secondary-color);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: none;
+  }
+}

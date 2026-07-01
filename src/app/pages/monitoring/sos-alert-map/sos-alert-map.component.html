@@ -43,7 +43,7 @@
           placeholder="Search location…"
           [(ngModel)]="locationSearch"
           (input)="onLocationSearchInput()"
-          (keydown.enter)="doLocationSearch()"
+          (keydown)="onSearchKeydown($event)"
           autocomplete="off">
         @if (locationSearch) {
         <button type="button" class="btn btn-white border border-start-0" (click)="clearLocationSearch()" title="Clear">
@@ -53,8 +53,8 @@
       </div>
       @if (showSearchResults && searchResults.length > 0) {
       <div class="search-dropdown">
-        @for (r of searchResults; track r.place_id) {
-        <div class="search-item" (click)="selectLocation(r)">
+        @for (r of searchResults; track r.place_id; let i = $index) {
+        <div class="search-item" [class.highlighted]="highlightedIndex === i" (click)="selectLocation(r)">
           <i class="ri-map-pin-line me-2 text-danger flex-shrink-0"></i>
           <span class="text-truncate">{{ r.display_name }}</span>
         </div>

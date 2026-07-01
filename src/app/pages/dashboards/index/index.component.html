@@ -1,9 +1,19 @@
+@if (isLoading) {
+<div class="d-flex justify-content-center align-items-center dashboard-loader">
+    <div class="text-center">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="text-muted mt-3 mb-0">Loading dashboard data...</p>
+    </div>
+</div>
+} @else {
 <div class="row">
-    <div class="col-xl-12">
+    <div class="col-12">
         <div class="card border-0 overflow-hidden">
             <div class="card-body p-0">
                 <div class="row g-0">
-                    <div class="col-xl-2 col-md-6">
+                    <div class="col-12 col-md-6 col-xl-2">
                         <!-- card -->
                         <div class="card shadow-none border-end-md border-bottom rounded-0 mb-0">
                             <div class="card-body">
@@ -19,7 +29,7 @@
                             </div><!-- end card body -->
                         </div><!-- end card -->
                     </div><!-- end col -->
-                    <div class="col-xl-2 col-md-6">
+                    <div class="col-12 col-md-6 col-xl-2">
                         <!-- card -->
                         <div class="card shadow-none border-end-xl border-bottom rounded-0 mb-0">
                             <div class="card-body">
@@ -38,7 +48,7 @@
                             </div><!-- end card body -->
                         </div><!-- end card -->
                     </div><!-- end col -->
-                    <div class="col-xl-2 col-md-6">
+                    <div class="col-12 col-md-6 col-xl-2">
                         <!-- card -->
                         <div class="card shadow-none border-end-md border-bottom rounded-0 mb-0">
                             <div class="card-body">
@@ -75,7 +85,7 @@
                             </div>
                         </div>
                     </div> -->
-                    <div class="col-xl-2 col-md-6">
+                    <div class="col-12 col-md-6 col-xl-2">
                         <!-- card -->
                         <div class="card shadow-none border-end-md border-bottom-md border-bottom-xl-0 rounded-0 mb-0">
                             <div class="card-body">
@@ -92,7 +102,7 @@
                             </div><!-- end card body -->
                         </div><!-- end card -->
                     </div><!-- end col -->
-                    <div class="col-xl-2 col-md-6">
+                    <div class="col-12 col-md-6 col-xl-2">
                         <!-- card -->
                         <div class="card shadow-none border-end-xl border-bottom-md border-bottom-xl-0 rounded-0 mb-0">
                             <div class="card-body">
@@ -128,7 +138,7 @@
                             </div>
                         </div>
                     </div> -->
-                    <div class="col-xl-2 col-md-6">
+                    <div class="col-12 col-md-6 col-xl-2">
                         <!-- card -->
                         <div class="card shadow-none rounded-0 mb-0">
                             <div class="card-body">
@@ -154,7 +164,7 @@
     </div><!--end col-->
 </div><!--end row-->
 <div class="row">
-    <div class="col-lg-8">
+    <div class="col-12 col-lg-8">
         <div class="card" id="contactList">
             <div class="card-header align-items-center d-flex">
                 <h4 class="card-title mb-0 flex-grow-1">Recent Transactions</h4>
@@ -165,14 +175,21 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-borderless table-centered align-middle table-nowrap mb-0">
-                        <thead class="text-muted table-light">
+                    <table class="table table-borderless table-centered align-middle table-nowrap mb-0 dashboard-table">
+                        <thead class="text-muted table-light dashboard-table-head">
                             <tr>
-                                <th scope="col">Date</th>
+                                <th scope="col">
+                                    <span class="th-date">
+                                        <span>Date</span>
+                                        <small>(DD/MM/YYYY)</small>
+                                    </span>
+                                </th>
                                 <th scope="col">Transaction ID</th>
                                 <th scope="col">User</th>
                                 <th scope="col">Plan</th>
                                 <th scope="col">Amount</th>
+                                <th scope="col">Currency</th>
+                                <th scope="col">USD Amount</th>
                                 <th scope="col">Event</th>
                                 <th scope="col">Payment
                                     Source</th>
@@ -182,7 +199,7 @@
                             @for (data of recentTransactions; track data.id) {
                             <tr>
                                 <td class="order_date">
-                                    {{ data.created_at | date:'MM/dd/yyyy' }}
+                                    {{ data.created_at | date:'dd/MM/yyyy' }}
                                 </td>
                                 <td class="order_id">
                                     <span class="fw-medium link-primary">#{{ data.id }}</span>
@@ -205,9 +222,10 @@
                                     </div>
                                 </td>
                                 <td class="products">{{ data.plan_name }}</td>
-                                <td class="amount">
-                                    <span class="fw-medium">{{ data.amount | currency }}</span>
-                                </td>
+                                <td class="amount"><span class="fw-medium">{{ data.amount}}</span></td>
+                                <td class="amount"><span class="fw-medium">{{ data.currency}}</span></td>
+                                <td class="amount"><span class="fw-medium">{{ data.amount_usd ? '$' + data.amount_usd
+                                        :'-' }}</span></td>
                                 <td class="status">
                                     <span class="badge text-uppercase bg-success-subtle text-success">
                                         {{ data.event_type }}
@@ -228,7 +246,7 @@
             </div>
         </div>
     </div><!--end col-->
-    <div class="col-xl-4 col-lg-6">
+    <div class="col-12 col-lg-4">
         <div class="card card-height-100">
             <div class="card-header d-flex">
                 <h4 class="card-title mb-0 flex-grow-1">Recent Registered Users</h4>
@@ -236,8 +254,8 @@
                     <a routerLink="/users" class="btn btn-sm btn-soft-secondary">View All Users</a>
                 </div>
             </div>
-            <div class="card-body px-0">
-                <ngx-simplebar class="px-3" style="max-height: 285px;">
+            <div class="card-body px-0 pb-0">
+                <ngx-simplebar class="px-3 recent-users-scroll">
                     <table class="table table-sm align-middle mb-0">
                         <tbody>
                             @for (data of recentUsers; track data.id) {
@@ -247,7 +265,7 @@
                                         <div class="flex-shrink-0">
                                             <ng-container *ngIf="data.profile_picture; else userInitials">
                                                 <img [src]="data.profile_picture" alt="{{ data.full_name }}"
-                                                    class="rounded-circle object-fit-cover" width="32" height="32">
+                                                    class="rounded-circle object-fit-cover" width="46" height="46">
                                             </ng-container>
                                             <ng-template #userInitials>
                                                 <div
@@ -262,7 +280,7 @@
                                     </div>
                                 </td>
                                 <td class="text-center text-nowrap">
-                                    <span class="fs-sm text-muted">{{ data.created_at | date:'MM/dd/yyyy' }}</span>
+                                    <span class="fs-sm text-muted">{{ data.created_at | date:'dd/MM/yyyy' }}</span>
                                 </td>
                             </tr>
                             }
@@ -274,12 +292,16 @@
     </div><!--end col-->
 </div><!--end row-->
 <div class="row">
-    <div class="col-xl-12">
+    <div class="col-12">
         <div class="card">
             <div class="row g-0">
-                <div class="col-xl-12">
+                <div class="col-12">
                     <div class="card-header border-0 align-items-center d-flex">
                         <h4 class="card-title mb-0 flex-grow-1">Revenue</h4>
+                        @if (totalMonthlyRevenue > 0) {
+                        <span class="badge bg-primary-subtle text-primary fs-sm">Total: ${{ totalMonthlyRevenue |
+                            number:'1.0-0' }}</span>
+                        }
                     </div><!-- end card header -->
                     <div class="card-body ps-0">
                         <div class="w-100">
@@ -289,7 +311,8 @@
                                     [fill]="marketverviewChart.fill" [colors]="marketverviewChart.colors"
                                     [legend]="marketverviewChart.legend" [xaxis]="marketverviewChart.xaxis"
                                     [dataLabels]="marketverviewChart.dataLabels" [grid]="marketverviewChart.grid"
-                                    [yaxis]="marketverviewChart.yaxis" dir="ltr"></apx-chart>
+                                    [yaxis]="marketverviewChart.yaxis" [states]="marketverviewChart.states"
+                                    dir="ltr"></apx-chart>
                             </div>
                         </div>
                     </div><!-- end card body -->
@@ -299,28 +322,168 @@
     </div><!-- end col -->
 </div>
 <div class="row">
-    <div class="col-xl-6">
+    <div class="col-12 col-lg-6 col-xl-3">
         <div class="card card-height-100">
+            <div class="card-header">
+                <h4 class="card-title mb-0">Revenue by Plan</h4>
+            </div>
             <div class="card-body">
-                <p class="text-muted mb-2">Revenue by Plan</p>
-                <div id="plan-pie-chart" class="apex-charts" style="height:220px;">
+                <div id="plan-pie-chart" class="apex-charts chart-pie">
                     <apx-chart [series]="planPieChart.series" [chart]="planPieChart.chart"
                         [labels]="planPieChart.labels" [legend]="planPieChart.legend" [colors]="planPieChart.colors"
+                        [dataLabels]="planPieChart.dataLabels" [plotOptions]="planPieChart.plotOptions"
+                        [states]="planPieChart.states" dir="ltr"></apx-chart>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-6 col-xl-3">
+        <div class="card card-height-100">
+            <div class="card-header">
+                <h4 class="card-title mb-0">Renewals by Plan</h4>
+            </div>
+            <div class="card-body">
+                <div id="renewals-plan-chart" class="apex-charts chart-pie">
+                    <apx-chart [series]="renewalsPlanChart.series" [chart]="renewalsPlanChart.chart"
+                        [labels]="renewalsPlanChart.labels" [legend]="renewalsPlanChart.legend"
+                        [colors]="renewalsPlanChart.colors" [dataLabels]="renewalsPlanChart.dataLabels"
+                        [plotOptions]="renewalsPlanChart.plotOptions" [states]="renewalsPlanChart.states"
                         dir="ltr"></apx-chart>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-xl-6">
+    <!-- Revenue by Country -->
+    <div class="col-12 col-lg-6 col-xl-3">
         <div class="card card-height-100">
+            <div class="card-header">
+                <h4 class="card-title mb-0">Revenue by Country</h4>
+            </div>
             <div class="card-body">
-                <p class="text-muted mb-2">Renewals by Plan</p>
-                <div id="renewals-plan-chart" class="apex-charts" style="height:220px;">
-                    <apx-chart [series]="renewalsPlanChart.series" [chart]="renewalsPlanChart.chart"
-                        [labels]="renewalsPlanChart.labels" [legend]="renewalsPlanChart.legend"
-                        [colors]="renewalsPlanChart.colors" dir="ltr"></apx-chart>
+                <div id="revenue-country-chart" class="apex-charts chart-pie">
+                    <apx-chart [series]="revenueByCountryChart.series" [chart]="revenueByCountryChart.chart"
+                        [labels]="revenueByCountryChart.labels" [legend]="revenueByCountryChart.legend"
+                        [colors]="revenueByCountryChart.colors" [dataLabels]="revenueByCountryChart.dataLabels"
+                        [plotOptions]="revenueByCountryChart.plotOptions" [states]="revenueByCountryChart.states"
+                        dir="ltr">
+                    </apx-chart>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Users by Device -->
+    <div class="col-12 col-lg-6 col-xl-3">
+        <div class="card card-height-100">
+            <div class="card-header">
+                <h4 class="card-title mb-0">Users by Device</h4>
+            </div>
+            <div class="card-body">
+                <div id="users-device-chart" class="apex-charts chart-pie">
+                    <apx-chart [series]="usersByDeviceChart.series" [chart]="usersByDeviceChart.chart"
+                        [labels]="usersByDeviceChart.labels" [legend]="usersByDeviceChart.legend"
+                        [colors]="usersByDeviceChart.colors" [dataLabels]="usersByDeviceChart.dataLabels"
+                        [plotOptions]="usersByDeviceChart.plotOptions" [states]="usersByDeviceChart.states" dir="ltr">
+                    </apx-chart>
                 </div>
             </div>
         </div>
     </div>
 </div><!--end row-->
+
+<div class="row">
+    <!-- Revenue by Year -->
+    <div class="col-12 col-xl-6">
+        <div class="card card-height-100">
+            <div class="card-header d-flex align-items-center">
+                <h4 class="card-title mb-0 flex-grow-1">Revenue by Year</h4>
+                @if (totalRevenueByYear > 0) {
+                <span class="badge bg-primary-subtle text-primary fs-sm">Total: ${{ totalRevenueByYear | number:'1.0-0'
+                    }}</span>
+                }
+            </div>
+            <div class="card-body">
+                <apx-chart [series]="revenueByYearChart.series" [chart]="revenueByYearChart.chart"
+                    [plotOptions]="revenueByYearChart.plotOptions" [dataLabels]="revenueByYearChart.dataLabels"
+                    [xaxis]="revenueByYearChart.xaxis" [yaxis]="revenueByYearChart.yaxis"
+                    [colors]="revenueByYearChart.colors" [states]="revenueByYearChart.states" dir="ltr">
+                </apx-chart>
+            </div>
+        </div>
+    </div>
+    <!-- Users by Country -->
+    <div class="col-12 col-xl-6">
+        <div class="card card-height-100">
+            <div class="card-header d-flex align-items-center">
+                <h4 class="card-title mb-0 flex-grow-1">Users by Country</h4>
+                @if (totalUsersByCountry > 0) {
+                <span class="badge bg-info-subtle text-info fs-sm">Total: {{ totalUsersByCountry | number }}</span>
+                }
+            </div>
+            <div class="card-body p-0 country-chart-card">
+                <div class="country-chart-scroll">
+                    <apx-chart [series]="usersByCountryChart.series" [chart]="usersByCountryChart.chart"
+                        [plotOptions]="usersByCountryChart.plotOptions" [dataLabels]="usersByCountryChart.dataLabels"
+                        [xaxis]="usersByCountryChart.xaxis" [grid]="usersByCountryChart.grid"
+                        [colors]="usersByCountryChart.colors" [states]="usersByCountryChart.states" dir="ltr">
+                    </apx-chart>
+                </div>
+                <div class="country-chart-axis" *ngIf="usersByCountryAxisTicks.length > 0">
+                    <span *ngFor="let tick of usersByCountryAxisTicks" [style.left.%]="tick.position">
+                        {{ tick.value }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><!--end row-->
+
+<div class="row">
+    <div class="col-12 col-xl-7">
+        <div class="card card-height-100">
+            <div class="card-header d-flex align-items-center">
+                <h4 class="card-title mb-0 flex-grow-1">Install by Month ({{ dashboardData?.downloads_by_month?.year }})
+                </h4>
+                @if (totalDownloadsByMonth > 0) {
+                <span class="badge bg-success-subtle text-success fs-sm">Total: {{ totalDownloadsByMonth | number
+                    }}</span>
+                }
+            </div>
+            <div class="card-body">
+                <apx-chart [series]="downloadsByMonthChart.series" [chart]="downloadsByMonthChart.chart"
+                    [plotOptions]="downloadsByMonthChart.plotOptions" [dataLabels]="downloadsByMonthChart.dataLabels"
+                    [xaxis]="downloadsByMonthChart.xaxis" [yaxis]="downloadsByMonthChart.yaxis"
+                    [colors]="downloadsByMonthChart.colors" [states]="downloadsByMonthChart.states" dir="ltr">
+                </apx-chart>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-xl-5">
+        <div class="card card-height-100">
+            <div class="card-header d-flex align-items-center">
+                <h4 class="card-title mb-0 flex-grow-1">Installs by Country</h4>
+                @if (totalDownloadsByCountry > 0) {
+                <span class="badge bg-primary-subtle text-primary fs-sm">Total: {{ totalDownloadsByCountry | number
+                    }}</span>
+                }
+            </div>
+            <div class="card-body p-0 country-chart-card">
+                @if (downloadsByCountryChart) {
+                <div class="country-chart-scroll">
+                    <apx-chart [series]="downloadsByCountryChart.series" [chart]="downloadsByCountryChart.chart"
+                        [plotOptions]="downloadsByCountryChart.plotOptions"
+                        [dataLabels]="downloadsByCountryChart.dataLabels" [xaxis]="downloadsByCountryChart.xaxis"
+                        [grid]="downloadsByCountryChart.grid" [colors]="downloadsByCountryChart.colors"
+                        [states]="downloadsByCountryChart.states" dir="ltr">
+                    </apx-chart>
+                </div>
+                <div class="country-chart-axis" *ngIf="downloadsByCountryAxisTicks.length > 0">
+                    <span *ngFor="let tick of downloadsByCountryAxisTicks" [style.left.%]="tick.position">
+                        {{ tick.value }}
+                    </span>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</div><!--end row-->
+}

@@ -30,7 +30,7 @@ export class GeoFenceEventsComponent implements OnInit {
   totalItems = 0;
   itemsPerPage = 10;
   isLoading = false;
-  sortField: 'name' | 'safe_zone_name' | '' = '';
+  sortField: 'name' | 'safe_zone_name' | 'created_at' | '' = '';
   sortDirection: 'asc' | 'desc' = 'asc';
   ordering: string = '';
   private searchTimeout: any;
@@ -40,7 +40,7 @@ export class GeoFenceEventsComponent implements OnInit {
   datePickerConfig = {
     containerClass: 'theme-blue',
     showWeekNumbers: false,
-    dateInputFormat: 'DD-MM-YYYY'
+    rangeInputFormat: 'DD/MM/YYYY'
   };
 
   eventTypeOptions = [
@@ -59,7 +59,7 @@ export class GeoFenceEventsComponent implements OnInit {
     this.loadMonitoringPage(1);
   }
 
-  onSort(field: 'name' | 'safe_zone_name'): void {
+  onSort(field: 'name' | 'safe_zone_name' | 'created_at'): void {
     if (this.sortField === field) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
@@ -70,7 +70,7 @@ export class GeoFenceEventsComponent implements OnInit {
     this.loadMonitoringPage(1);
   }
 
-  getSortIcon(field: 'name' | 'safe_zone_name'): string {
+  getSortIcon(field: 'name' | 'safe_zone_name' | 'created_at'): string {
     if (this.sortField !== field) return 'ri-arrow-up-down-line';
     return this.sortDirection === 'asc' ? 'ri-arrow-up-line' : 'ri-arrow-down-line';
   }

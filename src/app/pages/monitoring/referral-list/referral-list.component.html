@@ -5,7 +5,7 @@
     <div class="card">
       <div class="card-body">
         <div id="monitoringList">
-          <div class="row g-4 mb-3">
+          <div class="row g-4 mb-3 monitoring-filter-bar">
             <div class="col-sm-auto">
               <div class="d-flex align-items-center">
                 <label class="me-2 mb-0">Show</label>
@@ -15,7 +15,7 @@
               </div>
             </div>
             <div class="col-sm">
-              <div class="d-flex justify-content-sm-end">
+              <div class="d-flex justify-content-sm-end align-items-center flex-wrap gap-3">
                 <div class="search-box ms-2 d-flex align-items-center">
                   <input type="text" class="form-control search" placeholder="Search..." [(ngModel)]="term"
                     (input)="onSearchInput()" />
@@ -32,15 +32,18 @@
           </div>
 
           <div class="table-responsive table-card mt-3 mb-1" *ngIf="!isLoading">
-            <table class="table align-middle table-nowrap" id="monitoringTable">
-              <thead class="table-light" *ngIf="tableColumns.length > 0">
+            <table class="table align-middle table-nowrap monitoring-table" id="monitoringTable">
+              <thead class="table-light monitoring-table-head" *ngIf="tableColumns.length > 0">
                 <tr>
-                  <th>Id</th>
-                  <th class="cursor-pointer" (click)="onSort('name')">
-                    Name <i class="ms-1" [ngClass]="getSortIcon('name')"></i>
+                  <th scope="col" class="col-id">Id</th>
+                  <th scope="col" class="cursor-pointer sortable-heading" (click)="onSort('name')">
+                    <span class="th-content">
+                      <span>Name</span>
+                      <i class="sort-icon" [ngClass]="getSortIcon('name')"></i>
+                    </span>
                   </th>
-                  <th>Referral Code</th>
-                  <th>Total Referrals</th>
+                  <th scope="col">Referral Code</th>
+                  <th scope="col">Total Referrals</th>
                 </tr>
               </thead>
               <tbody class="list form-check-all">

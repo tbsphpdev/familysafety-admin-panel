@@ -129,4 +129,12 @@ export class UserService {
       catchError((error: any) => this.handleError(error))
     );
   }
+
+  getUserPaymentHistory(token: string, id: any, page: number = 1): Observable<any> {
+    const url = API_URL + `user_list/${id}/?page=${page}`;
+    return this.http.get<any>(url, this.createHeaders(token)).pipe(
+      map((response: any) => this.handleApiResponse(response, 200)),
+      catchError((error: any) => this.handleError(error))
+    );
+  }
 }

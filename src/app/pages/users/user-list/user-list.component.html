@@ -7,7 +7,7 @@
     <div class="card">
       <div class="card-body">
         <div id="customerList">
-          <div class="row g-4 mb-3">
+          <div class="row g-4 mb-3 user-filter-bar">
             <div class="col-sm-auto">
             </div>
             <div class="col-sm d-flex justify-content-between align-items-center gap-2">
@@ -51,25 +51,42 @@
           </div>
 
           <div class="table-responsive table-card mt-3 mb-1">
-            <table class="table align-middle table-nowrap" id="customerTable">
-              <thead class="table-light">
+            <table class="table align-middle table-nowrap user-table" id="customerTable">
+              <thead class="table-light user-table-head">
                 <tr>
-                  <th>#</th>
-                  <th class="cursor-pointer" (click)="onSort('full_name')">
-                    Full Name <i class="ms-1" [ngClass]="getSortIcon('full_name')"></i>
+                  <th scope="col">#</th>
+                  <th scope="col" class="cursor-pointer sortable-heading" (click)="onSort('full_name')">
+                    <span class="th-content">
+                      <span>Full Name</span>
+                      <i class="sort-icon" [ngClass]="getSortIcon('full_name')"></i>
+                    </span>
                   </th>
-                  <th class="cursor-pointer" (click)="onSort('email')">
-                    Email <i class="ms-1" [ngClass]="getSortIcon('email')"></i>
+                  <th scope="col" class="cursor-pointer sortable-heading" (click)="onSort('email')">
+                    <span class="th-content">
+                      <span>Email</span>
+                      <i class="sort-icon" [ngClass]="getSortIcon('email')"></i>
+                    </span>
                   </th>
-                  <th>Phone</th>
-                  <th>Date of Birth</th>
-                  <th>Minor</th>
-                  <th>Status</th>
-                  <th>Suspended By</th>
-                  <th class="cursor-pointer" (click)="onSort('last_active')">
-                    Last Active <i class="ms-1" [ngClass]="getSortIcon('last_active')"></i>
+                  <th scope="col">Phone</th>
+                  <th scope="col">
+                    <span class="th-date">
+                      <span>Date of Birth</span>
+                      <small>(DD/MM/YYYY)</small>
+                    </span>
                   </th>
-                  <th>Action</th>
+                  <th scope="col">Minor</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Suspended By</th>
+                  <th scope="col" class="cursor-pointer sortable-heading" (click)="onSort('last_active')">
+                    <span class="th-date-sort">
+                      <span class="th-content">
+                        <span>Last Active</span>
+                        <i class="sort-icon" [ngClass]="getSortIcon('last_active')"></i>
+                      </span>
+                      <small>(DD/MM/YYYY HH:MM)</small>
+                    </span>
+                  </th>
+                  <th scope="col">Action</th>
                 </tr>
               </thead>
               <tbody class="list form-check-all">
@@ -97,7 +114,7 @@
                   </td>
                   <td class="email">{{ user.email }}</td>
                   <td class="phone">{{ user.phone_number }}</td>
-                  <td>{{ user.date_of_birth | date:'MM/dd/yyyy' }}</td>
+                  <td>{{ user.date_of_birth | date:'dd/MM/yyyy' }}</td>
                   <td>
                     <span class="badge text-uppercase"
                       [ngClass]="{ 'bg-warning-subtle text-warning': user.is_minor, 'bg-secondary-subtle text-secondary': !user.is_minor }">
@@ -109,7 +126,7 @@
                       {{ user.is_suspended ? 'Suspended' : 'Active' }}</span>
                   </td>
                   <td>{{ user.suspended_by ?? '-' }}</td>
-                  <td>{{ user.last_active ? (user.last_active | date:'MM/dd/yyyy HH:mm:ss') : '-' }}</td>
+                  <td>{{ user.last_active ? (user.last_active | date:'dd/MM/yyyy HH:mm') : '-' }}</td>
                   <td (click)="$event.stopPropagation()" class="actions-cell">
                     <div class="d-flex gap-2">
                       <div class="view">

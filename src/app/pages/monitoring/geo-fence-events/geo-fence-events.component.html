@@ -5,7 +5,7 @@
     <div class="card">
       <div class="card-body">
         <div id="monitoringList">
-          <div class="row d-flex justify-content-between g-4 mb-3">
+          <div class="row d-flex justify-content-between g-4 mb-3 monitoring-filter-bar">
             <div class="col-sm-auto">
               <div class="d-flex align-items-center">
                 <label class="me-2 mb-0">Show</label>
@@ -15,8 +15,8 @@
                 </select>
               </div>
             </div>
-            <div class="col-sm-6">
-              <div class="d-flex justify-content-sm-end align-items-center flex-nowrap gap-3">
+            <div class="col-sm">
+              <div class="d-flex justify-content-sm-end align-items-center flex-wrap gap-3">
                 <div class="me-2 d-flex align-items-center">
                   <label class="me-2 event-label mb-0">Event type</label>
                   <select class="form-select" [(ngModel)]="eventType" (change)="onFilterChange()"
@@ -24,9 +24,9 @@
                     <option *ngFor="let option of eventTypeOptions" [value]="option.value">{{ option.label }}</option>
                   </select>
                 </div>
-                <div class="me-2 d-flex align-items-center">
+                <div class="me-2 d-flex align-items-center date-range-filter">
                   <label class="me-2 event-label mb-0">Date range</label>
-                  <div class="input-group">
+                  <div class="input-group date-range-input">
                     <input type="text" class="form-control" placeholder="Select date range" bsDaterangepicker
                       [bsConfig]="datePickerConfig" [(ngModel)]="dateRange" (bsValueChange)="onDateRangeChange($event)"
                       readonly>
@@ -52,23 +52,37 @@
           </div>
 
           <div class="table-responsive table-card mt-3 mb-1" *ngIf="!isLoading">
-            <table class="table align-middle table-nowrap" id="monitoringTable">
-              <thead class="table-light" *ngIf="tableColumns.length > 0">
+            <table class="table align-middle table-nowrap monitoring-table" id="monitoringTable">
+              <thead class="table-light monitoring-table-head" *ngIf="tableColumns.length > 0">
                 <tr>
-                  <th>Id</th>
-                  <th class="cursor-pointer" (click)="onSort('name')">
-                    Name <i class="ms-1" [ngClass]="getSortIcon('name')"></i>
+                  <th scope="col" class="col-id">Id</th>
+                  <th scope="col" class="cursor-pointer sortable-heading" (click)="onSort('name')">
+                    <span class="th-content">
+                      <span>Name</span>
+                      <i class="sort-icon" [ngClass]="getSortIcon('name')"></i>
+                    </span>
                   </th>
                   <!-- <th>Email</th>
                   <th>Phone Number</th> -->
-                  <th class="cursor-pointer" (click)="onSort('safe_zone_name')">
-                    Safe Zone <i class="ms-1" [ngClass]="getSortIcon('safe_zone_name')"></i>
+                  <th scope="col" class="cursor-pointer sortable-heading" (click)="onSort('safe_zone_name')">
+                    <span class="th-content">
+                      <span>Safe Zone</span>
+                      <i class="sort-icon" [ngClass]="getSortIcon('safe_zone_name')"></i>
+                    </span>
                   </th>
                   <!-- <th>Lat</th>
                   <th>Long</th> -->
-                  <th>Radius</th>
-                  <th>Event Type</th>
-                  <th>Date Time</th>
+                  <th scope="col">Radius</th>
+                  <th scope="col">Event Type</th>
+                  <th scope="col" class="cursor-pointer sortable-heading" (click)="onSort('created_at')">
+                    <span class="th-date">
+                      <span class="th-content">
+                        <span>Date Time</span>
+                        <i class="sort-icon" [ngClass]="getSortIcon('created_at')"></i>
+                      </span>
+                      <small>(DD/MM/YYYY HH:MM)</small>
+                    </span>
+                  </th>
                 </tr>
               </thead>
               <tbody class="list form-check-all">
@@ -83,7 +97,7 @@
                   <td>{{ item.longitude }}</td> -->
                   <td>{{ item.radius }} Meters</td>
                   <td class="text-capitalize">{{ item.event_type }}</td>
-                  <td>{{ item.created_at | date:'MM/dd/yyyy HH:mm' }}</td>
+                  <td>{{ item.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
                 </tr>
               </tbody>
             </table>

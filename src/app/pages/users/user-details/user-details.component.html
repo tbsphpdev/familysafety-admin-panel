@@ -124,7 +124,7 @@
             </div>
             <div class="col-md-4">
               <label class="form-label fw-semibold text-muted">Plan Price</label>
-              <p class="mb-0 fw-medium">{{ subscriptionDetails.plan?.price ?? '-' }}</p>
+              <p class="mb-0 fw-medium">${{ subscriptionDetails.plan?.price ?? '-' }}</p>
             </div>
             <div class="col-md-4">
               <label class="form-label fw-semibold text-muted">Interval</label>
@@ -159,14 +159,14 @@
             } -->
             @if (subscriptionDetails.current_period_start) {
             <div class="col-md-4">
-              <label class="form-label fw-semibold text-muted">Period Start</label>
-              <p class="mb-0 fw-medium">{{ subscriptionDetails.current_period_start | date:'MM/dd/yyyy' }}</p>
+              <label class="form-label fw-semibold text-muted">Period Start (DD/MM/YYYY)</label>
+              <p class="mb-0 fw-medium">{{ subscriptionDetails.current_period_start | date:'dd/MM/yyyy' }}</p>
             </div>
             }
             @if (subscriptionDetails.current_period_end) {
             <div class="col-md-4">
-              <label class="form-label fw-semibold text-muted">Period End</label>
-              <p class="mb-0 fw-medium">{{ subscriptionDetails.current_period_end | date:'MM/dd/yyyy' }}</p>
+              <label class="form-label fw-semibold text-muted">Period End (DD/MM/YYYY)</label>
+              <p class="mb-0 fw-medium">{{ subscriptionDetails.current_period_end | date:'dd/MM/yyyy' }}</p>
             </div>
             }
           </div>
@@ -177,7 +177,7 @@
           <h6 class="fw-semibold mb-3">Family Members</h6>
           <div class="row g-3">
             @if (familyOwner) {
-            <div class="col-md-3">
+            <div class="col-md-6 col-lg-4 col-xl-3">
               <div class="card border cursor-pointer" (click)="openUserInNewTab(familyOwner.id)">
                 <div class="card-body p-3">
                   <div class="d-flex align-items-center gap-3">
@@ -202,7 +202,7 @@
             </div>
             }
             @for (member of familyMembers; track member.id) {
-            <div class="col-md-3">
+            <div class="col-md-6 col-lg-4 col-xl-3">
               <div class="card border cursor-pointer" (click)="openUserInNewTab(member.id)">
                 <div class="card-body p-3">
                   <div class="d-flex align-items-center gap-3">
@@ -271,6 +271,97 @@
           </div>
         </div>
       </div>
+
+      <!-- Payment History card -->
+      <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+          <h5 class="card-title mb-0">Payment History</h5>
+          @if (paymentHistoryTotal > 0) {
+          <span class="badge bg-secondary-subtle text-secondary">{{ paymentHistoryTotal }} record{{ paymentHistoryTotal
+            !== 1 ? 's' : '' }}</span>
+          }
+        </div>
+        <div class="card-body">
+          @if (paymentHistoryLoading) {
+          <div class="text-center py-4">
+            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+          </div>
+          } @else if (paymentHistory.length > 0) {
+          <div class="table-responsive">
+            <table class="table align-middle table-nowrap mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>#</th>
+                  <th>Plan</th>
+                  <th>Amount</th>
+                  <th>Currency</th>
+                  <th>USD Amount</th>
+                  <th>In App</th>
+                  <th>Event</th>
+                  <th>Period Start (DD/MM/YYYY HH:MM)</th>
+                  <th>Period End (DD/MM/YYYY HH:MM)</th>
+                  <th>Purchase Date (DD/MM/YYYY HH:MM)</th>
+                  <th>Payment ID</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of paymentHistory; track item.id; let i = $index) {
+                <tr>
+                  <td>{{ (paymentHistoryCurrentPage - 1) * 10 + i + 1 }}</td>
+                  <td>
+                    <div class="fw-medium">{{ item.plan_name || '-' }}</div>
+                    <small class="text-muted">{{ formatAmount(item.plan_price) }} / {{ item.plan_interval }}</small>
+                  </td>
+                  <td>{{ item.amount }}</td>
+                  <td>{{ item.currency || '-' }}</td>
+                  <td>{{ item.amount_usd ? formatAmount(item.amount_usd) : '-' }}</td>
+                  <td>{{ item.payment_source_display || '-' }}</td>
+                  <td><span class="badge bg-info-subtle text-info text-capitalize">{{ item.event_type || '-' }}</span>
+                  </td>
+                  <td>{{ item.period_start ? (item.period_start | date:'dd/MM/yyyy HH:mm') : '-' }}</td>
+                  <td>{{ item.period_end ? (item.period_end | date:'dd/MM/yyyy HH:mm') : '-' }}</td>
+                  <td>{{ item.created_at ? (item.created_at | date:'dd/MM/yyyy HH:mm') : '-' }}</td>
+                  <td><small class="text-muted font-monospace">{{ item.payment_id || '-' }}</small></td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          @if (paymentHistoryTotalPages >= 1) {
+          <div class="d-flex justify-content-between align-items-center px-3 py-2 border-top">
+            <div class="text-muted small">
+              Showing {{ (paymentHistoryCurrentPage - 1) * 10 + 1 }} to
+              {{ paymentHistoryCurrentPage * 10 > paymentHistoryTotal ? paymentHistoryTotal : paymentHistoryCurrentPage
+              * 10 }}
+              of {{ paymentHistoryTotal }} entries
+            </div>
+            <nav aria-label="Payment history pagination">
+              <ul class="pagination pagination-sm mb-0">
+                <li class="page-item" [class.disabled]="paymentHistoryCurrentPage <= 1">
+                  <button class="page-link" (click)="onPaymentHistoryPageChange(paymentHistoryCurrentPage - 1)"
+                    [disabled]="paymentHistoryCurrentPage <= 1">Previous</button>
+                </li>
+                <li class="page-item" *ngFor="let p of [].constructor(paymentHistoryTotalPages); let idx = index"
+                  [class.active]="(idx + 1) === paymentHistoryCurrentPage">
+                  <button class="page-link" (click)="onPaymentHistoryPageChange(idx + 1)">{{ idx + 1 }}</button>
+                </li>
+                <li class="page-item" [class.disabled]="paymentHistoryCurrentPage >= paymentHistoryTotalPages">
+                  <button class="page-link" (click)="onPaymentHistoryPageChange(paymentHistoryCurrentPage + 1)"
+                    [disabled]="paymentHistoryCurrentPage >= paymentHistoryTotalPages">Next</button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          }
+          } @else {
+          <div class="text-center py-4">
+            <i class="ri-bill-line fs-1 text-muted mb-2 d-block"></i>
+            <p class="text-muted mb-0">No payment history found.</p>
+          </div>
+          }
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

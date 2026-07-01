@@ -8,6 +8,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { loadUser, updateUser, updateUserSuccess, updateUserFailure } from '../../../store/Users/user.actions';
 import { selectEntities } from '../../../store/Users/user.reducer';
+import { UserService } from '../user.service';
 
 @Component({
   selector: 'app-user-details',
@@ -22,12 +23,17 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
   referralDetails: any = null;
   familyOwner: any = null;
   familyMembers: any = null;
+  paymentHistory: any[] = [];
+  paymentHistoryTotal: number = 0;
+  paymentHistoryTotalPages: number = 0;
+  paymentHistoryCurrentPage: number = 1;
+  paymentHistoryLoading: boolean = false;
   userId!: number;
   loading = false;
   form!: FormGroup;
   private destroy$ = new Subject<void>();
 
-  constructor(private route: ActivatedRoute, private fb: FormBuilder, private store: Store, private actions$: Actions, private router: Router) { }
+  constructor(private route: ActivatedRoute, private fb: FormBuilder, private store: Store, private actions$: Actions, private router: Router, private userService: UserService) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -59,6 +65,10 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
           this.referralDetails = user.referrals?.list ?? null;
           this.familyOwner = user.user_subs?.family_owner ?? null;
           this.familyMembers = user.user_subs?.family_members ?? null;
+          this.paymentHistory = user.payment_history?.data ?? [];
+          this.paymentHistoryTotal = user.payment_history?.total_records ?? 0;
+          this.paymentHistoryTotalPages = user.payment_history?.total_pages ?? 0;
+          this.paymentHistoryCurrentPage = user.payment_history?.current_page ?? 1;
           this.patchUserForm(user);
         }
       }
@@ -141,5 +151,27 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
 
   openUserInNewTab(id: any): void {
     if (id) { window.open('/users/' + id, '_blank'); }
+  }
+
+  formatAmount(amount: any): string {
+    if (amount === null || amount === undefined) return '-';
+    const num = parseFloat(amount);
+    return isNaN(num) ? String(amount) : '$' + num.toFixed(2);
+  }
+
+  onPaymentHistoryPageChange(page: number): void {
+    if (page < 1 || page > this.paymentHistoryTotalPages || page === this.paymentHistoryCurrentPage) return;
+    this.paymentHistoryLoading = true;
+    const token = localStorage.getItem('token') || '';
+    this.userService.getUserPaymentHistory(token, this.userId, page).subscribe({
+      next: (data: any) => {
+        this.paymentHistory = data?.payment_history?.data ?? [];
+        this.paymentHistoryTotal = data?.payment_history?.total_records ?? this.paymentHistoryTotal;
+        this.paymentHistoryTotalPages = data?.payment_history?.total_pages ?? this.paymentHistoryTotalPages;
+        this.paymentHistoryCurrentPage = data?.payment_history?.current_page ?? page;
+        this.paymentHistoryLoading = false;
+      },
+      error: () => { this.paymentHistoryLoading = false; }
+    });
   }
 }

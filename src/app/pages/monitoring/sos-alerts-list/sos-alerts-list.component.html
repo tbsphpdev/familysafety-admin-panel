@@ -5,7 +5,7 @@
     <div class="card">
       <div class="card-body">
         <div id="monitoringList">
-          <div class="row g-4 mb-3">
+          <div class="row g-4 mb-3 monitoring-filter-bar">
             <div class="col-sm-auto">
               <div class="d-flex justify-content-start align-items-center gap-3 flex-wrap">
                 <div class="d-flex align-items-center">
@@ -33,9 +33,9 @@
                     <option value="resolved">Resolved</option>
                   </select>
                 </div>
-                <div class="me-2 d-flex align-items-center">
+                <div class="me-2 d-flex align-items-center date-range-filter">
                   <label class="me-2 date-range-label mb-0">Date range</label>
-                  <div class="input-group">
+                  <div class="input-group date-range-input">
                     <input type="text" class="form-control" placeholder="Select date range" bsDaterangepicker
                       [bsConfig]="datePickerConfig" [(ngModel)]="dateRange" (bsValueChange)="onDateRangeChange($event)"
                       readonly>
@@ -61,21 +61,43 @@
           </div>
 
           <div class="table-responsive table-card mt-3 mb-1" *ngIf="!isLoading">
-            <table class="table align-middle table-nowrap" id="monitoringTable">
-              <thead class="table-light" *ngIf="tableColumns.length > 0">
+            <table class="table align-middle table-nowrap monitoring-table" id="monitoringTable">
+              <thead class="table-light monitoring-table-head" *ngIf="tableColumns.length > 0">
                 <tr>
-                  <th>Id</th>
-                  <th class="cursor-pointer" (click)="onSort('triggered_by_name')">
-                    Name <i class="ms-1" [ngClass]="getSortIcon('triggered_by_name')"></i>
+                  <th scope="col" class="col-id">Id</th>
+                  <th scope="col" class="cursor-pointer sortable-heading" (click)="onSort('triggered_by_name')">
+                    <span class="th-content">
+                      <span>Name</span>
+                      <i class="sort-icon" [ngClass]="getSortIcon('triggered_by_name')"></i>
+                    </span>
                   </th>
                   <!-- <th>Email</th>
                   <th>Phone Number</th> -->
-                  <th class="cursor-pointer" (click)="onSort('resolved_by_name')">
-                    Resolved By <i class="ms-1" [ngClass]="getSortIcon('resolved_by_name')"></i>
+                  <th scope="col" class="cursor-pointer sortable-heading" (click)="onSort('resolved_by_name')">
+                    <span class="th-content">
+                      <span>Resolved By</span>
+                      <i class="sort-icon" [ngClass]="getSortIcon('resolved_by_name')"></i>
+                    </span>
                   </th>
-                  <th>SOS Status</th>
-                  <th>Triggered At</th>
-                  <th>Acknowledged At</th>
+                  <th scope="col">SOS Status</th>
+                  <th scope="col" class="cursor-pointer sortable-heading" (click)="onSort('triggered_at')">
+                    <span class="th-date">
+                      <span class="th-content">
+                        <span>Triggered At</span>
+                        <i class="sort-icon" [ngClass]="getSortIcon('triggered_at')"></i>
+                      </span>
+                      <small>(DD/MM/YYYY HH:MM)</small>
+                    </span>
+                  </th>
+                  <th scope="col" class="cursor-pointer sortable-heading" (click)="onSort('resolved_at')">
+                    <span class="th-date">
+                      <span class="th-content">
+                        <span>Acknowledged At</span>
+                        <i class="sort-icon" [ngClass]="getSortIcon('resolved_at')"></i>
+                      </span>
+                      <small>(DD/MM/YYYY HH:MM)</small>
+                    </span>
+                  </th>
                 </tr>
               </thead>
               <tbody class="list form-check-all">
@@ -88,8 +110,8 @@
                   <td (click)="item.resolved_by_id && openUserInNewTab(item.resolved_by_id)"
                     [class.cursor-pointer]="item.resolved_by_id">{{ item.resolved_by_name ?? '-' }}</td>
                   <td class="text-capitalize">{{ item.sos_status }}</td>
-                  <td>{{ item.triggered_at | date:'MM/dd/yyyy HH:mm' }}</td>
-                  <td>{{ item.resolved_at | date:'MM/dd/yyyy HH:mm' }}</td>
+                  <td>{{ item.triggered_at | date:'dd/MM/yyyy HH:mm' }}</td>
+                  <td>{{ item.resolved_at | date:'dd/MM/yyyy HH:mm' }}</td>
                 </tr>
               </tbody>
             </table>

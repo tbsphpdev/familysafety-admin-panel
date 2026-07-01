@@ -52,7 +52,7 @@
     border: 1px solid #dee2e6;
     border-top: none;
     border-radius: 0 0 8px 8px;
-    max-height: 240px;
+    max-height: 185px;
     overflow-y: auto;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
   }
@@ -68,6 +68,11 @@
 
     &:last-child { border-bottom: none; }
     &:hover { background: #f8f9fa; }
+    &.highlighted {
+      background: #e8edf8;
+      border-left: 3px solid #405189;
+      padding-left: 9px;
+    }
   }
 }
 

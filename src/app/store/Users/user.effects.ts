@@ -133,7 +133,10 @@ export class UserEffects {
         const token = localStorage.getItem('token') || '';
         const id = action && action.id ? action.id : null;
         return this.userService.getUser(token, id).pipe(
-          map((data: any) => loadUserSuccess({ user: data && data.user ? data.user : data })),
+          map((data: any) => {
+            const user = data && data.user ? data.user : data;
+            return loadUserSuccess({ user: { ...user, payment_history: data?.payment_history ?? null } });
+          }),
           catchError((error) => of(loadUserFailure({ error: this.getEffectErrorMessage(error) })))
         );
       })

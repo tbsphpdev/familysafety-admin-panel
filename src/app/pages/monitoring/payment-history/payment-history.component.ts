@@ -47,12 +47,12 @@ export class PaymentHistoryComponent implements OnInit, OnDestroy {
   datePickerConfig = {
     containerClass: 'theme-blue',
     showWeekNumbers: false,
-    dateInputFormat: 'DD-MM-YYYY'
+    rangeInputFormat: 'DD/MM/YYYY'
   };
 
   // Sorting properties
   ordering = '';
-  sortField: 'full_name' | 'email' | 'event_type' | 'payment_source' | '' = '';
+  sortField: 'full_name' | 'email' | 'event_type' | 'payment_source' | 'period_start' | 'period_end' | 'created_at' | '' = '';
   sortDirection: 'asc' | 'desc' = 'asc';
 
   private destroy$ = new Subject<void>();
@@ -177,7 +177,7 @@ export class PaymentHistoryComponent implements OnInit, OnDestroy {
     return `${year}-${month}-${day}`;
   }
 
-  onSort(field: 'full_name' | 'email' | 'event_type' | 'payment_source'): void {
+  onSort(field: 'full_name' | 'email' | 'event_type' | 'payment_source' | 'period_start' | 'period_end' | 'created_at'): void {
     if (this.sortField === field) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
@@ -188,7 +188,7 @@ export class PaymentHistoryComponent implements OnInit, OnDestroy {
     this.loadPaymentHistory(1);
   }
 
-  getSortIcon(field: 'full_name' | 'email' | 'event_type' | 'payment_source'): string {
+  getSortIcon(field: 'full_name' | 'email' | 'event_type' | 'payment_source' | 'period_start' | 'period_end' | 'created_at'): string {
     if (this.sortField !== field) {
       return 'ri-arrow-up-down-line';
     }
