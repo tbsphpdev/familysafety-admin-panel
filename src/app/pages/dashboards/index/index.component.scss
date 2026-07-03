@@ -4,6 +4,14 @@
   font-size: 0.75rem;
 }
 
+::ng-deep .apex-charts {
+  .apexcharts-bar-area:focus,
+  .apexcharts-series path:focus,
+  .apexcharts-series rect:focus {
+    outline: none;
+  }
+}
+
 .dashboard-loader {
   min-height: 400px;
 }
@@ -32,6 +40,11 @@
   max-height: 350px;
   overflow-x: hidden;
   overflow-y: auto;
+
+  ::ng-deep .apexcharts-tooltip {
+    z-index: 20;
+    transform: translateY(70px);
+  }
 }
 
 .country-chart-axis {

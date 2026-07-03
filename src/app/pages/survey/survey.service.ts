@@ -47,9 +47,13 @@ export class SurveyService {
     );
   }
 
-  getSurveyQuestion(id: number): Observable<any> {
+  getSurveyQuestion(id: number, language?: string): Observable<any> {
+    let url = `${this.apiUrl}onboarding_questions/${id}/`;
+    if (language) {
+      url += `?lang=${language}`;
+    }
     return this.http
-      .get<any>(`${this.apiUrl}onboarding_questions/${id}/`, { headers: this.headers })
+      .get<any>(url, { headers: this.headers })
       .pipe(
         map((response: any) => {
           // API returns { data: [ {...} ], message, status }
@@ -60,6 +64,12 @@ export class SurveyService {
         }),
         catchError((error: any) => throwError(() => this.parseError(error)))
       );
+  }
+
+  getLanguages(): Observable<any> {
+    return this.http
+      .get<any>(`${this.apiUrl}languages/`, { headers: this.headers })
+      .pipe(catchError((error: any) => throwError(() => this.parseError(error))));
   }
 
   getSurveyQuestionStats(id: number): Observable<any> {

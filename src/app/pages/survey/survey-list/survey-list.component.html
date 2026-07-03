@@ -157,6 +157,23 @@
         @if (!modalLoading && form) {
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
+          <!-- Language (edit only) -->
+          @if (isEditing) {
+          <div class="mb-3">
+            <label class="form-label d-block">Language</label>
+            <div class="d-flex gap-3 flex-wrap">
+              <div class="form-check" *ngFor="let lang of languages">
+                <input class="form-check-input" [id]="'lang-' + (lang.code || lang.id)" type="radio" name="lang"
+                  [title]="lang.name || lang.language_name" [value]="lang.code || lang.id"
+                  [checked]="selectedLanguage == (lang.code || lang.id)"
+                  (change)="onLanguageChange(lang.code || lang.id)">
+                <label class="form-check-label" [for]="'lang-' + (lang.code || lang.id)">{{ lang.name ||
+                  lang.language_name }}</label>
+              </div>
+            </div>
+          </div>
+          }
+
           <!-- Question text -->
           <div class="mb-3">
             <label class="form-label fw-semibold">Question <span class="text-danger">*</span></label>
@@ -169,24 +186,32 @@
           <!-- Options -->
           <div class="mb-2">
             <label class="form-label fw-semibold">Options</label>
-            <div formArrayName="options" cdkDropList (cdkDropListDropped)="dropOption($event)">
+            <div formArrayName="options" cdkDropList [cdkDropListDisabled]="selectedLanguage !== 'en'"
+              (cdkDropListDropped)="dropOption($event)">
               <div *ngFor="let opt of options.controls; let i = index" [formGroupName]="i"
-                class="d-flex gap-2 mb-2 align-items-center option-drag-row" cdkDrag>
+                class="d-flex gap-2 mb-2 align-items-center option-drag-row" cdkDrag
+                [cdkDragDisabled]="selectedLanguage !== 'en'">
+                @if (selectedLanguage === 'en') {
                 <span class="drag-handle flex-shrink-0 text-muted" cdkDragHandle title="Drag to reorder">
                   <i class="ri-drag-move-2-line fs-5"></i>
                 </span>
+                }
                 <span class="text-muted small flex-shrink-0 option-num">{{ i + 1 }}.</span>
                 <input type="text" class="form-control" formControlName="text" placeholder="Option text">
+                @if (selectedLanguage === 'en') {
                 <button type="button" class="btn btn-sm btn-outline-danger flex-shrink-0"
                   (click)="removeOption(i, $event)" title="Remove option">
                   <i class="ri-delete-bin-line"></i>
                 </button>
+                }
                 <div *cdkDragPlaceholder class="option-drag-placeholder"></div>
               </div>
             </div>
+            @if (selectedLanguage === 'en') {
             <button type="button" class="btn btn-sm btn-primary mt-1" (click)="addOption()">
               <i class="ri-add-line me-1"></i> Add Option
             </button>
+            }
           </div>
 
         </form>

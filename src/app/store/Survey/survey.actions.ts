@@ -17,7 +17,7 @@ export const loadSurveyQuestionsFailure = createAction(
 
 export const getSurvey = createAction(
   '[Survey] Get Survey',
-  props<{ id: number }>()
+  props<{ id: number; language?: string }>()
 );
 
 export const getSurveySuccess = createAction(
@@ -87,5 +87,17 @@ export const loadSurveyStatsSuccess = createAction(
 
 export const loadSurveyStatsFailure = createAction(
   '[Survey] Load Survey Stats Failure',
+  props<{ error: any }>()
+);
+
+export const getLanguages = createAction('[Survey] Get Languages');
+
+export const getLanguagesSuccess = createAction(
+  '[Survey] Get Languages Success',
+  props<{ languages: any }>()
+);
+
+export const getLanguagesFailure = createAction(
+  '[Survey] Get Languages Failure',
   props<{ error: any }>()
 );

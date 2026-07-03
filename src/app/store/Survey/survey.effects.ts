@@ -26,13 +26,39 @@ export class SurveyEffects {
   getSurvey$ = createEffect(() =>
     this.actions$.pipe(
       ofType(SurveyActions.getSurvey),
-      concatMap(({ id }) =>
-        this.surveyService.getSurveyQuestion(id).pipe(
+      concatMap(({ id, language }) =>
+        this.surveyService.getSurveyQuestion(id, language).pipe(
           map((survey) => SurveyActions.getSurveySuccess({ survey })),
           catchError(error => of(SurveyActions.getSurveyFailure({ error })))
         )
       )
     )
+  );
+
+  getLanguages$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(SurveyActions.getLanguages),
+      concatMap(() =>
+        this.surveyService.getLanguages().pipe(
+          map((res: any) => {
+            const languages = Array.isArray(res) ? res : res?.data ?? res?.languages ?? [];
+            return SurveyActions.getLanguagesSuccess({ languages });
+          }),
+          catchError(error => of(SurveyActions.getLanguagesFailure({ error })))
+        )
+      )
+    )
+  );
+
+  getLanguagesFailure$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(SurveyActions.getLanguagesFailure),
+      tap((action: any) => {
+        try {
+          this.toastr.error(action.error || 'Failed to load languages', 'Error');
+        } catch (e) { }
+      })
+    ), { dispatch: false }
   );
 
   createSurvey$ = createEffect(() =>

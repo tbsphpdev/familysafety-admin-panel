@@ -9,3 +9,17 @@
   height: 40px;
   font-size: 0.85rem;
 }
+
+.th-date {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  line-height: 1.15;
+
+  small {
+    color: var(--vz-secondary-color);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: none;
+  }
+}

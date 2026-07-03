@@ -8,162 +8,147 @@
     </div>
 </div>
 } @else {
-<div class="row">
-    <div class="col-12">
-        <div class="card border-0 overflow-hidden">
-            <div class="card-body p-0">
-                <div class="row g-0">
-                    <div class="col-12 col-md-6 col-xl-2">
-                        <!-- card -->
-                        <div class="card shadow-none border-end-md border-bottom rounded-0 mb-0">
-                            <div class="card-body">
-                                <div class="avatar-sm">
-                                    <span class="avatar-title bg-primary-subtle text-primary rounded-circle fs-3">
-                                        <i class="ph-wallet"></i>
-                                    </span>
-                                </div>
-                                <div class="mt-4">
-                                    <p class="text-uppercase fw-medium text-muted text-truncate fs-sm">Total Revenue</p>
-                                    <h4 class="fw-semibold mb-3">${{ dashboardData?.revenue?.total_revenue }}</h4>
-                                </div>
-                            </div><!-- end card body -->
-                        </div><!-- end card -->
-                    </div><!-- end col -->
-                    <div class="col-12 col-md-6 col-xl-2">
-                        <!-- card -->
-                        <div class="card shadow-none border-end-xl border-bottom rounded-0 mb-0">
-                            <div class="card-body">
-                                <div class="avatar-sm">
-                                    <span class="avatar-title bg-dark-subtle text-dark rounded-circle fs-3">
-                                        <i class="ph-bag"></i>
-                                    </span>
-                                </div>
-                                <div class="mt-4">
-                                    <p class="text-uppercase fw-medium text-muted text-truncate fs-sm">Total Subscribers
-                                    </p>
-                                    <h4 class="fw-semibold mb-3"><span class="counter-value"
-                                            [countUp]="dashboardData?.summary?.total_subscribers ?? 0">0</span>
-                                    </h4>
-                                </div>
-                            </div><!-- end card body -->
-                        </div><!-- end card -->
-                    </div><!-- end col -->
-                    <div class="col-12 col-md-6 col-xl-2">
-                        <!-- card -->
-                        <div class="card shadow-none border-end-md border-bottom rounded-0 mb-0">
-                            <div class="card-body">
-                                <div class="avatar-sm">
-                                    <span class="avatar-title bg-light text-body rounded-circle fs-3">
-                                        <i class="ph-eye"></i>
-                                    </span>
-                                </div>
-                                <div class="mt-4">
-                                    <p class="text-uppercase fw-medium text-muted text-truncate fs-sm">Active Trial
-                                        Users</p>
-                                    <h4 class="fw-semibold mb-3"><span class="counter-value"
-                                            [countUp]="dashboardData?.trials?.trial_active ?? 0">0</span>
-                                    </h4>
-                                </div>
-                            </div><!-- end card body -->
-                        </div><!-- end card -->
-                    </div><!-- end col -->
-                    <!-- <div class="col-xl-2 col-md-6">
-                        <div class="card shadow-none border-bottom rounded-0 mb-0">
-                            <div class="card-body">
-                                <div class="avatar-sm">
-                                    <span class="avatar-title bg-info-subtle text-info rounded-circle fs-3">
-                                        <i class="ph-users-three"></i>
-                                    </span>
-                                </div>
-                                <div class="mt-4">
-                                    <p class="text-uppercase fw-medium text-muted text-truncate fs-sm">Family Members
-                                    </p>
-                                    <h4 class="fw-semibold mb-3"><span class="counter-value"
-                                            [countUp]="dashboardData?.family?.total_family_members ?? 0">0</span>
-                                    </h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
-                    <div class="col-12 col-md-6 col-xl-2">
-                        <!-- card -->
-                        <div class="card shadow-none border-end-md border-bottom-md border-bottom-xl-0 rounded-0 mb-0">
-                            <div class="card-body">
-                                <div class="avatar-sm">
-                                    <span class="avatar-title bg-warning-subtle text-warning rounded-circle fs-3">
-                                        <i class="ph-calendar"></i>
-                                    </span>
-                                </div>
-                                <div class="mt-4">
-                                    <p class="text-uppercase fw-medium text-muted text-truncate fs-sm">Revenue This
-                                        Month</p>
-                                    <h4 class="fw-semibold mb-3">${{ dashboardData?.revenue?.revenue_this_month }}</h4>
-                                </div>
-                            </div><!-- end card body -->
-                        </div><!-- end card -->
-                    </div><!-- end col -->
-                    <div class="col-12 col-md-6 col-xl-2">
-                        <!-- card -->
-                        <div class="card shadow-none border-end-xl border-bottom-md border-bottom-xl-0 rounded-0 mb-0">
-                            <div class="card-body">
-                                <div class="avatar-sm">
-                                    <span class="avatar-title bg-danger-subtle text-danger rounded-circle fs-3">
-                                        <i class="ph-chart-line"></i>
-                                    </span>
-                                </div>
-                                <div class="mt-4">
-                                    <p class="text-uppercase fw-medium text-muted text-truncate fs-sm">Revenue This Week
-                                    </p>
-                                    <h4 class="fw-semibold mb-3">${{ dashboardData?.revenue?.revenue_this_week }}</h4>
-                                </div>
-                            </div><!-- end card body -->
-                        </div><!-- end card -->
-                    </div><!-- end col -->
-                    <!-- <div class="col-xl-2 col-md-6">
-                        <div class="card shadow-none border-end-md rounded-0 mb-0">
-                            <div class="card-body">
-                                <div class="avatar-sm">
-                                    <span class="avatar-title bg-success-subtle text-success rounded-circle fs-3">
-                                        <i class="ph-arrows-clockwise"></i>
-                                    </span>
-                                </div>
-                                <div class="mt-4">
-                                    <p class="text-uppercase fw-medium text-muted text-truncate fs-sm">Total Renewals
-                                    </p>
-                                    <h4 class="fw-semibold mb-3">
-                                        <span class="counter-value"
-                                            [countUp]="dashboardData?.renewals?.total_renewals ?? 0">0</span>
-                                    </h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
-                    <div class="col-12 col-md-6 col-xl-2">
-                        <!-- card -->
-                        <div class="card shadow-none rounded-0 mb-0">
-                            <div class="card-body">
-                                <div class="avatar-sm">
-                                    <span class="avatar-title bg-info-subtle text-info rounded-circle fs-3">
-                                        <i class="ph-calendar-check"></i>
-                                    </span>
-                                </div>
-                                <div class="mt-4">
-                                    <p class="text-uppercase fw-medium text-muted text-truncate fs-sm">Renewals This
-                                        Month</p>
-                                    <h4 class="fw-semibold mb-3">
-                                        <span class="counter-value"
-                                            [countUp]="dashboardData?.renewals?.renewals_this_month ?? 0">0</span>
-                                    </h4>
-                                </div>
-                            </div><!-- end card body -->
-                        </div><!-- end card -->
-                    </div><!-- end col -->
-                </div> <!-- end row-->
+<div class="row g-3">
+    <div class="col-6 col-md-4 col-xl-2">
+        <!-- card -->
+        <div class="card mb-0 h-100">
+            <div class="card-body p-3">
+                <div class="avatar-xs">
+                    <span class="avatar-title bg-primary-subtle text-primary rounded-circle fs-5">
+                        <i class="ph-wallet"></i>
+                    </span>
+                </div>
+                <div class="mt-3">
+                    <p class="text-uppercase fw-medium text-muted text-truncate fs-xs mb-1">Total Revenue</p>
+                    <h5 class="fw-semibold mb-0">${{ dashboardData?.revenue?.total_revenue }}</h5>
+                </div>
+            </div><!-- end card body -->
+        </div><!-- end card -->
+    </div><!-- end col -->
+    <div class="col-6 col-md-4 col-xl-2">
+        <!-- card -->
+        <div class="card mb-0 h-100">
+            <div class="card-body p-3">
+                <div class="avatar-xs">
+                    <span class="avatar-title bg-dark-subtle text-dark rounded-circle fs-5">
+                        <i class="ph-bag"></i>
+                    </span>
+                </div>
+                <div class="mt-3">
+                    <p class="text-uppercase fw-medium text-muted text-truncate fs-xs mb-1">Total Subscribers</p>
+                    <h5 class="fw-semibold mb-0"><span class="counter-value"
+                            [countUp]="dashboardData?.summary?.total_subscribers ?? 0">0</span>
+                    </h5>
+                </div>
+            </div><!-- end card body -->
+        </div><!-- end card -->
+    </div><!-- end col -->
+    <div class="col-6 col-md-4 col-xl-2">
+        <!-- card -->
+        <div class="card mb-0 h-100">
+            <div class="card-body p-3">
+                <div class="avatar-xs">
+                    <span class="avatar-title bg-light text-body rounded-circle fs-5">
+                        <i class="ph-eye"></i>
+                    </span>
+                </div>
+                <div class="mt-3">
+                    <p class="text-uppercase fw-medium text-muted text-truncate fs-xs mb-1">Active Trial Users</p>
+                    <h5 class="fw-semibold mb-0"><span class="counter-value"
+                            [countUp]="dashboardData?.trials?.trial_active ?? 0">0</span>
+                    </h5>
+                </div>
+            </div><!-- end card body -->
+        </div><!-- end card -->
+    </div><!-- end col -->
+    <!-- <div class="col-6 col-md-4 col-xl-2">
+        <div class="card mb-0 h-100">
+            <div class="card-body p-3">
+                <div class="avatar-xs">
+                    <span class="avatar-title bg-info-subtle text-info rounded-circle fs-5">
+                        <i class="ph-users-three"></i>
+                    </span>
+                </div>
+                <div class="mt-3">
+                    <p class="text-uppercase fw-medium text-muted text-truncate fs-xs mb-1">Family Members</p>
+                    <h5 class="fw-semibold mb-0"><span class="counter-value"
+                            [countUp]="dashboardData?.family?.total_family_members ?? 0">0</span>
+                    </h5>
+                </div>
             </div>
         </div>
-    </div><!--end col-->
+    </div> -->
+    <div class="col-6 col-md-4 col-xl-2">
+        <!-- card -->
+        <div class="card mb-0 h-100">
+            <div class="card-body p-3">
+                <div class="avatar-xs">
+                    <span class="avatar-title bg-warning-subtle text-warning rounded-circle fs-5">
+                        <i class="ph-calendar"></i>
+                    </span>
+                </div>
+                <div class="mt-3">
+                    <p class="text-uppercase fw-medium text-muted text-truncate fs-xs mb-1">Revenue This Month</p>
+                    <h5 class="fw-semibold mb-0">${{ dashboardData?.revenue?.revenue_this_month }}</h5>
+                </div>
+            </div><!-- end card body -->
+        </div><!-- end card -->
+    </div><!-- end col -->
+    <div class="col-6 col-md-4 col-xl-2">
+        <!-- card -->
+        <div class="card mb-0 h-100">
+            <div class="card-body p-3">
+                <div class="avatar-xs">
+                    <span class="avatar-title bg-danger-subtle text-danger rounded-circle fs-5">
+                        <i class="ph-chart-line"></i>
+                    </span>
+                </div>
+                <div class="mt-3">
+                    <p class="text-uppercase fw-medium text-muted text-truncate fs-xs mb-1">Revenue This Week</p>
+                    <h5 class="fw-semibold mb-0">${{ dashboardData?.revenue?.revenue_this_week }}</h5>
+                </div>
+            </div><!-- end card body -->
+        </div><!-- end card -->
+    </div><!-- end col -->
+    <!-- <div class="col-6 col-md-4 col-xl-2">
+        <div class="card mb-0 h-100">
+            <div class="card-body p-3">
+                <div class="avatar-xs">
+                    <span class="avatar-title bg-success-subtle text-success rounded-circle fs-5">
+                        <i class="ph-arrows-clockwise"></i>
+                    </span>
+                </div>
+                <div class="mt-3">
+                    <p class="text-uppercase fw-medium text-muted text-truncate fs-xs mb-1">Total Renewals</p>
+                    <h5 class="fw-semibold mb-0">
+                        <span class="counter-value"
+                            [countUp]="dashboardData?.renewals?.total_renewals ?? 0">0</span>
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div> -->
+    <div class="col-6 col-md-4 col-xl-2">
+        <!-- card -->
+        <div class="card mb-0 h-100">
+            <div class="card-body p-3">
+                <div class="avatar-xs">
+                    <span class="avatar-title bg-info-subtle text-info rounded-circle fs-5">
+                        <i class="ph-calendar-check"></i>
+                    </span>
+                </div>
+                <div class="mt-3">
+                    <p class="text-uppercase fw-medium text-muted text-truncate fs-xs mb-1">Renewals This Month</p>
+                    <h5 class="fw-semibold mb-0">
+                        <span class="counter-value"
+                            [countUp]="dashboardData?.renewals?.renewals_this_month ?? 0">0</span>
+                    </h5>
+                </div>
+            </div><!-- end card body -->
+        </div><!-- end card -->
+    </div><!-- end col -->
 </div><!--end row-->
-<div class="row">
+<div class="row mt-3">
     <div class="col-12 col-lg-8">
         <div class="card" id="contactList">
             <div class="card-header align-items-center d-flex">
@@ -184,7 +169,7 @@
                                         <small>(DD/MM/YYYY)</small>
                                     </span>
                                 </th>
-                                <th scope="col">Transaction ID</th>
+                                <!-- <th scope="col">Transaction ID</th> -->
                                 <th scope="col">User</th>
                                 <th scope="col">Plan</th>
                                 <th scope="col">Amount</th>
@@ -201,9 +186,9 @@
                                 <td class="order_date">
                                     {{ data.created_at | date:'dd/MM/yyyy' }}
                                 </td>
-                                <td class="order_id">
+                                <!-- <td class="order_id">
                                     <span class="fw-medium link-primary">#{{ data.id }}</span>
-                                </td>
+                                </td> -->
                                 <td (click)="openUserInNewTab(data.user_id)" class="cursor-pointer">
                                     <div class="d-flex align-items-center gap-2">
                                         <ng-container *ngIf="data.profile_picture; else transactionInitials">
@@ -306,13 +291,13 @@
                     <div class="card-body ps-0">
                         <div class="w-100">
                             <div id="market-overview" class="apex-charts" dir="ltr">
-                                <apx-chart [series]="marketverviewChart.series" [chart]="marketverviewChart.chart"
-                                    [plotOptions]="marketverviewChart.plotOptions" [stroke]="marketverviewChart.stroke"
-                                    [fill]="marketverviewChart.fill" [colors]="marketverviewChart.colors"
-                                    [legend]="marketverviewChart.legend" [xaxis]="marketverviewChart.xaxis"
-                                    [dataLabels]="marketverviewChart.dataLabels" [grid]="marketverviewChart.grid"
-                                    [yaxis]="marketverviewChart.yaxis" [states]="marketverviewChart.states"
-                                    dir="ltr"></apx-chart>
+                                <apx-chart #marketOverviewChart [series]="marketverviewChart.series"
+                                    [chart]="marketverviewChart.chart" [plotOptions]="marketverviewChart.plotOptions"
+                                    [stroke]="marketverviewChart.stroke" [fill]="marketverviewChart.fill"
+                                    [colors]="marketverviewChart.colors" [legend]="marketverviewChart.legend"
+                                    [xaxis]="marketverviewChart.xaxis" [dataLabels]="marketverviewChart.dataLabels"
+                                    [grid]="marketverviewChart.grid" [yaxis]="marketverviewChart.yaxis"
+                                    [states]="marketverviewChart.states" dir="ltr"></apx-chart>
                             </div>
                         </div>
                     </div><!-- end card body -->
@@ -405,7 +390,8 @@
                 <apx-chart [series]="revenueByYearChart.series" [chart]="revenueByYearChart.chart"
                     [plotOptions]="revenueByYearChart.plotOptions" [dataLabels]="revenueByYearChart.dataLabels"
                     [xaxis]="revenueByYearChart.xaxis" [yaxis]="revenueByYearChart.yaxis"
-                    [colors]="revenueByYearChart.colors" [states]="revenueByYearChart.states" dir="ltr">
+                    [colors]="revenueByYearChart.colors" [states]="revenueByYearChart.states"
+                    [fill]="revenueByYearChart.fill" dir="ltr">
                 </apx-chart>
             </div>
         </div>
@@ -421,10 +407,11 @@
             </div>
             <div class="card-body p-0 country-chart-card">
                 <div class="country-chart-scroll">
-                    <apx-chart [series]="usersByCountryChart.series" [chart]="usersByCountryChart.chart"
-                        [plotOptions]="usersByCountryChart.plotOptions" [dataLabels]="usersByCountryChart.dataLabels"
-                        [xaxis]="usersByCountryChart.xaxis" [grid]="usersByCountryChart.grid"
-                        [colors]="usersByCountryChart.colors" [states]="usersByCountryChart.states" dir="ltr">
+                    <apx-chart #usersCountryChart [series]="usersByCountryChart.series"
+                        [chart]="usersByCountryChart.chart" [plotOptions]="usersByCountryChart.plotOptions"
+                        [dataLabels]="usersByCountryChart.dataLabels" [xaxis]="usersByCountryChart.xaxis"
+                        [grid]="usersByCountryChart.grid" [colors]="usersByCountryChart.colors"
+                        [states]="usersByCountryChart.states" [fill]="usersByCountryChart.fill" dir="ltr">
                     </apx-chart>
                 </div>
                 <div class="country-chart-axis" *ngIf="usersByCountryAxisTicks.length > 0">
@@ -438,10 +425,11 @@
 </div><!--end row-->
 
 <div class="row">
-    <div class="col-12 col-xl-7">
+    <div class="col-12 col-xl-6">
         <div class="card card-height-100">
             <div class="card-header d-flex align-items-center">
-                <h4 class="card-title mb-0 flex-grow-1">Install by Month ({{ dashboardData?.downloads_by_month?.year }})
+                <h4 class="card-title mb-0 flex-grow-1">Installs by Month ({{ dashboardData?.downloads_by_month?.year
+                    }})
                 </h4>
                 @if (totalDownloadsByMonth > 0) {
                 <span class="badge bg-success-subtle text-success fs-sm">Total: {{ totalDownloadsByMonth | number
@@ -452,12 +440,13 @@
                 <apx-chart [series]="downloadsByMonthChart.series" [chart]="downloadsByMonthChart.chart"
                     [plotOptions]="downloadsByMonthChart.plotOptions" [dataLabels]="downloadsByMonthChart.dataLabels"
                     [xaxis]="downloadsByMonthChart.xaxis" [yaxis]="downloadsByMonthChart.yaxis"
-                    [colors]="downloadsByMonthChart.colors" [states]="downloadsByMonthChart.states" dir="ltr">
+                    [colors]="downloadsByMonthChart.colors" [states]="downloadsByMonthChart.states"
+                    [fill]="downloadsByMonthChart.fill" dir="ltr">
                 </apx-chart>
             </div>
         </div>
     </div>
-    <div class="col-12 col-xl-5">
+    <div class="col-12 col-xl-6">
         <div class="card card-height-100">
             <div class="card-header d-flex align-items-center">
                 <h4 class="card-title mb-0 flex-grow-1">Installs by Country</h4>
@@ -469,11 +458,11 @@
             <div class="card-body p-0 country-chart-card">
                 @if (downloadsByCountryChart) {
                 <div class="country-chart-scroll">
-                    <apx-chart [series]="downloadsByCountryChart.series" [chart]="downloadsByCountryChart.chart"
-                        [plotOptions]="downloadsByCountryChart.plotOptions"
+                    <apx-chart #downloadsCountryChart [series]="downloadsByCountryChart.series"
+                        [chart]="downloadsByCountryChart.chart" [plotOptions]="downloadsByCountryChart.plotOptions"
                         [dataLabels]="downloadsByCountryChart.dataLabels" [xaxis]="downloadsByCountryChart.xaxis"
                         [grid]="downloadsByCountryChart.grid" [colors]="downloadsByCountryChart.colors"
-                        [states]="downloadsByCountryChart.states" dir="ltr">
+                        [states]="downloadsByCountryChart.states" [fill]="downloadsByCountryChart.fill" dir="ltr">
                     </apx-chart>
                 </div>
                 <div class="country-chart-axis" *ngIf="downloadsByCountryAxisTicks.length > 0">

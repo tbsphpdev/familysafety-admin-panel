@@ -298,9 +298,24 @@
                   <th>USD Amount</th>
                   <th>In App</th>
                   <th>Event</th>
-                  <th>Period Start (DD/MM/YYYY HH:MM)</th>
-                  <th>Period End (DD/MM/YYYY HH:MM)</th>
-                  <th>Purchase Date (DD/MM/YYYY HH:MM)</th>
+                  <th>
+                    <span class="th-date">
+                      <span>Period Start</span>
+                      <small>(DD/MM/YYYY)</small>
+                    </span>
+                  </th>
+                  <th>
+                    <span class="th-date">
+                      <span>Period End</span>
+                      <small>(DD/MM/YYYY)</small>
+                    </span>
+                  </th>
+                  <th>
+                    <span class="th-date">
+                      <span>Purchase Date</span>
+                      <small>(DD/MM/YYYY)</small>
+                    </span>
+                  </th>
                   <th>Payment ID</th>
                 </tr>
               </thead>
@@ -310,7 +325,7 @@
                   <td>{{ (paymentHistoryCurrentPage - 1) * 10 + i + 1 }}</td>
                   <td>
                     <div class="fw-medium">{{ item.plan_name || '-' }}</div>
-                    <small class="text-muted">{{ formatAmount(item.plan_price) }} / {{ item.plan_interval }}</small>
+                    <!-- <small class="text-muted">{{ formatAmount(item.plan_price) }} / {{ item.plan_interval }}</small> -->
                   </td>
                   <td>{{ item.amount }}</td>
                   <td>{{ item.currency || '-' }}</td>
@@ -318,10 +333,10 @@
                   <td>{{ item.payment_source_display || '-' }}</td>
                   <td><span class="badge bg-info-subtle text-info text-capitalize">{{ item.event_type || '-' }}</span>
                   </td>
-                  <td>{{ item.period_start ? (item.period_start | date:'dd/MM/yyyy HH:mm') : '-' }}</td>
-                  <td>{{ item.period_end ? (item.period_end | date:'dd/MM/yyyy HH:mm') : '-' }}</td>
-                  <td>{{ item.created_at ? (item.created_at | date:'dd/MM/yyyy HH:mm') : '-' }}</td>
-                  <td><small class="text-muted font-monospace">{{ item.payment_id || '-' }}</small></td>
+                  <td>{{ item.period_start ? (item.period_start | date:'dd/MM/yyyy') : '-' }}</td>
+                  <td>{{ item.period_end ? (item.period_end | date:'dd/MM/yyyy') : '-' }}</td>
+                  <td>{{ item.created_at ? (item.created_at | date:'dd/MM/yyyy') : '-' }}</td>
+                  <td>{{ item.payment_id || '-' }}</td>
                 </tr>
                 }
               </tbody>

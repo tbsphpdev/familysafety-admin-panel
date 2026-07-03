@@ -25,6 +25,9 @@ import {
   getSurveySuccess,
   getSurveyFailure,
   loadSurveyStats,
+  getLanguages,
+  getLanguagesSuccess,
+  getLanguagesFailure,
 } from 'src/app/store/Survey/survey.actions';
 import {
   selectSurveyItems,
@@ -56,6 +59,10 @@ export class SurveyListComponent implements OnInit, OnDestroy {
   modalLoading = false;
   editId: number | null = null;
   form!: FormGroup;
+
+  // Language selection (edit only)
+  languages: any[] = [];
+  selectedLanguage: string = 'en';
 
   // Stats modal state
   showStatsModal = false;
@@ -107,6 +114,23 @@ export class SurveyListComponent implements OnInit, OnDestroy {
     this.store.select(selectSurveyStatsLoading).pipe(takeUntil(this.destroy$)).subscribe(l => (this.statsLoading = l));
     this.store.select(selectSurveyStats).pipe(takeUntil(this.destroy$)).subscribe(stats => (this.statsData = stats));
 
+    // languages for the edit-question language switcher
+    this.fetchLanguages();
+
+    this.actions$.pipe(
+      ofType(getLanguagesSuccess),
+      takeUntil(this.destroy$)
+    ).subscribe((action: any) => {
+      this.languages = Array.isArray(action.languages) ? action.languages : [];
+    });
+
+    this.actions$.pipe(
+      ofType(getLanguagesFailure),
+      takeUntil(this.destroy$)
+    ).subscribe((action: any) => {
+      console.error('Failed to load languages', action.error);
+    });
+
     this.loadPage();
   }
 
@@ -149,6 +173,7 @@ export class SurveyListComponent implements OnInit, OnDestroy {
   openCreateModal(): void {
     this.isEditing = false;
     this.editId = null;
+    this.selectedLanguage = this.defaultLanguage();
     this.form = this.buildForm();
     this.showModal = true;
   }
@@ -157,10 +182,31 @@ export class SurveyListComponent implements OnInit, OnDestroy {
     if (event) event.stopPropagation();
     this.isEditing = true;
     this.editId = id;
+    this.selectedLanguage = this.defaultLanguage();
     this.form = this.buildForm();
     this.modalLoading = true;
     this.showModal = true;
-    this.store.dispatch(getSurvey({ id }));
+    this.store.dispatch(getSurvey({ id, language: this.selectedLanguage }));
+  }
+
+  private defaultLanguage(): string {
+    return this.languages.find((lang: any) => (lang.code || lang.id) === 'en')?.code
+      || this.languages[0]?.code
+      || this.languages[0]?.id
+      || 'en';
+  }
+
+  fetchLanguages(): void {
+    this.store.dispatch(getLanguages());
+  }
+
+  onLanguageChange(languageId: any): void {
+    if (!this.editId) {
+      return;
+    }
+    this.selectedLanguage = String(languageId);
+    this.modalLoading = true;
+    this.store.dispatch(getSurvey({ id: this.editId, language: this.selectedLanguage }));
   }
 
 
@@ -206,6 +252,7 @@ export class SurveyListComponent implements OnInit, OnDestroy {
     if (this.isEditing && this.editId) {
       const payload = {
         id: this.editId,
+        lang: this.selectedLanguage,
         text: raw.text,
         options: raw.options.map((o: any, i: number) => ({
           id: o.id ?? null,
@@ -217,6 +264,7 @@ export class SurveyListComponent implements OnInit, OnDestroy {
       return;
     } else {
       const payload = {
+        lang: this.selectedLanguage,
         text: raw.text,
         options: raw.options.map((o: any, i: number) => ({
           text: o.text,

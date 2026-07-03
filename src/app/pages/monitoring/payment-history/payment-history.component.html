@@ -114,8 +114,6 @@
                   <!-- <td>{{ item.user?.email || '-' }}</td> -->
                   <td>
                     <div>{{ item.plan?.name || '-' }}</div>
-                    <small class="text-muted" *ngIf="item.plan">{{ formatAmount(item.plan.price) }} / {{
-                      item.plan.interval }}</small>
                   </td>
                   <td>{{ item.amount }}</td>
                   <td>{{ item.currency || '-' }}</td>
